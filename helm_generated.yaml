@@ -443,8 +443,9 @@ data:
         type: ClientSecret
         clientId: abcdefghijklm
         clientSecretLocation: /etc/union/secret/app_secret
+    operator:
       clusterId:
-        name: zVASDMg91DyGc9hS
+        name: RKnczPFSFm6oAHDg
         organization: sample-tenant
 ---
 # Source: union-operator/charts/flyte/templates/propeller/crds/flyteworkflow.yaml

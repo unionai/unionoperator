@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-settings:
+union:
   cloudUrl: <Union Cloud URL>
   appId: <App Id from uctl create app>
   appSecret: <App secret from uctl create app>
@@ -69,3 +69,5 @@ nodeSelector: { }
 tolerations: [ ]
 
 affinity: { }
+
+configmapOverrides: { }

@@ -6,11 +6,15 @@ data:
   config.yaml: |
     union:
       connection:
-        host: dns:///{{ .Values.settings.cloudUrl }}
+        host: dns:///{{ .Values.union.cloudUrl }}
       auth:
         type: ClientSecret
-        clientId: {{ .Values.settings.appId }}
+        clientId: {{ .Values.union.appId }}
         clientSecretLocation: /etc/union/secret/app_secret
+    operator:
       clusterId:
         name: {{ include "clusterName" . }}
-        organization: {{ (split "." .Values.settings.cloudUrl)._0 }}
+        organization: {{ (split "." .Values.union.cloudUrl)._0 }}
+{{- with .Values.configmapOverrides }}
+  config-overrides.yaml: | {{ toYaml . | nindent 4 }}
+{{- end }}
