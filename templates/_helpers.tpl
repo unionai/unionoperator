@@ -9,6 +9,18 @@ Expand the name of the chart.
 {{- randAlphaNum 16 | nospace -}}
 {{- end -}}
 
+{{- define "union-operator.grpcUrl" -}}
+{{- printf "dns:///%s" (.Values.union.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://") -}}
+{{- end -}}
+
+{{- define "union-operator.org" -}}
+{{- (split "." (.Values.union.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://"))._0 -}}
+{{- end -}}
+
+{{- define "union-operator.bucket" -}}
+{{- (split "/" (.Values.union.metadataBucketPrefix | trimPrefix "s3://" | trimPrefix "gcs://" | trimPrefix "az://"))._0 -}}
+{{- end -}}
+
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).

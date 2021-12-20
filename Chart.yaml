@@ -15,15 +15,10 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.0
+version: 0.1.0 # CHART_VERSION
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "1.16.0"
-dependencies:
-  - name: flyte-core
-    alias: flyte
-    version: 0.18.1
-    repository: https://flyteorg.github.io/flyte
+appVersion: "operator-88eb8cd9af194b574b6c4ce4f3b2782426c8f607" # OPERATOR_VERSION

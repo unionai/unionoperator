@@ -1,0 +1,52 @@
+{{- if .Values.flyte.flytepropeller.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyte-propeller-config
+  labels:
+    {{- include "union-operator.labels" . | nindent 4 }}
+data:
+{{- with .Values.flyte.configmap.admin }}
+  admin.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.catalog }}
+  catalog.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.catalog_cache }}
+  catalog_cache.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.copilot }}
+  copilot.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.core }}
+  core.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.enabled_plugins }}
+  enabled_plugins.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.k8s }}
+  k8s.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.logger }}
+  logger.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.qubole }}
+  qubole.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- with .Values.flyte.configmap.resource_manager }}
+  resource_manager.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- if .Values.flyte.sparkoperator.enabled }}
+{{- with .Values.flyte.sparkoperator.plugin_config }}
+  spark.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- end }}
+  storage.yaml: | {{ tpl (include "storage" .) $ | nindent 4 }}
+  cache.yaml: |
+    cache:
+      max_size_mbs: {{ .Values.flyte.flytepropeller.cacheSizeMbs }}
+      target_gc_percent: 70
+{{- with .Values.flyte.configmap.task_logs }}
+  task_logs.yaml: | {{ tpl (toYaml .) $ | nindent 4 }}
+{{- end }}
+{{- end }}
