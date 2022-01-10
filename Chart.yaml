@@ -21,4 +21,4 @@ version: 0.1.0 # CHART_VERSION
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "operator-88eb8cd9af194b574b6c4ce4f3b2782426c8f607" # OPERATOR_VERSION
+appVersion: "operator-92d34872d46545f56e6808c12d6c602e2c6a95bf" # OPERATOR_VERSION

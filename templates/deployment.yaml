@@ -47,10 +47,22 @@ spec:
               name: config-volume
             - mountPath: /etc/union/secret
               name: secret-volume
+          env:
+            - name: CLUSTER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "union-operator.fullname" . }}-cluster-name
+                  key: cluster_name
           args:
             - operator
             - --config
             - /etc/union/config/*.yaml
+            - --operator.clusterId.name
+            - "$(CLUSTER_NAME)"
+          ports:
+            - name: debug
+              containerPort: 10254
+              protocol: TCP
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

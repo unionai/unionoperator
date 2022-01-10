@@ -15,7 +15,6 @@ data:
         clientSecretLocation: /etc/union/secret/app_secret
     operator:
       clusterId:
-        name: {{ include "clusterName" . }}
         organization: {{ include "union-operator.org" . }}
 {{- with .Values.configmapOverrides }}
   config-overrides.yaml: | {{ toYaml . | nindent 4 }}

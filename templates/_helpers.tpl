@@ -6,7 +6,7 @@ Expand the name of the chart.
 {{- end }}
 
 {{- define "clusterName" -}}
-{{- randAlphaNum 16 | nospace -}}
+{{- printf "c%v" (randAlphaNum 16 | nospace) -}}
 {{- end -}}
 
 {{- define "union-operator.grpcUrl" -}}

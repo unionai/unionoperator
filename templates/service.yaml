@@ -8,8 +8,8 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: debug
       protocol: TCP
-      name: http
+      name: debug
   selector:
     {{- include "union-operator.selectorLabels" . | nindent 4 }}

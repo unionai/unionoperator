@@ -7,6 +7,7 @@ union:
   appId: <App Id from uctl create app>
   appSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
+  clusterName: ""
 
 replicaCount: 1
 
@@ -161,7 +162,7 @@ flyte:
         capacity: 1000
       admin:
         endpoint: '{{- include "union-operator.grpcUrl" . }}'
-        clientId: flytepropeller
+        clientId: '{{- .Values.union.appId -}}'
         clientSecretLocation: /etc/secrets/client_secret
     # -- Catalog Client configuration [structure](https://pkg.go.dev/github.com/flyteorg/flytepropeller/pkg/controller/nodes/task/catalog#Config)
     # Additional advanced Catalog configuration [here](https://pkg.go.dev/github.com/lyft/flyteplugins/go/tasks/pluginmachinery/catalog#Config)
@@ -198,7 +199,7 @@ flyte:
           lock-config-map:
             name: propeller-leader
             namespace: flyte
-          enabled: true
+          enabled: false
           lease-duration: 15s
           renew-deadline: 10s
           retry-period: 2s
