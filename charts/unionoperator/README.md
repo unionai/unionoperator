@@ -12,19 +12,19 @@ Deploys Union Operator to onboard a k8s cluster to Union Cloud
 
 ### SANDBOX INSTALLATION:
 - [Install helm 3](https://helm.sh/docs/intro/install/)
-- Install Flyte sandbox:
+- Install Union Operator:
 
 ```bash
-git clone git@github.com:unionai/unionoperator.git
-cd unionoperator
-helm install -n union-operator -f values.yaml --create-namespace union-operator .
+helm repo add unionai https://unionai.github.io/unionoperator/
+helm repo update
+helm install -n union-operator -f values.yaml --create-namespace union-operator unionai/union-operator
 ```
 
 Customize your installation by changing settings in a new file `values.yaml`.
 
 Then apply your changes:
 ```bash
-helm upgrade -f values.yaml union-operator . -n union-operator
+helm upgrade -f values.yaml union-operator unionai/union-operator -n union-operator
 ```
 
 ### CONFIGURATION NOTES:

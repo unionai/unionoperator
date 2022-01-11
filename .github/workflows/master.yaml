@@ -37,6 +37,7 @@ jobs:
         uses: azure/setup-helm@v1
       - name: Update Version in helm
         run: |
+          sed "s/v0.0.1/${{ needs.bump-version.outputs.version }}/g" ./charts/unionoperator/README.md  > temp.txt && mv temp.txt ./charts/unionoperator/README.md
           grep -rlZ "version:[^P]*# VERSION" ./charts/unionoperator/Chart.yaml | xargs -0 sed -i "s/version:[^P]*# VERSION/version: ${{ needs.bump-version.outputs.version }} # VERSION/g"
       - name: Configure Git
         run: |
