@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "union-operator.fullname" . }}
+  labels:
+    {{- include "union-operator.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.union.unionoperator.autoscaling.enabled }}
+  replicas: {{ .Values.union.unionoperator.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "union-operator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.union.unionoperator.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "union-operator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.union.unionoperator.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "union-operator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.union.unionoperator.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "union-operator.fullname" . }}
+        - name: secret-volume
+          secret:
+            secretName: {{ include "union-operator.fullname" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.union.unionoperator.securityContext | nindent 12 }}
+          image: "{{ .Values.union.unionoperator.image.repository }}:{{ .Values.union.unionoperator.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.union.unionoperator.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.union.unionoperator.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /etc/union/config
+              name: config-volume
+            - mountPath: /etc/union/secret
+              name: secret-volume
+          env:
+            - name: CLUSTER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "union-operator.fullname" . }}-cluster-name
+                  key: cluster_name
+          args:
+            - operator
+            - --config
+            - /etc/union/config/*.yaml
+            - --operator.clusterId.name
+            - "$(CLUSTER_NAME)"
+          ports:
+            - name: debug
+              containerPort: 10254
+              protocol: TCP
+      {{- with .Values.union.unionoperator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.union.unionoperator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.union.unionoperator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

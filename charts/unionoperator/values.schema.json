@@ -1,0 +1,649 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "affinity": {
+      "type": "object"
+    },
+    "autoscaling": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "maxReplicas": {
+          "type": "integer"
+        },
+        "minReplicas": {
+          "type": "integer"
+        },
+        "targetCPUUtilizationPercentage": {
+          "type": "integer"
+        }
+      }
+    },
+    "configmapOverrides": {
+      "type": "object"
+    },
+    "flyte": {
+      "type": "object",
+      "properties": {
+        "configmap": {
+          "type": "object",
+          "properties": {
+            "admin": {
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "type": "object",
+                  "properties": {
+                    "clientId": {
+                      "type": "string"
+                    },
+                    "clientSecretLocation": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "capacity": {
+                      "type": "integer"
+                    },
+                    "rate": {
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "catalog": {
+              "type": "object",
+              "properties": {
+                "catalog-cache": {
+                  "type": "object",
+                  "properties": {
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "copilot": {
+              "type": "object",
+              "properties": {
+                "plugins": {
+                  "type": "object",
+                  "properties": {
+                    "k8s": {
+                      "type": "object",
+                      "properties": {
+                        "co-pilot": {
+                          "type": "object",
+                          "properties": {
+                            "image": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "start-timeout": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "core": {
+              "type": "object",
+              "properties": {
+                "propeller": {
+                  "type": "object",
+                  "properties": {
+                    "downstream-eval-duration": {
+                      "type": "string"
+                    },
+                    "enable-admin-launcher": {
+                      "type": "boolean"
+                    },
+                    "leader-election": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "lease-duration": {
+                          "type": "string"
+                        },
+                        "lock-config-map": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "namespace": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "renew-deadline": {
+                          "type": "string"
+                        },
+                        "retry-period": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "limit-namespace": {
+                      "type": "string"
+                    },
+                    "max-workflow-retries": {
+                      "type": "integer"
+                    },
+                    "metadata-prefix": {
+                      "type": "string"
+                    },
+                    "metrics-prefix": {
+                      "type": "string"
+                    },
+                    "prof-port": {
+                      "type": "integer"
+                    },
+                    "queue": {
+                      "type": "object",
+                      "properties": {
+                        "batch-size": {
+                          "type": "integer"
+                        },
+                        "batching-interval": {
+                          "type": "string"
+                        },
+                        "queue": {
+                          "type": "object",
+                          "properties": {
+                            "base-delay": {
+                              "type": "string"
+                            },
+                            "capacity": {
+                              "type": "integer"
+                            },
+                            "max-delay": {
+                              "type": "string"
+                            },
+                            "rate": {
+                              "type": "integer"
+                            },
+                            "type": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "sub-queue": {
+                          "type": "object",
+                          "properties": {
+                            "capacity": {
+                              "type": "integer"
+                            },
+                            "rate": {
+                              "type": "integer"
+                            },
+                            "type": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "rawoutput-prefix": {
+                      "type": "string"
+                    },
+                    "workers": {
+                      "type": "integer"
+                    },
+                    "workflow-reeval-duration": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "webhook": {
+                  "type": "object",
+                  "properties": {
+                    "certDir": {
+                      "type": "string"
+                    },
+                    "serviceName": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "enabled_plugins": {
+              "type": "object",
+              "properties": {
+                "tasks": {
+                  "type": "object",
+                  "properties": {
+                    "task-plugins": {
+                      "type": "object",
+                      "properties": {
+                        "default-for-task-types": {
+                          "type": "object",
+                          "properties": {
+                            "container": {
+                              "type": "string"
+                            },
+                            "container_array": {
+                              "type": "string"
+                            },
+                            "sidecar": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "enabled-plugins": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "k8s": {
+              "type": "object",
+              "properties": {
+                "plugins": {
+                  "type": "object",
+                  "properties": {
+                    "k8s": {
+                      "type": "object",
+                      "properties": {
+                        "default-cpus": {
+                          "type": "string"
+                        },
+                        "default-env-vars": {
+                          "type": "array"
+                        },
+                        "default-memory": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "logger": {
+              "type": "object",
+              "properties": {
+                "logger": {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "integer"
+                    },
+                    "show-source": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            "resource_manager": {
+              "type": "object",
+              "properties": {
+                "propeller": {
+                  "type": "object",
+                  "properties": {
+                    "resourcemanager": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "task_logs": {
+              "type": "object",
+              "properties": {
+                "plugins": {
+                  "type": "object",
+                  "properties": {
+                    "logs": {
+                      "type": "object",
+                      "properties": {
+                        "cloudwatch-enabled": {
+                          "type": "boolean"
+                        },
+                        "kubernetes-enabled": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "flytepropeller": {
+          "type": "object",
+          "properties": {
+            "affinity": {
+              "type": "object"
+            },
+            "cacheSizeMbs": {
+              "type": "integer"
+            },
+            "client_secret": {
+              "type": "string"
+            },
+            "configPath": {
+              "type": "string"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "pullPolicy": {
+                  "type": "string"
+                },
+                "repository": {
+                  "type": "string"
+                },
+                "tag": {
+                  "type": "string"
+                }
+              }
+            },
+            "nodeSelector": {
+              "type": "object"
+            },
+            "podAnnotations": {
+              "type": "object"
+            },
+            "replicaCount": {
+              "type": "integer"
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string"
+                    },
+                    "ephemeral-storage": {
+                      "type": "string"
+                    },
+                    "memory": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string"
+                    },
+                    "ephemeral-storage": {
+                      "type": "string"
+                    },
+                    "memory": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "serviceAccount": {
+              "type": "object",
+              "properties": {
+                "annotations": {
+                  "type": "object"
+                },
+                "create": {
+                  "type": "boolean"
+                },
+                "imagePullSecrets": {
+                  "type": "object"
+                }
+              }
+            },
+            "tolerations": {
+              "type": "array"
+            }
+          }
+        },
+        "sparkoperator": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "plugin_config": {
+              "type": "object",
+              "properties": {
+                "plugins": {
+                  "type": "object",
+                  "properties": {
+                    "spark": {
+                      "type": "object",
+                      "properties": {
+                        "spark-config-default": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "spark.hadoop.fs.s3a.aws.credentials.provider": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "webhook": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "podAnnotations": {
+              "type": "object"
+            },
+            "service": {
+              "type": "object",
+              "properties": {
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "projectcontour.io/upstream-protocol.h2c": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            },
+            "serviceAccount": {
+              "type": "object",
+              "properties": {
+                "annotations": {
+                  "type": "object"
+                },
+                "create": {
+                  "type": "boolean"
+                },
+                "imagePullSecrets": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "fullnameOverride": {
+      "type": "string"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "pullPolicy": {
+          "type": "string"
+        },
+        "repository": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      }
+    },
+    "imagePullSecrets": {
+      "type": "array"
+    },
+    "nameOverride": {
+      "type": "string"
+    },
+    "nodeSelector": {
+      "type": "object"
+    },
+    "podAnnotations": {
+      "type": "object",
+      "properties": {
+        "prometheus.io/path": {
+          "type": "string"
+        },
+        "prometheus.io/port": {
+          "type": "string"
+        },
+        "prometheus.io/scrape": {
+          "type": "string"
+        }
+      }
+    },
+    "podSecurityContext": {
+      "type": "object"
+    },
+    "replicaCount": {
+      "type": "integer"
+    },
+    "resources": {
+      "type": "object"
+    },
+    "securityContext": {
+      "type": "object"
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "annotations": {
+          "type": "object"
+        },
+        "create": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "storage": {
+      "type": "object",
+      "properties": {
+        "custom": {
+          "type": "object"
+        },
+        "gcs": {
+          "type": "null"
+        },
+        "s3": {
+          "type": "object",
+          "properties": {
+            "region": {
+              "type": "string"
+            }
+          }
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "tolerations": {
+      "type": "array"
+    },
+    "union": {
+      "type": "object",
+      "properties": {
+        "appId": {
+          "type": "string"
+        },
+        "appSecret": {
+          "type": "string"
+        },
+        "cloudUrl": {
+          "type": "string"
+        },
+        "clusterName": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$"
+        },
+        "metadataBucketPrefix": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
