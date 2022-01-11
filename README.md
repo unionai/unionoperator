@@ -1,6 +1,6 @@
 # union-operator
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: operator-92d34872d46545f56e6808c12d6c602e2c6a95bf](https://img.shields.io/badge/AppVersion-operator--92d34872d46545f56e6808c12d6c602e2c6a95bf-informational?style=flat-square)
+![Version: v0.1.0](https://img.shields.io/badge/Version-v0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: operator-92d34872d46545f56e6808c12d6c602e2c6a95bf](https://img.shields.io/badge/AppVersion-operator--92d34872d46545f56e6808c12d6c602e2c6a95bf-informational?style=flat-square)
 
 Deploys Union Operator to onboard a k8s cluster to Union Cloud
 

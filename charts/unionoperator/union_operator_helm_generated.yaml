@@ -25,7 +25,7 @@ kind: ServiceAccount
 metadata:
   name: flyte-union-operator
   labels:
-    helm.sh/chart: union-operator-0.1.0
+    helm.sh/chart: union-operator-v0.1.0
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: flyte
     app.kubernetes.io/version: "operator-92d34872d46545f56e6808c12d6c602e2c6a95bf"
@@ -193,7 +193,7 @@ kind: ConfigMap
 metadata:
   name: flyte-union-operator
   labels:
-    helm.sh/chart: union-operator-0.1.0
+    helm.sh/chart: union-operator-v0.1.0
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: flyte
     app.kubernetes.io/version: "operator-92d34872d46545f56e6808c12d6c602e2c6a95bf"
@@ -326,7 +326,7 @@ kind: ClusterRole
 metadata:
   name: flyte-union-operator
   labels:
-    helm.sh/chart: union-operator-0.1.0
+    helm.sh/chart: union-operator-v0.1.0
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: flyte
     app.kubernetes.io/version: "operator-92d34872d46545f56e6808c12d6c602e2c6a95bf"
@@ -390,7 +390,7 @@ kind: ClusterRoleBinding
 metadata:
   name: flyte-union-operator
   labels:
-    helm.sh/chart: union-operator-0.1.0
+    helm.sh/chart: union-operator-v0.1.0
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: flyte
     app.kubernetes.io/version: "operator-92d34872d46545f56e6808c12d6c602e2c6a95bf"
@@ -428,7 +428,7 @@ kind: Service
 metadata:
   name: flyte-union-operator
   labels:
-    helm.sh/chart: union-operator-0.1.0
+    helm.sh/chart: union-operator-v0.1.0
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: flyte
     app.kubernetes.io/version: "operator-92d34872d46545f56e6808c12d6c602e2c6a95bf"
@@ -603,7 +603,7 @@ kind: Deployment
 metadata:
   name: flyte-union-operator
   labels:
-    helm.sh/chart: union-operator-0.1.0
+    helm.sh/chart: union-operator-v0.1.0
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: flyte
     app.kubernetes.io/version: "operator-92d34872d46545f56e6808c12d6c602e2c6a95bf"
