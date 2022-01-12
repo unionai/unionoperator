@@ -21,7 +21,6 @@ must be set:
 - `union.cloudUrl`
 - `union.clusterName`
 - `union.appSecret`
-- `union.appSecret`
 
 You can create a `values.yaml` file to set the required values, like so:
 
