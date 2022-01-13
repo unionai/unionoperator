@@ -21,6 +21,7 @@ must be set:
 - `union.cloudUrl`
 - `union.clusterName`
 - `union.appSecret`
+- `union.metadataBucketPrefix`
 
 You can create a `values.yaml` file to set the required values, like so:
 
@@ -36,11 +37,11 @@ union:
 Install Union Operator by running this command:
 
 ```bash
-$ helm install -n union-operator -f values.yaml --create-namespace union-operator unionai/union-operator -n union --create-namespace
+$ helm install -n union-operator -f values.yaml --create-namespace union-operator unionai/union-operator 
 ```
 
 ### Upgrade Union Operator
 
 ```bash
-$ helm upgrade -n union-operator -f values.yaml --create-namespace union-operator unionai/union-operator -n union --create-namespace
+$ helm upgrade -n union-operator -f values.yaml --create-namespace union-operator unionai/union-operator
 ```
