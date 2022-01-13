@@ -255,10 +255,10 @@ union:
     replicaCount: 1
 
     image:
-      repository: public.ecr.aws/p0i0a9q8/union-public
+      repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "" # UNION_OPERATOR TAG
+      tag: v0.0.1 # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""
