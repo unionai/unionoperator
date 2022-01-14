@@ -638,7 +638,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/union-public:operator-92d34872d46545f56e6808c12d6c602e2c6a95bf"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:v0.0.1"
           imagePullPolicy: IfNotPresent
           resources:
             {}
