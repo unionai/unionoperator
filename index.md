@@ -19,8 +19,8 @@ must be set:
 
 - `union.appId`
 - `union.cloudUrl`
-- `union.clusterName`
-- `union.appSecret`
+- `union.clusterName` (It's optional config, By default helm generates a random string)
+- `union.secrets.adminOauthClientCredentials.clientSecret`
 - `union.metadataBucketPrefix`
 
 You can create a `values.yaml` file to set the required values, like so:
@@ -29,9 +29,10 @@ You can create a `values.yaml` file to set the required values, like so:
 union:
   cloudUrl: <Union Cloud URL>
   appId: <App Id from uctl create app>
-  appSecret: <App secret from uctl create app>
+  secrets: 
+    adminOauthClientCredentials:
+        clientSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
-  clusterName: ""
 ```
 
 Install Union Operator by running this command:
