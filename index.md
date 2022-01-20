@@ -32,6 +32,9 @@ union:
     adminOauthClientCredentials:
         clientSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
+  unionoperator:
+    storage:
+      type: "s3" 
 ```
 
 #### Sandbox Clusters (kind, k3s, minikube... etc.)
@@ -43,9 +46,6 @@ union:
     adminOauthClientCredentials:
         clientSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
-  unionoperator:
-    storage:
-      type: "s3" 
   configmap:
     k8s:
       plugins:
