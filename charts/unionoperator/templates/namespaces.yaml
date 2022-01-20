@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flytesnacks-development
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flytesnacks-staging
+
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flytesnacks-production
+

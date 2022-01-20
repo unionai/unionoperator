@@ -4,9 +4,12 @@
 union:
   cloudUrl: <Union Cloud URL>
   appId: <App Id from uctl create app>
-  appSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
   clusterName: ""
+  secrets:
+    adminOauthClientCredentials:
+      clientSecret: < APP Secret >
+  appSecret: '{{ tpl .Values.union.secrets.adminOauthClientCredentials.clientSecret . }}'
 
   flyteadmin:
     enabled: false
@@ -94,15 +97,17 @@ union:
         rate: 500
         capacity: 1000
       admin:
-        endpoint: '{{- (split "." (.Values.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://"))._0 -}}'
+        endpoint: '{{- printf "dns:///%s" (.Values.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://") -}}'
         clientId: '{{ tpl .Values.appId . }}'
         clientSecretLocation: /etc/secrets/client_secret
+        insecure: false
     # -- Catalog Client configuration [structure](https://pkg.go.dev/github.com/flyteorg/flytepropeller/pkg/controller/nodes/task/catalog#Config)
     # Additional advanced Catalog configuration [here](https://pkg.go.dev/github.com/lyft/flyteplugins/go/tasks/pluginmachinery/catalog#Config)
     catalog:
       catalog-cache:
-        endpoint: '{{- (split "." (.Values.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://"))._0 -}}'
+        endpoint: '{{- printf "dns:///%s" (.Values.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://") -}}'
         type: datacatalog
+        insecure: false
 
 
     # -- Core propeller configuration
@@ -141,6 +146,8 @@ union:
             type: bucket
             rate: 10
             capacity: 100
+        event-config:
+          raw-output-policy: inline
       webhook:
         certDir: /etc/webhook/certs
         serviceName: flyte-pod-webhook
@@ -168,8 +175,10 @@ union:
       plugins:
         # -- Configuration section for all K8s specific plugins [Configuration structure](https://pkg.go.dev/github.com/lyft/flyteplugins/go/tasks/pluginmachinery/flytek8s/config)
         k8s:
-          default-env-vars: [ ]
-          #  DEFAULT_ENV_VAR: VALUE
+          default-env-vars:
+            - FLYTE_AWS_ENDPOINT: "http://minio.union-operator.svc.cluster.local:9000"
+            - FLYTE_AWS_ACCESS_KEY_ID: minio
+            - FLYTE_AWS_SECRET_ACCESS_KEY: miniostorage
           default-cpus: 100m
           default-memory: 100Mi
 
@@ -258,7 +267,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v0.0.1 # UNION_OPERATOR_TAG
+      tag: v0.0.2 # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""
@@ -320,3 +329,35 @@ union:
 
     configmapOverrides: { }
 
+minio:
+  # -- Replicas count for Minio deployment
+  replicaCount: 1
+  image:
+    # -- Docker image for Minio deployment
+    repository: ecr.flyte.org/bitnami/minio
+    # -- Docker image tag
+    tag: 2021.10.13-debian-10-r0
+    # -- Docker image pull policy
+    pullPolicy: IfNotPresent
+  # -- Default resources requests and limits for Minio deployment
+  resources:
+    # -- Requests are the minimum set of resources needed for this pod
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    # -- Limits are the maximum set of resources needed for this pod
+    limits:
+      cpu: 200m
+      memory: 512Mi
+  # -- Service settings for Minio
+  service:
+    annotations: { }
+    type: NodePort
+  # -- Annotations for Minio pods
+  podAnnotations: { }
+  # -- nodeSelector for Minio deployment
+  nodeSelector: { }
+  # -- tolerations for Minio deployment
+  tolerations: [ ]
+  # -- affinity for Minio deployment
+  affinity: { }

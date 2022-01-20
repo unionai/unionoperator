@@ -21,6 +21,22 @@ Expand the name of the chart.
 {{- (split "/" (.Values.union.metadataBucketPrefix | trimPrefix "s3://" | trimPrefix "gcs://" | trimPrefix "az://"))._0 -}}
 {{- end -}}
 
+{{- define "minio.name" -}}
+minio
+{{- end -}}
+
+{{- define "minio.selectorLabels" -}}
+app.kubernetes.io/name: {{ template "minio.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{- define "minio.labels" -}}
+{{ include "minio.selectorLabels" . }}
+helm.sh/chart: {{ include "flyte.chart" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
@@ -76,3 +92,4 @@ Create the name of the service account to use
 {{- default "default" .Values.union.unionoperator.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
