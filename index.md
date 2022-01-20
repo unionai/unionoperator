@@ -15,10 +15,10 @@ The Union Operator Helm Chart helps you to onboard a k8s cluster to Union Cloud
 
 To install Union Operator, the following configuration values must be set:
 
-- `union.appId`
 - `union.cloudUrl`
-- `union.clusterName` (It's optional config, By default helm generates a random string)
-- `union.secrets.adminOauthClientCredentials.clientSecret`
+- `union.appId`
+- `union.appSecret`
+- `union.clusterName` (Optional: By default helm generates a random string)
 - `union.metadataBucketPrefix`
 
 You can create a `values.yaml` file to set the required values, a sample `values.yaml` file is provided below:
@@ -28,13 +28,12 @@ You can create a `values.yaml` file to set the required values, a sample `values
 union:
   cloudUrl: <Union Cloud URL>
   appId: <App Id from uctl create app>
-  secrets: 
-    adminOauthClientCredentials:
-        clientSecret: <App secret from uctl create app>
+  appSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
   unionoperator:
     storage:
       type: "s3" 
+      region: "us-east-1"
 ```
 
 #### Sandbox Clusters (kind, k3s, minikube... etc.)
@@ -42,9 +41,7 @@ union:
 union:
   cloudUrl: <Union Cloud URL>
   appId: <App Id from uctl create app>
-  secrets: 
-    adminOauthClientCredentials:
-        clientSecret: <App secret from uctl create app>
+  appSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
   configmap:
     k8s:
