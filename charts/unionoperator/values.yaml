@@ -2,14 +2,15 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 union:
-  cloudUrl: <Union Cloud URL>
-  appId: <App Id from uctl create app>
+  cloudUrl: "<Union Cloud URL>"
+  appId: "<App Id from uctl create app>"
+  appSecret: "<App Secret from uctl create app>"
   metadataBucketPrefix: s3://my-s3-bucket
   clusterName: ""
+
   secrets:
     adminOauthClientCredentials:
-      clientSecret: < APP Secret >
-  appSecret: '{{ tpl .Values.union.secrets.adminOauthClientCredentials.clientSecret . }}'
+      clientSecret: '{{ tpl .Values.appSecret . }}'
 
   flyteadmin:
     enabled: false

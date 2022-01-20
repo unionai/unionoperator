@@ -26,7 +26,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: flyte
-    helm.sh/chart: union-v0.18.2
+    helm.sh/chart: union-v0.19.2-b2
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
@@ -57,7 +57,7 @@ metadata:
   namespace: flyte
 type: Opaque
 stringData:
-  client_secret: < APP Secret >
+  client_secret: '<App Secret from uctl create app>'
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Create an empty secret that the first propeller pod will populate
@@ -75,7 +75,7 @@ metadata:
   name: flyte-union-operator
 type: Opaque
 stringData:
-  app_secret: < APP Secret >
+  app_secret: <App Secret from uctl create app>
 ---
 # Source: union-operator/templates/secret.yaml
 apiVersion: v1
@@ -95,7 +95,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: flyte
-    helm.sh/chart: union-v0.18.2
+    helm.sh/chart: union-v0.19.2-b2
     app.kubernetes.io/managed-by: Helm
 data:
   admin.yaml: | 
@@ -117,10 +117,14 @@ data:
     plugins:
       k8s:
         co-pilot:
-          image: cr.flyte.org/flyteorg/flytecopilot-release:v0.18.2
+          image: cr.flyte.org/flyteorg/flytecopilot-release:v0.19.2-b2
           name: flyte-copilot-
           start-timeout: 30s
   core.yaml: | 
+    manager:
+      pod-application: flytepropeller
+      pod-template-container-name: flytepropeller
+      pod-template-name: flytepropeller-template
     propeller:
       downstream-eval-duration: 30s
       enable-admin-launcher: true
@@ -258,7 +262,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: flyte
-    helm.sh/chart: union-v0.18.2
+    helm.sh/chart: union-v0.19.2-b2
     app.kubernetes.io/managed-by: Helm
 rules:
 # Allow RO access to PODS
@@ -391,7 +395,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: flyte
-    helm.sh/chart: union-v0.18.2
+    helm.sh/chart: union-v0.19.2-b2
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -510,12 +514,12 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flytepropeller
   namespace: flyte
+  name: flytepropeller
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: flyte
-    helm.sh/chart: union-v0.18.2
+    helm.sh/chart: union-v0.19.2-b2
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -526,11 +530,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "c492c9f31667e4881d3d66da25e6d4674c9d60b024517c53dc95f27bcc1f332"
+        configChecksum: "69ed649a2b7cb72e0b7e9b7beeb0fb7a647e7d159cde92867783bef23f0a4f6"
       labels: 
         app.kubernetes.io/name: flytepropeller
         app.kubernetes.io/instance: flyte
-        helm.sh/chart: union-v0.18.2
+        helm.sh/chart: union-v0.19.2-b2
         app.kubernetes.io/managed-by: Helm
     spec:
       securityContext:
@@ -547,7 +551,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.18.2"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.2-b2"
         imagePullPolicy: "IfNotPresent"
         name: flytepropeller
         ports:
@@ -593,9 +597,9 @@ spec:
       labels:
         app: flyte-pod-webhook
         app.kubernetes.io/name: flyte-pod-webhook
-        app.kubernetes.io/version: v0.18.2
+        app.kubernetes.io/version: v0.19.2-b2
       annotations:
-        configChecksum: "c492c9f31667e4881d3d66da25e6d4674c9d60b024517c53dc95f27bcc1f332"
+        configChecksum: "69ed649a2b7cb72e0b7e9b7beeb0fb7a647e7d159cde92867783bef23f0a4f6"
     spec:
       securityContext:
         fsGroup: 65534
@@ -604,7 +608,7 @@ spec:
       serviceAccountName: flyte-pod-webhook
       initContainers:
       - name: generate-secrets
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.18.2"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.2-b2"
         imagePullPolicy: "IfNotPresent"
         command:
           - flytepropeller
@@ -627,7 +631,7 @@ spec:
             mountPath: /etc/flyte/config
       containers:
         - name: webhook
-          image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.18.2"
+          image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.2-b2"
           imagePullPolicy: "IfNotPresent"
           command:
             - flytepropeller
