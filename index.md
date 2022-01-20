@@ -33,6 +33,14 @@ union:
     adminOauthClientCredentials:
         clientSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
+  configmap:
+    k8s:
+      plugins:
+        k8s:
+          default-env-vars:
+            - FLYTE_AWS_ENDPOINT: "http://minio.union-operator.svc.cluster.local:9000"
+            - FLYTE_AWS_ACCESS_KEY_ID: minio
+            - FLYTE_AWS_SECRET_ACCESS_KEY: miniostorage
 ```
 
 Install Union Operator by running this command:
