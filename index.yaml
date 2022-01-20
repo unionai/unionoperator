@@ -3,7 +3,22 @@ entries:
   union-operator:
   - apiVersion: v2
     appVersion: v0.0.2
-    created: "2022-01-20T15:42:31.830914964Z"
+    created: "2022-01-20T21:34:09.272862487Z"
+    dependencies:
+    - alias: union
+      name: flyte-core
+      repository: https://flyteorg.github.io/flyte/
+      version: v0.19.2-b2
+    description: Deploys Union Operator to onboard a k8s cluster to Union Cloud
+    digest: 1e7162b98bc7ebf9c063d90edbecc4abb94f4cb541cc972577d02eebfb136d36
+    name: union-operator
+    type: application
+    urls:
+    - https://unionai.github.io/unionoperator/union-operator-v0.0.4.tgz
+    version: v0.0.4
+  - apiVersion: v2
+    appVersion: v0.0.2
+    created: "2022-01-20T21:34:09.267974297Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -18,7 +33,7 @@ entries:
     version: v0.0.3
   - apiVersion: v2
     appVersion: v0.0.1
-    created: "2022-01-20T15:42:31.825123069Z"
+    created: "2022-01-20T21:34:09.263071706Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -33,7 +48,7 @@ entries:
     version: v0.0.2
   - apiVersion: v2
     appVersion: v0.0.1
-    created: "2022-01-20T15:42:31.820544394Z"
+    created: "2022-01-20T21:34:09.257747017Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -46,4 +61,4 @@ entries:
     urls:
     - https://unionai.github.io/unionoperator/union-operator-v0.0.1.tgz
     version: v0.0.1
-generated: "2022-01-20T15:42:31.814884501Z"
+generated: "2022-01-20T21:34:09.253075326Z"
