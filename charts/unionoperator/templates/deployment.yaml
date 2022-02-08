@@ -17,6 +17,7 @@ spec:
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        configChecksum: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum | trunc 63 | quote }}
       labels:
         {{- include "union-operator.selectorLabels" . | nindent 8 }}
     spec:
@@ -53,6 +54,10 @@ spec:
                 secretKeyRef:
                   name: {{ include "union-operator.fullname" . }}-cluster-name
                   key: cluster_name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           args:
             - operator
             - --config

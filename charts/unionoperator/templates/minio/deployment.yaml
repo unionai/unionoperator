@@ -1,4 +1,4 @@
-{{- if eq .Values.union.unionoperator.storage.type "sandbox" }}
+{{- if eq .Values.union.storage.type "sandbox" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

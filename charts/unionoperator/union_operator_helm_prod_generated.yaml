@@ -285,10 +285,7 @@ data:
     plugins:
       k8s:
         default-cpus: 100m
-        default-env-vars:
-        - FLYTE_AWS_ENDPOINT: http://minio.union-operator.svc.cluster.local:9000
-        - FLYTE_AWS_ACCESS_KEY_ID: minio
-        - FLYTE_AWS_SECRET_ACCESS_KEY: miniostorage
+        default-env-vars: []
         default-memory: 100Mi
   logger.yaml: | 
     logger:
@@ -300,14 +297,10 @@ data:
         type: noop
   storage.yaml: | 
     storage:
-      type: minio
+      type: s3
       container: "my-s3-bucket"
       connection:
-        access-key: minio
-        auth-type: accesskey
-        secret-key: miniostorage
-        disable-ssl: true
-        endpoint: http://minio.union-operator.svc.cluster.local:9000
+        auth-type: iam
         region: us-east-1
       limits:
         maxDownloadMBs: 10
@@ -575,34 +568,6 @@ spec:
       port: 443
       targetPort: 9443
 ---
-# Source: union-operator/templates/minio/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: minio
-  namespace: union-operator
-  labels: 
-    app.kubernetes.io/name: minio
-    app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-operator-v0.0.1
-    app.kubernetes.io/managed-by: Helm
-spec:
-  type: NodePort
-  ports:
-  - name: minio
-    nodePort: 30084
-    port: 9000
-    protocol: TCP
-    targetPort: minio
-  - name: minio-console
-    nodePort: 30087
-    port: 9001
-    protocol: TCP
-    targetPort: minio-console
-  selector: 
-    app.kubernetes.io/name: minio
-    app.kubernetes.io/instance: union-operator
----
 # Source: union-operator/templates/service.yaml
 apiVersion: v1
 kind: Service
@@ -645,7 +610,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "92be95593908c8a7342411931b11991fff64200c8210f496e64dff784588a7d"
+        configChecksum: "1b06138c7f925935cfb7ebb35c6e1f69c8b7d2e05ee1d8fac787cc2d444bb72"
       labels: 
         app.kubernetes.io/name: flytepropeller
         app.kubernetes.io/instance: union-operator
@@ -714,7 +679,7 @@ spec:
         app.kubernetes.io/name: flyte-pod-webhook
         app.kubernetes.io/version: v0.19.2
       annotations:
-        configChecksum: "92be95593908c8a7342411931b11991fff64200c8210f496e64dff784588a7d"
+        configChecksum: "1b06138c7f925935cfb7ebb35c6e1f69c8b7d2e05ee1d8fac787cc2d444bb72"
     spec:
       securityContext:
         fsGroup: 65534
@@ -849,61 +814,6 @@ spec:
             - name: debug
               containerPort: 10254
               protocol: TCP
----
-# Source: union-operator/templates/minio/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: minio
-  namespace: union-operator
-  labels: 
-    app.kubernetes.io/name: minio
-    app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-operator-v0.0.1
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 1
-  selector:
-    matchLabels: 
-      app.kubernetes.io/name: minio
-      app.kubernetes.io/instance: union-operator
-  template:
-    metadata:
-      labels: 
-        app.kubernetes.io/name: minio
-        app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-operator-v0.0.1
-        app.kubernetes.io/managed-by: Helm
-    spec:
-      containers:
-      - image: "ecr.flyte.org/bitnami/minio:2021.10.13-debian-10-r0"
-        imagePullPolicy: "IfNotPresent"
-        name: minio
-        env:
-          - name: MINIO_ACCESS_KEY
-            value: minio
-          - name: MINIO_SECRET_KEY
-            value: miniostorage
-          - name: MINIO_DEFAULT_BUCKETS
-            value: my-s3-bucket
-        ports:
-        - containerPort: 9000
-          name: minio
-        - containerPort: 9001
-          name: minio-console
-        resources: 
-          limits:
-            cpu: 200m
-            memory: 512Mi
-          requests:
-            cpu: 10m
-            memory: 128Mi
-        volumeMounts:
-        - name: minio-storage
-          mountPath: /data
-      volumes:
-      - name: minio-storage
-        emptyDir: {}
 ---
 # Source: union-operator/charts/union/templates/clusterresourcesync/cronjob.yaml
 apiVersion: batch/v1beta1

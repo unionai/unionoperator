@@ -7,6 +7,10 @@ union:
   appSecret: "<App Secret from uctl create app>"
   metadataBucketPrefix: s3://my-s3-bucket
   clusterName: ""
+  # Something like 'iam.gke.io/gcp-service-account' for GCP or 'eks.amazonaws.com/role-arn' for AWS
+  userRoleAnnotationKey: ""
+  # Flyte user role with permissions to patch onto project service accounts e.g. arn:aws:iam::ACCOUNT_ID:role/flyte_project_role
+  userRoleAnnotationValue: ""
 
   secrets:
     adminOauthClientCredentials:
@@ -14,6 +18,13 @@ union:
 
   flyteadmin:
     enabled: false
+    # TODO: remove this image override once public flyte is release to include a flyteadmin image >= v0.6.91
+    image:
+      # -- Docker image for Flyteadmin deployment
+      repository: cr.flyte.org/flyteorg/flyteadmin
+      tag: v0.6.91
+      pullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
   flytescheduler:
     enabled: false
   flyteconsole:
@@ -59,6 +70,80 @@ union:
     tolerations: [ ]
     # -- affinity for Flytepropeller deployment
     affinity: { }
+
+  #
+  # CLUSTER RESOURCE MANAGER (SYNC) SETTINGS
+  #
+
+  cluster_resource_manager:
+    enabled: true
+    standalone_deploy: true
+    service_account_name: flytepropeller
+    config:
+      cluster_resources:
+        standaloneDeployment: true
+        customData:
+          - production:
+              - projectQuotaCpu:
+                  value: "5"
+              - projectQuotaMemory:
+                  value: "4000Mi"
+              - defaultUserRoleKey:
+                  value: '{{ tpl .Values.userRoleAnnotationKey . }}'
+              - defaultUserRoleValue:
+                  value: '{{ tpl .Values.userRoleAnnotationValue . }}'
+          - staging:
+              - projectQuotaCpu:
+                  value: "2"
+              - projectQuotaMemory:
+                  value: "3000Mi"
+              - defaultUserRoleKey:
+                  value: '{{ tpl .Values.userRoleAnnotationKey . }}'
+              - defaultUserRoleValue:
+                  value: '{{ tpl .Values.userRoleAnnotationValue . }}'
+          - development:
+              - projectQuotaCpu:
+                  value: "4"
+              - projectQuotaMemory:
+                  value: "3000Mi"
+              - defaultUserRoleKey:
+                  value: '{{ tpl .Values.userRoleAnnotationKey . }}'
+              - defaultUserRoleValue:
+                  value: '{{ tpl .Values.userRoleAnnotationValue . }}'
+    templates:
+      # -- Template for namespaces resources
+      - key: a_namespace
+        value: |
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: {{ namespace }}
+          spec:
+            finalizers:
+            - kubernetes
+
+      # -- Patch default service account
+      - key: b_default_service_account
+        value: |
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: default
+            namespace: {{ namespace }}
+            annotations:
+              {{ defaultUserRoleKey }}: {{ defaultUserRoleValue }}
+
+      - key: c_project_resource_quota
+        value: |
+          apiVersion: v1
+          kind: ResourceQuota
+          metadata:
+            name: project-quota
+            namespace: {{ namespace }}
+          spec:
+            hard:
+              limits.cpu: {{ projectQuotaCpu }}
+              limits.memory: {{ projectQuotaMemory }}
 
   #
   # WEBHOOK SETTINGS
@@ -109,7 +194,7 @@ union:
         endpoint: '{{- printf "dns:///%s" (.Values.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://") -}}'
         type: datacatalog
         insecure: false
-
+        use-admin-auth: true
 
     # -- Core propeller configuration
     core:
@@ -176,10 +261,6 @@ union:
       plugins:
         # -- Configuration section for all K8s specific plugins [Configuration structure](https://pkg.go.dev/github.com/lyft/flyteplugins/go/tasks/pluginmachinery/flytek8s/config)
         k8s:
-          default-env-vars:
-            - FLYTE_AWS_ENDPOINT: "http://minio.union-operator.svc.cluster.local:9000"
-            - FLYTE_AWS_ACCESS_KEY_ID: minio
-            - FLYTE_AWS_SECRET_ACCESS_KEY: miniostorage
           default-cpus: 100m
           default-memory: 100Mi
 
@@ -241,34 +322,34 @@ union:
   common:
     ingress:
       enabled: false
+  # -----------------------------------------------------
+  # Core dependencies that should be configured for Flyte to work on any platform
+  # ------------------------------------------------------
+  #
+  # STORAGE SETTINGS
+  #
+
+  storage:
+    # -- Sets the storage type. Supported values are sandbox, s3, gcs and custom.
+    type: sandbox
+    # -- settings for storage type s3
+    s3:
+      region: us-east-1
+    # -- settings for storage type gcs
+    gcs:
+    # -- GCP project ID. Required for storage type gcs.
+    # projectId:
+    # -- Settings for storage type custom. See https://github:com/graymeta/stow for supported storage providers/settings.
+    custom: { }
+
   unionoperator:
-    # -----------------------------------------------------
-    # Core dependencies that should be configured for Flyte to work on any platform
-    # ------------------------------------------------------
-    #
-    # STORAGE SETTINGS
-    #
-
-    storage:
-      # -- Sets the storage type. Supported values are sandbox, s3, gcs and custom.
-      type: sandbox
-      # -- settings for storage type s3
-      s3:
-        region: us-east-1
-      # -- settings for storage type gcs
-      gcs:
-      # -- GCP project ID. Required for storage type gcs.
-      # projectId:
-      # -- Settings for storage type custom. See https://github:com/graymeta/stow for supported storage providers/settings.
-      custom: { }
-
     replicaCount: 1
 
     image:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v0.0.3 # UNION_OPERATOR_TAG
+      tag: v0.0.6 # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""
