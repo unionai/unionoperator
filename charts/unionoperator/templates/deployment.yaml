@@ -13,8 +13,9 @@ spec:
       {{- include "union-operator.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.union.unionoperator.podAnnotations }}
       annotations:
+        configChecksum: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum | trunc 63 | quote }}
+      {{- with .Values.union.unionoperator.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
         configChecksum: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum | trunc 63 | quote }}

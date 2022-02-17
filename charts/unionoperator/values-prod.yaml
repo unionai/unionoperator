@@ -2,8 +2,9 @@ union:
   cloudUrl: dns:///playground.hosted.unionai.cloud
   appId: abcdef
   appSecret: ghijklm
-  metadataBucketPrefix: s3://my-s3-bucket
+  metadataBucketPrefix: s3://my-s3-bucket-prod
   storage:
     type: "s3"
-    container: my-s3-bucket
-    region: "us-east-1"
+    bucketName: my-s3-bucket-prod
+    s3:
+      region: "us-east-2"

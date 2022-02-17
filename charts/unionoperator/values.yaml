@@ -42,13 +42,13 @@ union:
     # -- Default resources requests and limits for Flytepropeller deployment
     resources:
       limits:
-        cpu: 200m
-        ephemeral-storage: 100Mi
-        memory: 200Mi
+        cpu: "2"
+        ephemeral-storage: 500Mi
+        memory: "2Gi"
       requests:
-        cpu: 10m
-        ephemeral-storage: 50Mi
-        memory: 50Mi
+        cpu: "1"
+        ephemeral-storage: 100Mi
+        memory: "500Mi"
     cacheSizeMbs: 0
     client_secret: foobar
     # -- Default regex string for searching configuration files
@@ -70,7 +70,17 @@ union:
     tolerations: [ ]
     # -- affinity for Flytepropeller deployment
     affinity: { }
-
+    clusterName: '
+      {{- $previous := lookup "v1" "Secret" (.Release.Namespace) (printf "%v-cluster-name" (include "union-operator.fullname" .)) -}}
+      {{- if (tpl .Values.clusterName .) -}}
+      {{- (tpl .Values.clusterName .) -}}
+      {{- else if ne $previous "" -}}
+      {{- $previous.data.cluster_name | b64dec -}}
+      {{- else -}}
+      {{- $newName := include "newClusterName" . -}}
+      {{- $newName -}}
+      {{- end -}}'
+  #
   #
   # CLUSTER RESOURCE MANAGER (SYNC) SETTINGS
   #
@@ -370,7 +380,9 @@ union:
       prometheus.io/scrape: "true"
 
     podSecurityContext: { }
-    # fsGroup: 2000
+    #      fsGroup: 65534
+    #      runAsUser: 1001
+    #      fsGroupChangePolicy: "Always"
 
     securityContext: { }
     # capabilities:
@@ -410,7 +422,6 @@ union:
     affinity: { }
 
     configmapOverrides: { }
-
 minio:
   # -- Replicas count for Minio deployment
   replicaCount: 1

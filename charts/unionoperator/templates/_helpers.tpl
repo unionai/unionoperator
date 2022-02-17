@@ -5,7 +5,7 @@ Expand the name of the chart.
 {{- default .Chart.Name .Values.union.unionoperator.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{- define "clusterName" -}}
+{{- define "newClusterName" -}}
 {{- printf "c%v" (randAlphaNum 16 | nospace) -}}
 {{- end -}}
 
@@ -92,4 +92,3 @@ Create the name of the service account to use
 {{- default "default" .Values.union.unionoperator.serviceAccount.name }}
 {{- end }}
 {{- end }}
-

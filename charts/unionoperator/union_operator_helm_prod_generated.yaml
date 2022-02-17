@@ -26,7 +26,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.2
+    helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
@@ -95,7 +95,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.2
+    helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
 data:
   a_namespace.yaml: | 
@@ -136,7 +136,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.2
+    helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
 data:
   cluster_resources.yaml: | 
@@ -201,7 +201,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.2
+    helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
 data:
   admin.yaml: | 
@@ -224,7 +224,7 @@ data:
     plugins:
       k8s:
         co-pilot:
-          image: cr.flyte.org/flyteorg/flytecopilot-release:v0.19.2
+          image: cr.flyte.org/flyteorg/flytecopilot-release:v0.19.3-b2
           name: flyte-copilot-
           start-timeout: 30s
   core.yaml: | 
@@ -264,7 +264,7 @@ data:
           rate: 10
           type: bucket
         type: batch
-      rawoutput-prefix: 's3://my-s3-bucket'
+      rawoutput-prefix: 's3://my-s3-bucket-prod'
       workers: 4
       workflow-reeval-duration: 30s
     webhook:
@@ -298,10 +298,10 @@ data:
   storage.yaml: | 
     storage:
       type: s3
-      container: "my-s3-bucket"
+      container: "my-s3-bucket-prod"
       connection:
         auth-type: iam
-        region: us-east-1
+        region: us-east-2
       limits:
         maxDownloadMBs: 10
   cache.yaml: |
@@ -370,7 +370,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.2
+    helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
 rules:
 # Allow RO access to PODS
@@ -503,7 +503,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.2
+    helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -599,7 +599,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.2
+    helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -610,11 +610,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "1b06138c7f925935cfb7ebb35c6e1f69c8b7d2e05ee1d8fac787cc2d444bb72"
+        configChecksum: "adc2922f42d9ad19439ee0fc1f7344d13aa052eaa9b184f3794014a67839f99"
       labels: 
         app.kubernetes.io/name: flytepropeller
         app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-v0.19.2
+        helm.sh/chart: union-v0.19.3-b2
         app.kubernetes.io/managed-by: Helm
     spec:
       securityContext:
@@ -626,25 +626,27 @@ spec:
         - flytepropeller
         - --config
         - /etc/flyte/config/*.yaml
+        - --propeller.cluster-id
+        - 'clustername'
         env:
         - name: POD_NAME
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.2"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
         imagePullPolicy: "IfNotPresent"
         name: flytepropeller
         ports:
         - containerPort: 10254
         resources: 
           limits:
-            cpu: 200m
-            ephemeral-storage: 100Mi
-            memory: 200Mi
+            cpu: "2"
+            ephemeral-storage: 500Mi
+            memory: 2Gi
           requests:
-            cpu: 10m
-            ephemeral-storage: 50Mi
-            memory: 50Mi
+            cpu: "1"
+            ephemeral-storage: 100Mi
+            memory: 500Mi
         volumeMounts:
           - name: config-volume
             mountPath: /etc/flyte/config
@@ -677,9 +679,9 @@ spec:
       labels:
         app: flyte-pod-webhook
         app.kubernetes.io/name: flyte-pod-webhook
-        app.kubernetes.io/version: v0.19.2
+        app.kubernetes.io/version: v0.19.3-b2
       annotations:
-        configChecksum: "1b06138c7f925935cfb7ebb35c6e1f69c8b7d2e05ee1d8fac787cc2d444bb72"
+        configChecksum: "adc2922f42d9ad19439ee0fc1f7344d13aa052eaa9b184f3794014a67839f99"
     spec:
       securityContext:
         fsGroup: 65534
@@ -688,7 +690,7 @@ spec:
       serviceAccountName: flyte-pod-webhook
       initContainers:
       - name: generate-secrets
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.2"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
         imagePullPolicy: "IfNotPresent"
         command:
           - flytepropeller
@@ -711,7 +713,7 @@ spec:
             mountPath: /etc/flyte/config
       containers:
         - name: webhook
-          image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.2"
+          image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
           imagePullPolicy: "IfNotPresent"
           command:
             - flytepropeller
@@ -763,6 +765,7 @@ spec:
   template:
     metadata:
       annotations:
+        configChecksum: "dcc7228d2e95af9eafd5bccd7565f297b2a44d2802d5b1b391bde989f2a164a"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
@@ -824,7 +827,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.2
+    helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
 spec:
   schedule: '*/1 * * * *'
