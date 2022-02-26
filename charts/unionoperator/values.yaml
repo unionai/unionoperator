@@ -95,27 +95,33 @@ union:
         customData:
           - production:
               - projectQuotaCpu:
-                  value: "5"
+                  value: "64"
               - projectQuotaMemory:
-                  value: "4000Mi"
+                  value: "32Gi"
+              - projectQuotaNvidiaGpu:
+                  value: "1"
               - defaultUserRoleKey:
                   value: '{{ tpl .Values.userRoleAnnotationKey . }}'
               - defaultUserRoleValue:
                   value: '{{ tpl .Values.userRoleAnnotationValue . }}'
           - staging:
               - projectQuotaCpu:
-                  value: "2"
+                  value: "64"
               - projectQuotaMemory:
-                  value: "3000Mi"
+                  value: "32Gi"
+              - projectQuotaNvidiaGpu:
+                  value: "1"
               - defaultUserRoleKey:
                   value: '{{ tpl .Values.userRoleAnnotationKey . }}'
               - defaultUserRoleValue:
                   value: '{{ tpl .Values.userRoleAnnotationValue . }}'
           - development:
               - projectQuotaCpu:
-                  value: "4"
+                  value: "64"
               - projectQuotaMemory:
-                  value: "3000Mi"
+                  value: "32Gi"
+              - projectQuotaNvidiaGpu:
+                  value: "1"
               - defaultUserRoleKey:
                   value: '{{ tpl .Values.userRoleAnnotationKey . }}'
               - defaultUserRoleValue:
@@ -154,6 +160,7 @@ union:
             hard:
               limits.cpu: {{ projectQuotaCpu }}
               limits.memory: {{ projectQuotaMemory }}
+              limits.nvidia.com/gpu: {{ projectQuotaNvidiaGpu }}
 
   #
   # WEBHOOK SETTINGS

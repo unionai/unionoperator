@@ -16,6 +16,8 @@ data:
     operator:
       clusterId:
         organization: {{ include "union-operator.org" . }}
+      propellerHeartbeat:
+        endpoint: {{ print "http://flytepropeller." .Release.Namespace ".svc.cluster.local:" (index .Values.union.configmap.core.propeller "prof-port") }}
 {{- with .Values.union.unionoperator.configmapOverrides }}
   config-overrides.yaml: |
   {{ toYaml . | nindent 4 }}

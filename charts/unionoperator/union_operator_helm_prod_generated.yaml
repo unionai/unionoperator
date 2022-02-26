@@ -126,6 +126,7 @@ data:
       hard:
         limits.cpu: {{ projectQuotaCpu }}
         limits.memory: {{ projectQuotaMemory }}
+        limits.nvidia.com/gpu: {{ projectQuotaNvidiaGpu }}
 ---
 # Source: union-operator/charts/union/templates/clusterresourcesync/configmap.yaml
 apiVersion: v1
@@ -144,27 +145,33 @@ data:
       customData:
       - production:
         - projectQuotaCpu:
-            value: "5"
+            value: "64"
         - projectQuotaMemory:
-            value: 4000Mi
+            value: 32Gi
+        - projectQuotaNvidiaGpu:
+            value: "1"
         - defaultUserRoleKey:
             value: ''
         - defaultUserRoleValue:
             value: ''
       - staging:
         - projectQuotaCpu:
-            value: "2"
+            value: "64"
         - projectQuotaMemory:
-            value: 3000Mi
+            value: 32Gi
+        - projectQuotaNvidiaGpu:
+            value: "1"
         - defaultUserRoleKey:
             value: ''
         - defaultUserRoleValue:
             value: ''
       - development:
         - projectQuotaCpu:
-            value: "4"
+            value: "64"
         - projectQuotaMemory:
-            value: 3000Mi
+            value: 32Gi
+        - projectQuotaNvidiaGpu:
+            value: "1"
         - defaultUserRoleKey:
             value: ''
         - defaultUserRoleValue:
@@ -337,6 +344,8 @@ data:
     operator:
       clusterId:
         organization: playground
+      propellerHeartbeat:
+        endpoint: http://flytepropeller.union-operator.svc.cluster.local:10254
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -590,6 +599,18 @@ spec:
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
 ---
+# Source: union-operator/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: flytepropeller
+spec:
+  ports:
+    - port: 10254
+  selector:
+    app.kubernetes.io/name: flytepropeller
+    app.kubernetes.io/instance: union-operator
+---
 # Source: union-operator/charts/union/templates/propeller/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -765,11 +786,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "59646197869f7898b0207f2566a6f6e0a976e9b008ce4da0d39356a2f6d9b6e"
+        configChecksum: "19365e618bc3fee42797369eacba153eb5d57c850cf87a37a91ca2922a78588"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "59646197869f7898b0207f2566a6f6e0a976e9b008ce4da0d39356a2f6d9b6e"
+        configChecksum: "19365e618bc3fee42797369eacba153eb5d57c850cf87a37a91ca2922a78588"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
