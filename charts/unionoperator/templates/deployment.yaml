@@ -22,6 +22,7 @@ spec:
       labels:
         {{- include "union-operator.selectorLabels" . | nindent 8 }}
     spec:
+      priorityClassName: "system-cluster-critical"
       {{- with .Values.union.unionoperator.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

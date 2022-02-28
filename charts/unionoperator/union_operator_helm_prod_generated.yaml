@@ -22,7 +22,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: flytepropeller
-  namespace: union-operator
+  namespace: union
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
@@ -35,7 +35,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: flyte-pod-webhook
-  namespace: union-operator
+  namespace: union
 ---
 # Source: union-operator/templates/serviceaccount.yaml
 apiVersion: v1
@@ -54,7 +54,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: flyte-secret-auth
-  namespace: union-operator
+  namespace: union
 type: Opaque
 stringData:
   client_secret: 'ghijklm'
@@ -65,7 +65,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: flyte-pod-webhook
-  namespace: union-operator
+  namespace: union
 type: Opaque
 ---
 # Source: union-operator/templates/secret.yaml
@@ -91,7 +91,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: clusterresource-template
-  namespace: union-operator
+  namespace: union
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
@@ -133,7 +133,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyte-clusterresourcesync-config
-  namespace: union-operator
+  namespace: union
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
@@ -204,7 +204,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyte-propeller-config
-  namespace: union-operator
+  namespace: union
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
@@ -239,6 +239,9 @@ data:
       pod-application: flytepropeller
       pod-template-container-name: flytepropeller
       pod-template-name: flytepropeller-template
+      shard:
+        shard-count: 3
+        type: Hash
     propeller:
       downstream-eval-duration: 30s
       enable-admin-launcher: true
@@ -345,7 +348,7 @@ data:
       clusterId:
         organization: playground
       propellerHeartbeat:
-        endpoint: http://flytepropeller.union-operator.svc.cluster.local:10254
+        endpoint: http://flytepropeller.union.svc.cluster.local:10254
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -450,7 +453,7 @@ kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: flyte-pod-webhook
-  namespace: union-operator
+  namespace: union
 rules:
   - apiGroups:
       - "*"
@@ -496,6 +499,7 @@ rules:
       - '*'
     resources:
       - resourcequotas
+      - pods
     verbs:
       - get
       - list
@@ -521,7 +525,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: flytepropeller
-  namespace: union-operator
+  namespace: union
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Create a binding from Role -> ServiceAccount
@@ -529,7 +533,7 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: flyte-pod-webhook
-  namespace: union-operator
+  namespace: union
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -537,7 +541,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: flyte-pod-webhook
-    namespace: union-operator
+    namespace: union
 ---
 # Source: union-operator/templates/serviceaccount.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -557,7 +561,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: union-operator
-    namespace: union-operator
+    namespace: union
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Service
@@ -565,7 +569,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: flyte-pod-webhook
-  namespace: union-operator
+  namespace: union
   annotations: 
     projectcontour.io/upstream-protocol.h2c: grpc
 spec:
@@ -615,10 +619,10 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: union-operator
-  name: flytepropeller
+  namespace: union
+  name: flytepropeller-manager
   labels: 
-    app.kubernetes.io/name: flytepropeller
+    app.kubernetes.io/name: flytepropeller-manager
     app.kubernetes.io/instance: union-operator
     helm.sh/chart: union-v0.19.3-b2
     app.kubernetes.io/managed-by: Helm
@@ -626,14 +630,14 @@ spec:
   replicas: 1
   selector:
     matchLabels: 
-      app.kubernetes.io/name: flytepropeller
+      app.kubernetes.io/name: flytepropeller-manager
       app.kubernetes.io/instance: union-operator
   template:
     metadata:
       annotations:
-        configChecksum: "adc2922f42d9ad19439ee0fc1f7344d13aa052eaa9b184f3794014a67839f99"
+        configChecksum: "24090873c488dc77479c79248fd6938b8d8c955f0786c81d28c32b51f76e3ee"
       labels: 
-        app.kubernetes.io/name: flytepropeller
+        app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
         helm.sh/chart: union-v0.19.3-b2
         app.kubernetes.io/managed-by: Helm
@@ -644,7 +648,9 @@ spec:
         fsGroupChangePolicy: "Always"
       containers:
       - command:
-        - flytepropeller
+        - flytepropeller-manager
+        - --manager.pod-template-namespace
+        - union
         - --config
         - /etc/flyte/config/*.yaml
         - --propeller.cluster-id
@@ -654,16 +660,20 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
         imagePullPolicy: "IfNotPresent"
-        name: flytepropeller
+        name: flytepropeller-manager
         ports:
         - containerPort: 10254
         resources: 
           limits:
-            cpu: "2"
+            cpu: "4"
             ephemeral-storage: 500Mi
-            memory: 2Gi
+            memory: 8Gi
           requests:
             cpu: "1"
             ephemeral-storage: 100Mi
@@ -688,7 +698,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flyte-pod-webhook
-  namespace: union-operator
+  namespace: union
   labels:
     app: flyte-pod-webhook
 spec:
@@ -702,7 +712,7 @@ spec:
         app.kubernetes.io/name: flyte-pod-webhook
         app.kubernetes.io/version: v0.19.3-b2
       annotations:
-        configChecksum: "adc2922f42d9ad19439ee0fc1f7344d13aa052eaa9b184f3794014a67839f99"
+        configChecksum: "24090873c488dc77479c79248fd6938b8d8c955f0786c81d28c32b51f76e3ee"
     spec:
       securityContext:
         fsGroup: 65534
@@ -786,15 +796,16 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "19365e618bc3fee42797369eacba153eb5d57c850cf87a37a91ca2922a78588"
+        configChecksum: "cbaeb90721bb51a35288486cf8b8e877cf5a98ae49dd72060f286b26ec8f6a9"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "19365e618bc3fee42797369eacba153eb5d57c850cf87a37a91ca2922a78588"
+        configChecksum: "cbaeb90721bb51a35288486cf8b8e877cf5a98ae49dd72060f286b26ec8f6a9"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
     spec:
+      priorityClassName: "system-cluster-critical"
       serviceAccountName: union-operator
       securityContext:
         {}
@@ -812,7 +823,14 @@ spec:
           image: "public.ecr.aws/p0i0a9q8/unionoperator:v0.0.9"
           imagePullPolicy: IfNotPresent
           resources:
-            {}
+            limits:
+              cpu: "4"
+              ephemeral-storage: 500Mi
+              memory: 8Gi
+            requests:
+              cpu: "1"
+              ephemeral-storage: 100Mi
+              memory: 500Mi
           volumeMounts:
             - mountPath: /etc/union/config
               name: config-volume
@@ -844,7 +862,7 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: syncresources
-  namespace: union-operator
+  namespace: union
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
@@ -886,3 +904,62 @@ spec:
           - name: auth
             secret:
               secretName: flyte-secret-auth
+---
+# Source: union-operator/charts/union/templates/propeller/manager.yaml
+apiVersion: v1
+kind: PodTemplate
+metadata:
+  name: flytepropeller-template
+  namespace: union
+template:
+  metadata:
+    annotations:
+      configChecksum: "24090873c488dc77479c79248fd6938b8d8c955f0786c81d28c32b51f76e3ee"
+    labels: 
+      app.kubernetes.io/name: flytepropeller
+      app.kubernetes.io/instance: union-operator
+      helm.sh/chart: union-v0.19.3-b2
+      app.kubernetes.io/managed-by: Helm
+      app: flytepropeller
+  spec:
+    securityContext:
+      fsGroup: 65534
+      runAsUser: 1001
+      fsGroupChangePolicy: "Always"
+    containers:
+    - command:
+      - flytepropeller
+      - --config
+      - /etc/flyte/config/*.yaml
+      env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
+      imagePullPolicy: "IfNotPresent"
+      name: flytepropeller
+      ports:
+      - containerPort: 10254
+      resources: 
+        limits:
+          cpu: "4"
+          ephemeral-storage: 500Mi
+          memory: 8Gi
+        requests:
+          cpu: "1"
+          ephemeral-storage: 100Mi
+          memory: 500Mi
+      volumeMounts:
+        - name: config-volume
+          mountPath: /etc/flyte/config
+        - name: auth
+          mountPath: /etc/secrets/
+    serviceAccountName: flytepropeller
+    volumes:
+    - configMap:
+        name: flyte-propeller-config
+      name: config-volume
+    - name: auth
+      secret:
+        secretName: flyte-secret-auth

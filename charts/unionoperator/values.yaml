@@ -42,9 +42,9 @@ union:
     # -- Default resources requests and limits for Flytepropeller deployment
     resources:
       limits:
-        cpu: "2"
+        cpu: "4"
         ephemeral-storage: 500Mi
-        memory: "2Gi"
+        memory: "8Gi"
       requests:
         cpu: "1"
         ephemeral-storage: 100Mi
@@ -74,12 +74,13 @@ union:
       {{- $previous := lookup "v1" "Secret" (.Release.Namespace) (printf "%v-cluster-name" (include "union-operator.fullname" .)) -}}
       {{- if (tpl .Values.clusterName .) -}}
       {{- (tpl .Values.clusterName .) -}}
-      {{- else if ne $previous "" -}}
+      {{- else if $previous -}}
       {{- $previous.data.cluster_name | b64dec -}}
       {{- else -}}
       {{- $newName := include "newClusterName" . -}}
       {{- $newName -}}
       {{- end -}}'
+    manager: true
   #
   #
   # CLUSTER RESOURCE MANAGER (SYNC) SETTINGS
@@ -215,6 +216,10 @@ union:
 
     # -- Core propeller configuration
     core:
+      manager:
+        shard:
+          type: Hash     # use the "hash" shard strategy
+          shard-count: 3 # the total number of shards
       # -- follows the structure specified [here](https://pkg.go.dev/github.com/flyteorg/flytepropeller/pkg/controller/config).
       propeller:
         rawoutput-prefix: '{{ tpl .Values.metadataBucketPrefix $ }}'
@@ -403,17 +408,19 @@ union:
       type: ClusterIP
       port: 80
 
-    resources: { }
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+    resources:
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      limits:
+        cpu: "4"
+        ephemeral-storage: 500Mi
+        memory: "8Gi"
+      requests:
+        cpu: "1"
+        ephemeral-storage: 100Mi
+        memory: "500Mi"
 
     autoscaling:
       enabled: false
