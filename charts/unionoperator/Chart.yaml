@@ -8,4 +8,4 @@ dependencies:
   - name: flyte-core
     alias: union
     repository: https://flyteorg.github.io/flyte/
-    version: v0.19.3-b2
+    version: v0.19.3

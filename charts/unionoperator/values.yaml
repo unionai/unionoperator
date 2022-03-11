@@ -8,9 +8,9 @@ union:
   metadataBucketPrefix: s3://my-s3-bucket
   clusterName: ""
   # Something like 'iam.gke.io/gcp-service-account' for GCP or 'eks.amazonaws.com/role-arn' for AWS
-  userRoleAnnotationKey: ""
+  userRoleAnnotationKey: "foo"
   # Flyte user role with permissions to patch onto project service accounts e.g. arn:aws:iam::ACCOUNT_ID:role/flyte_project_role
-  userRoleAnnotationValue: ""
+  userRoleAnnotationValue: "bar"
 
   secrets:
     adminOauthClientCredentials:

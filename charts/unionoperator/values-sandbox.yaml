@@ -9,6 +9,6 @@ union:
         # -- Configuration section for all K8s specific plugins [Configuration structure](https://pkg.go.dev/github.com/lyft/flyteplugins/go/tasks/pluginmachinery/flytek8s/config)
         k8s:
           default-env-vars:
-            - FLYTE_AWS_ENDPOINT: "http://minio.union-operator.svc.cluster.local:9000"
+            - FLYTE_AWS_ENDPOINT: "http://minio.union.svc.cluster.local:9000"
             - FLYTE_AWS_ACCESS_KEY_ID: minio
             - FLYTE_AWS_SECRET_ACCESS_KEY: miniostorage

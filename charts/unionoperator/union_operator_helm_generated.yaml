@@ -26,7 +26,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.3-b2
+    helm.sh/chart: union-v0.19.3
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
@@ -95,7 +95,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.3-b2
+    helm.sh/chart: union-v0.19.3
     app.kubernetes.io/managed-by: Helm
 data:
   a_namespace.yaml: | 
@@ -137,7 +137,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.3-b2
+    helm.sh/chart: union-v0.19.3
     app.kubernetes.io/managed-by: Helm
 data:
   cluster_resources.yaml: | 
@@ -151,9 +151,9 @@ data:
         - projectQuotaNvidiaGpu:
             value: "1"
         - defaultUserRoleKey:
-            value: ''
+            value: 'foo'
         - defaultUserRoleValue:
-            value: ''
+            value: 'bar'
       - staging:
         - projectQuotaCpu:
             value: "64"
@@ -162,9 +162,9 @@ data:
         - projectQuotaNvidiaGpu:
             value: "1"
         - defaultUserRoleKey:
-            value: ''
+            value: 'foo'
         - defaultUserRoleValue:
-            value: ''
+            value: 'bar'
       - development:
         - projectQuotaCpu:
             value: "64"
@@ -173,9 +173,9 @@ data:
         - projectQuotaNvidiaGpu:
             value: "1"
         - defaultUserRoleKey:
-            value: ''
+            value: 'foo'
         - defaultUserRoleValue:
-            value: ''
+            value: 'bar'
       refresh: 5m
       refreshInterval: 5m
       standaloneDeployment: true
@@ -208,7 +208,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.3-b2
+    helm.sh/chart: union-v0.19.3
     app.kubernetes.io/managed-by: Helm
 data:
   admin.yaml: | 
@@ -231,7 +231,7 @@ data:
     plugins:
       k8s:
         co-pilot:
-          image: cr.flyte.org/flyteorg/flytecopilot-release:v0.19.3-b2
+          image: cr.flyte.org/flyteorg/flytecopilot-release:v0.19.3
           name: flyte-copilot-
           start-timeout: 30s
   core.yaml: | 
@@ -296,7 +296,7 @@ data:
       k8s:
         default-cpus: 100m
         default-env-vars:
-        - FLYTE_AWS_ENDPOINT: http://minio.union-operator.svc.cluster.local:9000
+        - FLYTE_AWS_ENDPOINT: http://minio.union.svc.cluster.local:9000
         - FLYTE_AWS_ACCESS_KEY_ID: minio
         - FLYTE_AWS_SECRET_ACCESS_KEY: miniostorage
         default-memory: 100Mi
@@ -385,11 +385,11 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: flytepropeller
+  name: union-flytepropeller
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.3-b2
+    helm.sh/chart: union-v0.19.3
     app.kubernetes.io/managed-by: Helm
 rules:
 # Allow RO access to PODS
@@ -459,7 +459,7 @@ rules:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: flyte-pod-webhook
+  name: union-flyte-pod-webhook
   namespace: union
 rules:
   - apiGroups:
@@ -519,16 +519,16 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: flytepropeller
+  name: union-flytepropeller
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.3-b2
+    helm.sh/chart: union-v0.19.3
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: flytepropeller
+  name: union-flytepropeller
 subjects:
 - kind: ServiceAccount
   name: flytepropeller
@@ -539,12 +539,12 @@ subjects:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: flyte-pod-webhook
+  name: union-flyte-pod-webhook
   namespace: union
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: flyte-pod-webhook
+  name: union-flyte-pod-webhook
 subjects:
   - kind: ServiceAccount
     name: flyte-pod-webhook
@@ -659,7 +659,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller-manager
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.3-b2
+    helm.sh/chart: union-v0.19.3
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -670,17 +670,18 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "76f5129ffeee2f0a491c00e203010d91e1f980173ca383092a0af31fb996dc1"
+        configChecksum: "e9b494ad0397a46a39ca86347f23a7902589b88259e170babf3fb133a64af2a"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-v0.19.3-b2
+        helm.sh/chart: union-v0.19.3
         app.kubernetes.io/managed-by: Helm
     spec:
       securityContext:
         fsGroup: 65534
         runAsUser: 1001
         fsGroupChangePolicy: "Always"
+      priorityClassName: system-cluster-critical
       containers:
       - command:
         - flytepropeller-manager
@@ -699,7 +700,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3"
         imagePullPolicy: "IfNotPresent"
         name: flytepropeller-manager
         ports:
@@ -745,9 +746,9 @@ spec:
       labels:
         app: flyte-pod-webhook
         app.kubernetes.io/name: flyte-pod-webhook
-        app.kubernetes.io/version: v0.19.3-b2
+        app.kubernetes.io/version: v0.19.3
       annotations:
-        configChecksum: "76f5129ffeee2f0a491c00e203010d91e1f980173ca383092a0af31fb996dc1"
+        configChecksum: "e9b494ad0397a46a39ca86347f23a7902589b88259e170babf3fb133a64af2a"
     spec:
       securityContext:
         fsGroup: 65534
@@ -756,7 +757,7 @@ spec:
       serviceAccountName: flyte-pod-webhook
       initContainers:
       - name: generate-secrets
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3"
         imagePullPolicy: "IfNotPresent"
         command:
           - flytepropeller
@@ -779,7 +780,7 @@ spec:
             mountPath: /etc/flyte/config
       containers:
         - name: webhook
-          image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
+          image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3"
           imagePullPolicy: "IfNotPresent"
           command:
             - flytepropeller
@@ -956,7 +957,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v0.19.3-b2
+    helm.sh/chart: union-v0.19.3
     app.kubernetes.io/managed-by: Helm
 spec:
   schedule: '*/1 * * * *'
@@ -1004,11 +1005,11 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "76f5129ffeee2f0a491c00e203010d91e1f980173ca383092a0af31fb996dc1"
+      configChecksum: "e9b494ad0397a46a39ca86347f23a7902589b88259e170babf3fb133a64af2a"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator
-      helm.sh/chart: union-v0.19.3-b2
+      helm.sh/chart: union-v0.19.3
       app.kubernetes.io/managed-by: Helm
       app: flytepropeller
   spec:
@@ -1016,6 +1017,7 @@ template:
       fsGroup: 65534
       runAsUser: 1001
       fsGroupChangePolicy: "Always"
+    priorityClassName: system-cluster-critical
     containers:
     - command:
       - flytepropeller
@@ -1026,7 +1028,7 @@ template:
         valueFrom:
           fieldRef:
             fieldPath: metadata.name
-      image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3-b2"
+      image: "cr.flyte.org/flyteorg/flytepropeller-release:v0.19.3"
       imagePullPolicy: "IfNotPresent"
       name: flytepropeller
       ports:
