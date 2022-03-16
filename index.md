@@ -30,9 +30,10 @@ union:
   appId: <App Id from uctl create app>
   appSecret: <App secret from uctl create app>
   metadataBucketPrefix: s3://my-s3-bucket
-  unionoperator:
-    storage:
-      type: "s3" 
+  storage:
+    type: "s3" 
+    bucketName: "<s3 bucket>"
+    s3:
       region: "us-east-1"
 ```
 
@@ -63,4 +64,64 @@ $ helm install -n union -f values.yaml --create-namespace union-operator unionai
 
 ```bash
 $ helm upgrade -n union -f values.yaml --create-namespace union-operator unionai/union-operator
+```
+
+### Appendix
+
+Example values file for installing union-operator on EKS:
+
+```yaml
+union:
+  cloudUrl: <Union Cloud URL>
+  appId: <App Id from uctl create app>
+  appSecret: <App secret from uctl create app>
+  metadataBucketPrefix: "s3://<s3 bucket>"
+  userRoleAnnotationKey: eks.amazonaws.com/role-arn
+  userRoleAnnotationValue: "<User role with s3 access>"
+  storage:
+    type: "s3"
+    bucketName: "<s3 bucket>"
+    s3:
+      region: "{vars.region}"
+  flytepropeller:
+    serviceAccount:
+      annotations:
+        eks.amazonaws.com/role-arn: "<Propeller role with s3 access>"
+  cluster_resource_manager:
+    config:
+      cluster_resources:
+        customData:
+          - production:
+              - projectQuotaCpu:
+                  value: "64"
+              - projectQuotaMemory:
+                  value: "32Gi"
+              - projectQuotaNvidiaGpu:
+                  value: "1"
+              - defaultUserRoleKey:
+                  value: 'eks.amazonaws.com/role-arn'
+              - defaultUserRoleValue:
+                  value: '<User role with s3 access>'
+          - staging:
+              - projectQuotaCpu:
+                  value: "64"
+              - projectQuotaMemory:
+                  value: "32Gi"
+              - projectQuotaNvidiaGpu:
+                  value: "1"
+              - defaultUserRoleKey:
+                  value: 'eks.amazonaws.com/role-arn'
+              - defaultUserRoleValue:
+                  value: '<User role with s3 access>'
+          - development:
+              - projectQuotaCpu:
+                  value: "64"
+              - projectQuotaMemory:
+                  value: "32Gi"
+              - projectQuotaNvidiaGpu:
+                  value: "1"
+              - defaultUserRoleKey:
+                  value: 'eks.amazonaws.com/role-arn'
+              - defaultUserRoleValue:
+                  value: '<User role with s3 access>'
 ```
