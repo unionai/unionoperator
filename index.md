@@ -89,6 +89,7 @@ union:
         eks.amazonaws.com/role-arn: "<Propeller role with s3 access>"
   cluster_resource_manager:
     config:
+      # The cluster resource config specifies the default resource quota and user roles for each <project>-<domain> kubernetes namespace.   
       cluster_resources:
         customData:
           - production:
