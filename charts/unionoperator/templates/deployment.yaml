@@ -66,6 +66,8 @@ spec:
             - /etc/union/config/*.yaml
             - --operator.clusterId.name
             - "$(CLUSTER_NAME)"
+            - --operator.clusterPoolName
+            - {{ .Values.union.clusterPoolName }}
           ports:
             - name: debug
               containerPort: 10254

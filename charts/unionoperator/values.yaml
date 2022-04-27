@@ -7,6 +7,7 @@ union:
   appSecret: "<App Secret from uctl create app>"
   metadataBucketPrefix: s3://my-s3-bucket
   clusterName: ""
+  clusterPoolName: "default"
   # Something like 'iam.gke.io/gcp-service-account' for GCP or 'eks.amazonaws.com/role-arn' for AWS
   userRoleAnnotationKey: "foo"
   # Flyte user role with permissions to patch onto project service accounts e.g. arn:aws:iam::ACCOUNT_ID:role/flyte_project_role
@@ -371,7 +372,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v0.0.11 # UNION_OPERATOR_TAG
+      tag: v0.0.12 # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""

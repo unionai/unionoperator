@@ -46,7 +46,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.11"
+    app.kubernetes.io/version: "v0.0.12"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: union-operator/charts/union/templates/common/secret-auth.yaml
@@ -340,7 +340,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.11"
+    app.kubernetes.io/version: "v0.0.12"
     app.kubernetes.io/managed-by: Helm
 data:
   config.yaml: |
@@ -483,7 +483,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.11"
+    app.kubernetes.io/version: "v0.0.12"
     app.kubernetes.io/managed-by: Helm
 rules:
   # Allow Access to all resources under flyte.lyft.com
@@ -559,7 +559,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.11"
+    app.kubernetes.io/version: "v0.0.12"
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -625,7 +625,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.11"
+    app.kubernetes.io/version: "v0.0.12"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -821,7 +821,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.11"
+    app.kubernetes.io/version: "v0.0.12"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -832,11 +832,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "cf7b64cc5c1293e4dcd52bf06693eecbc1c83549a6f84b71bc8c334d63b357a"
+        configChecksum: "485d8b0b38a765d2230d07343c4f19506683d152ed6020bf58b9c180d72887e"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "cf7b64cc5c1293e4dcd52bf06693eecbc1c83549a6f84b71bc8c334d63b357a"
+        configChecksum: "485d8b0b38a765d2230d07343c4f19506683d152ed6020bf58b9c180d72887e"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -856,7 +856,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:v0.0.11"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:v0.0.12"
           imagePullPolicy: IfNotPresent
           resources:
             limits:
@@ -888,6 +888,8 @@ spec:
             - /etc/union/config/*.yaml
             - --operator.clusterId.name
             - "$(CLUSTER_NAME)"
+            - --operator.clusterPoolName
+            - default
           ports:
             - name: debug
               containerPort: 10254
