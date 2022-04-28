@@ -17,7 +17,11 @@ jobs:
           fetch-depth: "0"
       - name: Bump version and push tag
         id: bump-version
-        uses: anothrNick/github-tag-action@1.17.2
+        uses: mayitbeegh/github-tag-action@1.17.4
+        # There's a new Git CVE announced two weeks ago which (with the new Git update) broke actions that depend on Git. (https://github.blog/2022-04-12-git-security-vulnerability-announced/)
+        # This issue is fixed in anothrNick/github-tag-action@1.39.0 but it introduced another issue which prevents the action from working properly on versions that start with "v".
+        # I (Sean) took anothrNick/github-tag-action@1.17.2 and added the Git fix as a temporary solution until the "v" issue is fixed.
+        # See diff here (https://github.com/mayitbeegh/github-tag-action/commit/3a9f28ceef4d67adcaad320cabf719aa635e5a60)
         env:
           GITHUB_TOKEN: ${{ secrets.CI_BOT_PAT }}
           WITH_V: true
