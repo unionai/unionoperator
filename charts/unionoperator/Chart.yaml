@@ -3,7 +3,7 @@ name: union-operator
 description: Deploys Union Operator to onboard a k8s cluster to Union Cloud
 type: application
 version: v0.0.1 # VERSION
-appVersion: v0.0.12 # APP_VERSION
+appVersion: v0.0.14 # APP_VERSION
 dependencies:
   - name: flyte-core
     alias: union

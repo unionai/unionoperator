@@ -1,6 +1,6 @@
 # union-operator
 
-![Version: v0.0.1](https://img.shields.io/badge/Version-v0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.12](https://img.shields.io/badge/AppVersion-v0.0.12-informational?style=flat-square)
+![Version: v0.0.1](https://img.shields.io/badge/Version-v0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.14](https://img.shields.io/badge/AppVersion-v0.0.14-informational?style=flat-square)
 
 Deploys Union Operator to onboard a k8s cluster to Union Cloud
 
@@ -132,7 +132,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.unionoperator.fullnameOverride | string | `""` |  |
 | union.unionoperator.image.pullPolicy | string | `"IfNotPresent"` |  |
 | union.unionoperator.image.repository | string | `"public.ecr.aws/p0i0a9q8/unionoperator"` |  |
-| union.unionoperator.image.tag | string | `"v0.0.12"` |  |
+| union.unionoperator.image.tag | string | `"v0.0.14"` |  |
 | union.unionoperator.imagePullSecrets | list | `[]` |  |
 | union.unionoperator.nameOverride | string | `""` |  |
 | union.unionoperator.nodeSelector | object | `{}` |  |
