@@ -13,6 +13,18 @@ Expand the name of the chart.
 {{- printf "dns:///%s" (.Values.union.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://") -}}
 {{- end -}}
 
+{{- define "union-operator.cloudHostName" -}}
+{{- printf "%s" (.Values.union.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://") -}}
+{{- end -}}
+
+{{- define "union-operator.bucketRegion" -}}
+{{- if eq .Values.union.storage.type "s3" }}
+{{- printf "%s" .Values.union.storage.s3.region -}}
+{{- else }}
+{{- printf "us-east-2" -}}
+{{- end }}
+{{- end }}
+
 {{- define "union-operator.org" -}}
 {{- (split "." (.Values.union.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://"))._0 -}}
 {{- end -}}

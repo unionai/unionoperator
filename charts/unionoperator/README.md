@@ -1,6 +1,6 @@
 # union-operator
 
-![Version: v0.0.1](https://img.shields.io/badge/Version-v0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.15](https://img.shields.io/badge/AppVersion-v0.0.15-informational?style=flat-square)
+![Version: v0.0.1](https://img.shields.io/badge/Version-v0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.16-b3](https://img.shields.io/badge/AppVersion-v0.0.16--b3-informational?style=flat-square)
 
 Deploys Union Operator to onboard a k8s cluster to Union Cloud
 
@@ -8,7 +8,7 @@ Deploys Union Operator to onboard a k8s cluster to Union Cloud
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://flyteorg.github.io/flyte/ | union(flyte-core) | v0.19.3 |
+| https://flyteorg.github.io/flyte/ | union(flyte-core) | v1.2.0-b1 |
 
 ### SANDBOX INSTALLATION:
 - [Install helm 3](https://helm.sh/docs/intro/install/)
@@ -119,41 +119,12 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.sparkoperator.enabled | bool | `false` | - enable or disable Sparkoperator deployment installation |
 | union.sparkoperator.plugin_config | object | `{"plugins":{"spark":{"spark-config-default":[{"spark.hadoop.fs.s3a.aws.credentials.provider":"com.amazonaws.auth.DefaultAWSCredentialsProviderChain"},{"spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version":"2"},{"spark.kubernetes.allocation.batch.size":"50"},{"spark.hadoop.fs.s3a.acl.default":"BucketOwnerFullControl"},{"spark.hadoop.fs.s3n.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3n.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3a.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3a.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3a.multipart.threshold":"536870912"},{"spark.blacklist.enabled":"true"},{"spark.blacklist.timeout":"5m"},{"spark.task.maxfailures":"8"}]}}}` | Spark plugin configuration |
 | union.sparkoperator.plugin_config.plugins.spark.spark-config-default | list | `[{"spark.hadoop.fs.s3a.aws.credentials.provider":"com.amazonaws.auth.DefaultAWSCredentialsProviderChain"},{"spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version":"2"},{"spark.kubernetes.allocation.batch.size":"50"},{"spark.hadoop.fs.s3a.acl.default":"BucketOwnerFullControl"},{"spark.hadoop.fs.s3n.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3n.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3a.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3a.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3a.multipart.threshold":"536870912"},{"spark.blacklist.enabled":"true"},{"spark.blacklist.timeout":"5m"},{"spark.task.maxfailures":"8"}]` | Spark default configuration |
+| union.storage.bucketName | string | `"my-s3-bucket-prod"` |  |
 | union.storage.custom | object | `{}` | Settings for storage type custom. See https://github:com/graymeta/stow for supported storage providers/settings. |
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator.affinity | object | `{}` |  |
-| union.unionoperator.autoscaling.enabled | bool | `false` |  |
-| union.unionoperator.autoscaling.maxReplicas | int | `100` |  |
-| union.unionoperator.autoscaling.minReplicas | int | `1` |  |
-| union.unionoperator.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| union.unionoperator.configmapOverrides | object | `{}` |  |
-| union.unionoperator.fullnameOverride | string | `""` |  |
-| union.unionoperator.image.pullPolicy | string | `"IfNotPresent"` |  |
-| union.unionoperator.image.repository | string | `"public.ecr.aws/p0i0a9q8/unionoperator"` |  |
-| union.unionoperator.image.tag | string | `"v0.0.15"` |  |
-| union.unionoperator.imagePullSecrets | list | `[]` |  |
-| union.unionoperator.nameOverride | string | `""` |  |
-| union.unionoperator.nodeSelector | object | `{}` |  |
-| union.unionoperator.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
-| union.unionoperator.podAnnotations."prometheus.io/port" | string | `"10254"` |  |
-| union.unionoperator.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| union.unionoperator.podSecurityContext | object | `{}` |  |
-| union.unionoperator.replicaCount | int | `1` |  |
-| union.unionoperator.resources.limits.cpu | string | `"4"` |  |
-| union.unionoperator.resources.limits.ephemeral-storage | string | `"500Mi"` |  |
-| union.unionoperator.resources.limits.memory | string | `"8Gi"` |  |
-| union.unionoperator.resources.requests.cpu | string | `"1"` |  |
-| union.unionoperator.resources.requests.ephemeral-storage | string | `"100Mi"` |  |
-| union.unionoperator.resources.requests.memory | string | `"500Mi"` |  |
-| union.unionoperator.securityContext | object | `{}` |  |
-| union.unionoperator.service.port | int | `80` |  |
-| union.unionoperator.service.type | string | `"ClusterIP"` |  |
-| union.unionoperator.serviceAccount.annotations | object | `{}` |  |
-| union.unionoperator.serviceAccount.create | bool | `true` |  |
-| union.unionoperator.serviceAccount.name | string | `""` |  |
-| union.unionoperator.tolerations | list | `[]` |  |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"v0.0.16-b3"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.userRoleAnnotationKey | string | `"foo"` |  |
 | union.userRoleAnnotationValue | string | `"bar"` |  |
 | union.webhook.enabled | bool | `true` | enable or disable secrets webhook |

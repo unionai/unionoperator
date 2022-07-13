@@ -12,6 +12,23 @@ union:
   userRoleAnnotationKey: "foo"
   # Flyte user role with permissions to patch onto project service accounts e.g. arn:aws:iam::ACCOUNT_ID:role/flyte_project_role
   userRoleAnnotationValue: "bar"
+  #
+  # STORAGE SETTINGS
+  #
+
+  storage:
+    # -- Sets the storage type. Supported values are sandbox, s3, gcs and custom.
+    type: sandbox
+    bucketName: my-s3-bucket-prod
+    # -- settings for storage type s3
+    s3:
+      region: us-east-1
+    # -- settings for storage type gcs
+    gcs:
+    # -- GCP project ID. Required for storage type gcs.
+    # projectId:
+    # -- Settings for storage type custom. See https://github:com/graymeta/stow for supported storage providers/settings.
+    custom: { }
 
   secrets:
     adminOauthClientCredentials:
@@ -348,23 +365,6 @@ union:
   # -----------------------------------------------------
   # Core dependencies that should be configured for Flyte to work on any platform
   # ------------------------------------------------------
-  #
-  # STORAGE SETTINGS
-  #
-
-  storage:
-    # -- Sets the storage type. Supported values are sandbox, s3, gcs and custom.
-    type: sandbox
-    # -- settings for storage type s3
-    s3:
-      region: us-east-1
-    # -- settings for storage type gcs
-    gcs:
-    # -- GCP project ID. Required for storage type gcs.
-    # projectId:
-    # -- Settings for storage type custom. See https://github:com/graymeta/stow for supported storage providers/settings.
-    custom: { }
-
   unionoperator:
     replicaCount: 1
 
@@ -372,7 +372,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v0.0.15 # UNION_OPERATOR_TAG
+      tag: v0.0.16-b3 # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""

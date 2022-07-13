@@ -1,6 +1,6 @@
 dependencies:
 - name: flyte-core
   repository: https://flyteorg.github.io/flyte/
-  version: v0.19.3
-digest: sha256:f1aa1a202ca4d6a1f59b40ccc165bc69c3fd54d3b707672f89f2d5d0ee0bd383
-generated: "2022-06-14T03:33:16.125714965Z"
+  version: v1.2.0-b1
+digest: sha256:bde1bcb7b9c371ffbb9696812baa9eae43a3fa1d757fff2b7b6ecb6f2e3f0e73
+generated: "2022-07-13T18:32:31.170995796Z"

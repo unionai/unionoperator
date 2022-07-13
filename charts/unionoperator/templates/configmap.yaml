@@ -18,6 +18,14 @@ data:
         organization: {{ include "union-operator.org" . }}
       propellerHeartbeat:
         endpoint: {{ print "http://flytepropeller." .Release.Namespace ".svc.cluster.local:" (index .Values.union.configmap.core.propeller "prof-port") }}
+      clusterData:
+        appId: {{ tpl (.Values.union.appId | toString) $ }}
+        cloudHostName: {{ tpl (include "union-operator.cloudHostName" . | toString) $ }}
+        metadataBucketPrefix: {{ tpl (.Values.union.metadataBucketPrefix | toString) $ }}
+        bucketName:  {{ tpl (include "union-operator.bucket" . | toString) $ }}
+        bucketRegion: {{ tpl (include "union-operator.bucketRegion" . | toString) $ }}
+        userRoleKey: {{ tpl (.Values.union.userRoleAnnotationKey | toString) $ }}
+        userRole: {{ tpl (.Values.union.userRoleAnnotationValue | toString) $ }}
 {{- with .Values.union.unionoperator.configmapOverrides }}
   config-overrides.yaml: |
   {{ toYaml . | nindent 4 }}
