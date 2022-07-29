@@ -521,6 +521,8 @@ rules:
     resources:
       - resourcequotas
       - pods
+      - configmaps
+      - podtemplates
     verbs:
       - get
       - list
