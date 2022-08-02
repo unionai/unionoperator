@@ -1,0 +1,22 @@
+union:
+  cloudUrl: https://playground.hosted.unionai.cloud
+  appId: abcdef
+  appSecret: ghijklm
+  metadataBucketPrefix: "gcs://my-gcs-bucket-prod"
+  userRoleAnnotationKey: iam.gke.io/gcp-service-account
+  userRoleAnnotationValue: "<Operator IAM Permission>"
+  storage:
+    type: "gcs"
+    bucketName: "my-gcs-bucket-prod"
+    bucketRegion: "us-west1"
+    gcs:
+      projectId: "GOOGLE_TEST"
+  flytepropeller:
+    priorityClassName: ""
+    serviceAccount:
+      annotations:
+        iam.gke.io/gcp-service-account : "<Propeller IAM Permission>"
+  unionoperator:
+    priorityClassName: ""
+
+
