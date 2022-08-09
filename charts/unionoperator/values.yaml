@@ -31,7 +31,8 @@ union:
     custom: { }
 
   secrets:
-    # set to false if you use a different secrets pattern
+    # set to false if you want to create this secret yourself, for example using the external-secrets-operator
+    # see charts/unionoperator/templates/secret.yaml for the structure of the secret
     create: true
     adminOauthClientCredentials:
       clientSecret: '{{ tpl .Values.appSecret . }}'
