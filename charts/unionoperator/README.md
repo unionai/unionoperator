@@ -46,7 +46,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | minio.service | object | `{"annotations":{},"type":"NodePort"}` | Service settings for Minio |
 | minio.tolerations | list | `[]` | tolerations for Minio deployment |
 | union.appId | string | `"<App Id from uctl create app>"` |  |
-| union.appSecret | string | `"<App Secret from uctl create app>"` |  |
+| union.appSecret | string | `"<App Secret from uctl create app>"` | Required unless `.Values.union.secrets.create` is `false`  |
 | union.cloudUrl | string | `"<Union Cloud URL>"` |  |
 | union.clusterName | string | `""` |  |
 | union.clusterPoolName | string | `"default"` |  |

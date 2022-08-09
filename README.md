@@ -46,7 +46,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | minio.service | object | `{"annotations":{},"type":"NodePort"}` | Service settings for Minio |
 | minio.tolerations | list | `[]` | tolerations for Minio deployment |
 | union.appId | string | `"<App Id from uctl create app>"` |  |
-| union.appSecret | string | `"<App Secret from uctl create app>"` |  |
+| union.appSecret | string | `"<App Secret from uctl create app>"` | Required unless `.Values.union.secrets.create` is `false`  |
 | union.cloudUrl | string | `"<Union Cloud URL>"` |  |
 | union.clusterName | string | `""` |  |
 | union.clusterPoolName | string | `"default"` |  |
@@ -114,6 +114,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.flytepropeller.tolerations | list | `[]` | tolerations for Flytepropeller deployment |
 | union.flytescheduler.enabled | bool | `false` |  |
 | union.metadataBucketPrefix | string | `"s3://my-s3-bucket"` |  |
+| union.secrets.create | bool | `true` | Optional: set to false if you use a different secrets strategy |
 | union.secrets.adminOauthClientCredentials.clientSecret | string | `"{{ tpl .Values.appSecret . }}"` |  |
 | union.sparkoperator | object | `{"enabled":false,"plugin_config":{"plugins":{"spark":{"spark-config-default":[{"spark.hadoop.fs.s3a.aws.credentials.provider":"com.amazonaws.auth.DefaultAWSCredentialsProviderChain"},{"spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version":"2"},{"spark.kubernetes.allocation.batch.size":"50"},{"spark.hadoop.fs.s3a.acl.default":"BucketOwnerFullControl"},{"spark.hadoop.fs.s3n.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3n.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3a.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.AbstractFileSystem.s3a.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3a.multipart.threshold":"536870912"},{"spark.blacklist.enabled":"true"},{"spark.blacklist.timeout":"5m"},{"spark.task.maxfailures":"8"}]}}}}` | Optional: Spark Plugin using the Spark Operator |
 | union.sparkoperator.enabled | bool | `false` | - enable or disable Sparkoperator deployment installation |
