@@ -46,7 +46,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b1"
+    app.kubernetes.io/version: "v0.0.17-b3"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: union-operator/charts/union/templates/common/secret-auth.yaml
@@ -333,7 +333,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b1"
+    app.kubernetes.io/version: "v0.0.17-b3"
     app.kubernetes.io/managed-by: Helm
 data:
   config.yaml: |
@@ -345,6 +345,7 @@ data:
         clientId: abcdef
         clientSecretLocation: /etc/union/secret/app_secret
     operator:
+      enabled: true
       clusterId:
         organization: playground
       propellerHeartbeat:
@@ -357,6 +358,8 @@ data:
         bucketRegion: us-east-2
         userRoleKey: foo
         userRole: bar
+        storageType: s3
+        gcpProjectId: dummy-gcs-projectId
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -485,7 +488,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b1"
+    app.kubernetes.io/version: "v0.0.17-b3"
     app.kubernetes.io/managed-by: Helm
 rules:
   # Allow Access to all resources under flyte.lyft.com
@@ -563,7 +566,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b1"
+    app.kubernetes.io/version: "v0.0.17-b3"
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -601,7 +604,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b1"
+    app.kubernetes.io/version: "v0.0.17-b3"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -853,7 +856,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b1"
+    app.kubernetes.io/version: "v0.0.17-b3"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -864,11 +867,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "06383713f065d002922f8824ebec223834c0658c273b22013341ab3b3fa3ae2"
+        configChecksum: "aa8c91ad3b1ebb7b295c2954863cd3f10bc062a06ec67b16a6a11f4ff3bad76"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "06383713f065d002922f8824ebec223834c0658c273b22013341ab3b3fa3ae2"
+        configChecksum: "aa8c91ad3b1ebb7b295c2954863cd3f10bc062a06ec67b16a6a11f4ff3bad76"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -888,7 +891,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:v0.0.17-b1"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:v0.0.17-b3"
           imagePullPolicy: IfNotPresent
           resources:
             limits:

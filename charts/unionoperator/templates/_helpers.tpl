@@ -25,6 +25,14 @@ Expand the name of the chart.
 {{- end }}
 {{- end }}
 
+{{- define "union-operator.gcpProjectId" -}}
+{{- if eq .Values.union.storage.type "gcs" }}
+{{- printf "%s" .Values.union.storage.gcs.projectId -}}
+{{- else }}
+{{- printf "dummy-gcs-projectId" -}}
+{{- end }}
+{{- end }}
+
 {{- define "union-operator.org" -}}
 {{- (split "." (.Values.union.cloudUrl | trimPrefix "dns:///" | trimPrefix "http://" | trimPrefix "https://"))._0 -}}
 {{- end -}}

@@ -2,6 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 union:
+  # -- Mark cluster as healthy and ready to accept incoming workflows
+  enabled: true
   cloudUrl: "<Union Cloud URL>"
   appId: "<App Id from uctl create app>"
   appSecret: "<App Secret from uctl create app>"
@@ -31,6 +33,9 @@ union:
     custom: { }
 
   secrets:
+    # set to false if you want to create this secret yourself, for example using the external-secrets-operator
+    # see charts/unionoperator/templates/secret.yaml for the structure of the secret
+    create: true
     adminOauthClientCredentials:
       clientSecret: '{{ tpl .Values.appSecret . }}'
 
@@ -373,7 +378,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v0.0.17-b1 # UNION_OPERATOR_TAG
+      tag: v0.0.17-b3 # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""

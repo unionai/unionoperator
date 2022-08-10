@@ -14,6 +14,7 @@ data:
         clientId: {{ tpl (.Values.union.appId | toString) $ }}
         clientSecretLocation: /etc/union/secret/app_secret
     operator:
+      enabled: {{ tpl (.Values.union.enabled | toString) $ }}
       clusterId:
         organization: {{ include "union-operator.org" . }}
       propellerHeartbeat:
@@ -26,6 +27,11 @@ data:
         bucketRegion: {{ tpl (include "union-operator.bucketRegion" . | toString) $ }}
         userRoleKey: {{ tpl (.Values.union.userRoleAnnotationKey | toString) $ }}
         userRole: {{ tpl (.Values.union.userRoleAnnotationValue | toString) $ }}
+        storageType: {{ tpl (.Values.union.storage.type | toString) $ }}
+        gcpProjectId: {{ tpl (include "union-operator.gcpProjectId" . | toString) $ }}
+{{- if  .Values.union.storage.customStorageConfig}}
+        customStorageConfig: {{ tpl (.Values.union.storage.customStorageConfig | toString) $ }}
+{{- end }}
 {{- with .Values.union.unionoperator.configmapOverrides }}
   config-overrides.yaml: |
   {{ toYaml . | nindent 4 }}
