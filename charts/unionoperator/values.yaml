@@ -41,13 +41,6 @@ union:
 
   flyteadmin:
     enabled: false
-    # TODO: remove this image override once public flyte is release to include a flyteadmin image >= v0.6.91
-    image:
-      # -- Docker image for Flyteadmin deployment
-      repository: cr.flyte.org/flyteorg/flyteadmin
-      tag: v0.6.91
-      pullPolicy: IfNotPresent
-    pullPolicy: IfNotPresent
   flytescheduler:
     enabled: false
   flyteconsole:
@@ -152,7 +145,7 @@ union:
                   value: '{{ tpl .Values.userRoleAnnotationValue . }}'
     templates:
       # -- Template for namespaces resources
-      - key: a_namespace
+      - key: a_namespace.yaml
         value: |
           apiVersion: v1
           kind: Namespace
@@ -163,7 +156,7 @@ union:
             - kubernetes
 
       # -- Patch default service account
-      - key: b_default_service_account
+      - key: b_default_service_account.yaml
         value: |
           apiVersion: v1
           kind: ServiceAccount
@@ -173,7 +166,7 @@ union:
             annotations:
               {{ defaultUserRoleKey }}: {{ defaultUserRoleValue }}
 
-      - key: c_project_resource_quota
+      - key: c_project_resource_quota.yaml
         value: |
           apiVersion: v1
           kind: ResourceQuota
@@ -378,7 +371,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v0.0.17-b3 # UNION_OPERATOR_TAG
+      tag: 3fec633873660a536558162aff7b278a7f8c780c # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""

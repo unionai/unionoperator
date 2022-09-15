@@ -32,6 +32,10 @@ data:
 {{- if  .Values.union.storage.customStorageConfig}}
         customStorageConfig: {{ tpl (.Values.union.storage.customStorageConfig | toString) $ }}
 {{- end }}
+  logger.yaml: |
+    logger:
+      level: 4
+      show-source: true
 {{- with .Values.union.unionoperator.configmapOverrides }}
   config-overrides.yaml: |
   {{ toYaml . | nindent 4 }}

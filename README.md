@@ -1,6 +1,6 @@
 # union-operator
 
-![Version: v0.0.1](https://img.shields.io/badge/Version-v0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.17-b3](https://img.shields.io/badge/AppVersion-v0.0.17--b3-informational?style=flat-square)
+![Version: v0.0.1](https://img.shields.io/badge/Version-v0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.1](https://img.shields.io/badge/AppVersion-v0.0.1-informational?style=flat-square)
 
 Deploys Union Operator to onboard a k8s cluster to Union Cloud
 
@@ -69,9 +69,9 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.cluster_resource_manager.enabled | bool | `true` |  |
 | union.cluster_resource_manager.service_account_name | string | `"flytepropeller"` |  |
 | union.cluster_resource_manager.standalone_deploy | bool | `true` |  |
-| union.cluster_resource_manager.templates[0] | object | `{"key":"a_namespace","value":"apiVersion: v1\nkind: Namespace\nmetadata:\n  name: {{ namespace }}\nspec:\n  finalizers:\n  - kubernetes\n"}` | Template for namespaces resources |
-| union.cluster_resource_manager.templates[1] | object | `{"key":"b_default_service_account","value":"apiVersion: v1\nkind: ServiceAccount\nmetadata:\n  name: default\n  namespace: {{ namespace }}\n  annotations:\n    {{ defaultUserRoleKey }}: {{ defaultUserRoleValue }}\n"}` | Patch default service account |
-| union.cluster_resource_manager.templates[2].key | string | `"c_project_resource_quota"` |  |
+| union.cluster_resource_manager.templates[0] | object | `{"key":"a_namespace.yaml","value":"apiVersion: v1\nkind: Namespace\nmetadata:\n  name: {{ namespace }}\nspec:\n  finalizers:\n  - kubernetes\n"}` | Template for namespaces resources |
+| union.cluster_resource_manager.templates[1] | object | `{"key":"b_default_service_account.yaml","value":"apiVersion: v1\nkind: ServiceAccount\nmetadata:\n  name: default\n  namespace: {{ namespace }}\n  annotations:\n    {{ defaultUserRoleKey }}: {{ defaultUserRoleValue }}\n"}` | Patch default service account |
+| union.cluster_resource_manager.templates[2].key | string | `"c_project_resource_quota.yaml"` |  |
 | union.cluster_resource_manager.templates[2].value | string | `"apiVersion: v1\nkind: ResourceQuota\nmetadata:\n  name: project-quota\n  namespace: {{ namespace }}\nspec:\n  hard:\n    limits.cpu: {{ projectQuotaCpu }}\n    limits.memory: {{ projectQuotaMemory }}\n    limits.nvidia.com/gpu: {{ projectQuotaNvidiaGpu }}\n"` |  |
 | union.common.ingress.enabled | bool | `false` |  |
 | union.configmap | object | `{"admin":{"admin":{"clientId":"{{ tpl .Values.appId . }}","clientSecretLocation":"/etc/secrets/client_secret","endpoint":"{{- printf \"dns:///%s\" (.Values.cloudUrl | trimPrefix \"dns:///\" | trimPrefix \"http://\" | trimPrefix \"https://\") -}}","insecure":false},"event":{"capacity":1000,"rate":500,"type":"admin"}},"catalog":{"catalog-cache":{"endpoint":"{{- printf \"dns:///%s\" (.Values.cloudUrl | trimPrefix \"dns:///\" | trimPrefix \"http://\" | trimPrefix \"https://\") -}}","insecure":false,"type":"datacatalog","use-admin-auth":true}},"core":{"manager":{"shard":{"shard-count":3,"type":"Hash"}},"propeller":{"downstream-eval-duration":"30s","enable-admin-launcher":true,"event-config":{"raw-output-policy":"inline"},"leader-election":{"enabled":false,"lease-duration":"15s","lock-config-map":{"name":"propeller-leader","namespace":"flyte"},"renew-deadline":"10s","retry-period":"2s"},"limit-namespace":"all","max-workflow-retries":30,"metadata-prefix":"metadata/propeller","metrics-prefix":"flyte","prof-port":10254,"queue":{"batch-size":-1,"batching-interval":"2s","queue":{"base-delay":"5s","capacity":1000,"max-delay":"120s","rate":100,"type":"maxof"},"sub-queue":{"capacity":100,"rate":10,"type":"bucket"},"type":"batch"},"rawoutput-prefix":"{{ tpl .Values.metadataBucketPrefix $ }}","workers":4,"workflow-reeval-duration":"30s"},"webhook":{"certDir":"/etc/webhook/certs","serviceName":"flyte-pod-webhook"}},"enabled_plugins":{"tasks":{"task-plugins":{"default-for-task-types":{"container":"container","container_array":"k8s-array","sidecar":"sidecar"},"enabled-plugins":["container","sidecar","k8s-array"]}}},"k8s":{"plugins":{"k8s":{"default-cpus":"100m","default-memory":"100Mi"}}},"logger":{"logger":{"level":4,"show-source":true}},"resource_manager":{"propeller":{"resourcemanager":{"type":"noop"}}},"task_logs":{"plugins":{"logs":{"cloudwatch-enabled":false,"kubernetes-enabled":true}}}}` | ----------------------------------------------------------------- CONFIGMAPS SETTINGS |
@@ -92,10 +92,6 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.datacatalog.enabled | bool | `false` |  |
 | union.enabled | bool | `true` | Mark cluster as healthy and ready to accept incoming workflows |
 | union.flyteadmin.enabled | bool | `false` |  |
-| union.flyteadmin.image.pullPolicy | string | `"IfNotPresent"` |  |
-| union.flyteadmin.image.repository | string | `"cr.flyte.org/flyteorg/flyteadmin"` | Docker image for Flyteadmin deployment |
-| union.flyteadmin.image.tag | string | `"v0.6.91"` |  |
-| union.flyteadmin.pullPolicy | string | `"IfNotPresent"` |  |
 | union.flyteconsole.enabled | bool | `false` |  |
 | union.flytepropeller.affinity | object | `{}` | affinity for Flytepropeller deployment |
 | union.flytepropeller.cacheSizeMbs | int | `0` |  |
@@ -126,7 +122,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"v0.0.17-b3"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"3fec633873660a536558162aff7b278a7f8c780c"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.userRoleAnnotationKey | string | `"foo"` |  |
 | union.userRoleAnnotationValue | string | `"bar"` |  |
 | union.webhook.enabled | bool | `true` | enable or disable secrets webhook |

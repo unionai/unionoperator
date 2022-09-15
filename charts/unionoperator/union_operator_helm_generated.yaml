@@ -46,7 +46,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b3"
+    app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: union-operator/charts/union/templates/common/secret-auth.yaml
@@ -98,7 +98,7 @@ metadata:
     helm.sh/chart: union-v1.2.0-b1
     app.kubernetes.io/managed-by: Helm
 data:
-  a_namespace.yaml: | 
+  a_namespace.yaml.yaml: | 
     apiVersion: v1
     kind: Namespace
     metadata:
@@ -107,7 +107,7 @@ data:
       finalizers:
       - kubernetes
     
-  b_default_service_account.yaml: | 
+  b_default_service_account.yaml.yaml: | 
     apiVersion: v1
     kind: ServiceAccount
     metadata:
@@ -116,7 +116,7 @@ data:
       annotations:
         {{ defaultUserRoleKey }}: {{ defaultUserRoleValue }}
     
-  c_project_resource_quota.yaml: | 
+  c_project_resource_quota.yaml.yaml: | 
     apiVersion: v1
     kind: ResourceQuota
     metadata:
@@ -345,7 +345,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b3"
+    app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 data:
   config.yaml: |
@@ -372,6 +372,10 @@ data:
         userRole: bar
         storageType: sandbox
         gcpProjectId: dummy-gcs-projectId
+  logger.yaml: |
+    logger:
+      level: 4
+      show-source: true
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -500,7 +504,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b3"
+    app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 rules:
   # Allow Access to all resources under flyte.lyft.com
@@ -578,7 +582,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b3"
+    app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -644,7 +648,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b3"
+    app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -703,7 +707,7 @@ spec:
             - /etc/flyte/config/*.yaml
             - clusterresource
             - run
-          image: "cr.flyte.org/flyteorg/flyteadmin:v0.6.91"
+          image: "cr.flyte.org/flyteorg/flyteadmin-release:v1.2.0-b1"
           imagePullPolicy: "IfNotPresent"
           name: sync-cluster-resources
           volumeMounts:
@@ -896,7 +900,7 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
-    app.kubernetes.io/version: "v0.0.17-b3"
+    app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -907,11 +911,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "e97f0ab8295a0d9620a214ee352a948bed24527d4aae1e7d8843e9db3254f2a"
+        configChecksum: "05de83ea8a4aeb94b076db58d2aea7d8d4dd1b9a1e4bdf363c7a4b3b1f7a364"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "e97f0ab8295a0d9620a214ee352a948bed24527d4aae1e7d8843e9db3254f2a"
+        configChecksum: "05de83ea8a4aeb94b076db58d2aea7d8d4dd1b9a1e4bdf363c7a4b3b1f7a364"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -931,8 +935,9 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:v0.0.17-b3"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:3fec633873660a536558162aff7b278a7f8c780c"
           imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: FallbackToLogsOnError
           resources:
             limits:
               cpu: "4"

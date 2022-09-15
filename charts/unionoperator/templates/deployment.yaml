@@ -43,6 +43,7 @@ spec:
             {{- toYaml .Values.union.unionoperator.securityContext | nindent 12 }}
           image: "{{ .Values.union.unionoperator.image.repository }}:{{ .Values.union.unionoperator.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.union.unionoperator.image.pullPolicy }}
+          terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {{- toYaml .Values.union.unionoperator.resources | nindent 12 }}
           volumeMounts:

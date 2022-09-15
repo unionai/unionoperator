@@ -38,7 +38,7 @@ Expand the name of the chart.
 {{- end -}}
 
 {{- define "union-operator.bucket" -}}
-{{- (split "/" (.Values.union.metadataBucketPrefix | trimPrefix "s3://" | trimPrefix "gcs://" | trimPrefix "az://"))._0 -}}
+{{- (split "/" (.Values.union.metadataBucketPrefix | trimPrefix "s3://" | trimPrefix "gs://" | trimPrefix "az://"))._0 -}}
 {{- end -}}
 
 {{- define "minio.name" -}}

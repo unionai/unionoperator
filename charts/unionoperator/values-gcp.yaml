@@ -2,7 +2,7 @@ union:
   cloudUrl: https://playground.hosted.unionai.cloud
   appId: abcdef
   appSecret: ghijklm
-  metadataBucketPrefix: "gcs://my-gcs-bucket-prod"
+  metadataBucketPrefix: "gs://my-gcs-bucket-prod"
   userRoleAnnotationKey: iam.gke.io/gcp-service-account
   userRoleAnnotationValue: "<Operator IAM Permission>"
   storage:
