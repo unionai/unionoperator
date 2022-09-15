@@ -43,7 +43,7 @@ jobs:
         run: |
           sed "s/v0.0.1/${{ needs.bump-version.outputs.version }}/g" ./charts/unionoperator/README.md  > temp.txt && mv temp.txt ./charts/unionoperator/README.md
           grep -rlZ "version:[^P]*# VERSION" ./charts/unionoperator/Chart.yaml | xargs -0 sed -i "s/version:[^P]*# VERSION/version: ${{ needs.bump-version.outputs.version }} # VERSION/g"
-          grep -rlZ "version:[^P]*# APP_VERSION" ./charts/unionoperator/Chart.yaml | xargs -0 sed -i "s/version:[^P]*# APP_VERSION/version: ${{ needs.bump-version.outputs.version }} # APP_VERSION/g"
+          grep -rlZ "appVersion:[^P]*# APP_VERSION" ./charts/unionoperator/Chart.yaml | xargs -0 sed -i "s/appVersion:[^P]*# APP_VERSION/appVersion: ${{ needs.bump-version.outputs.version }} # APP_VERSION/g"
       - name: Configure Git
         run: |
           git config user.name "${{ github.actor }}"
