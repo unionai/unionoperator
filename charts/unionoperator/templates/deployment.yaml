@@ -61,18 +61,48 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: DEPLOYMENT_NAME
+              value: {{ include "union-operator.fullname" . }}
           args:
             - operator
+            - serve
             - --config
             - /etc/union/config/*.yaml
             - --operator.clusterId.name
             - "$(CLUSTER_NAME)"
-            - --operator.clusterPoolName
-            - {{ .Values.union.clusterPoolName }}
+            - --operator.tunnel.k8sSecretName
+            - {{ include "union-operator.fullname" . }}
           ports:
+            - name: grpc
+              containerPort: 8080
+              protocol: TCP
+            - name: http
+              containerPort: 8089
+              protocol: TCP
             - name: debug
               containerPort: 10254
               protocol: TCP
+
+        {{- if .Values.union.enableTunnelService }}
+        - name: "tunnel"
+          securityContext:
+            {{- toYaml .Values.union.unionoperator.securityContext | nindent 12 }}
+          image: cloudflare/cloudflared:2022.6.3
+          imagePullPolicy: {{ .Values.union.unionoperator.image.pullPolicy }}
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "union-operator.fullname" . }}
+                  key: tunnel_token
+                  optional: false
+        {{- end }}
       {{- with .Values.union.unionoperator.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

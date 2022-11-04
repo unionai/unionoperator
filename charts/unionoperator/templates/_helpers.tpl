@@ -6,7 +6,7 @@ Expand the name of the chart.
 {{- end }}
 
 {{- define "newClusterName" -}}
-{{- printf "c%v" (randAlphaNum 16 | nospace) -}}
+{{- printf "c%v" (randAlphaNum 16 | nospace | lower) -}}
 {{- end -}}
 
 {{- define "union-operator.grpcUrl" -}}
@@ -111,4 +111,54 @@ Create the name of the service account to use
 {{- else }}
 {{- default "default" .Values.union.unionoperator.serviceAccount.name }}
 {{- end }}
+{{- end }}
+
+{{- define "union-storage.base" -}}
+storage:
+{{- if eq .Values.union.storage.type "s3" }}
+  type: s3
+  container: {{ .Values.union.storage.bucketName | quote }}
+  connection:
+    auth-type: {{ .Values.union.storage.s3.authType }}
+    region: {{ .Values.union.storage.s3.region }}
+    {{- if eq .Values.union.storage.s3.authType "accesskey" }}
+    access-key: {{ .Values.union.storage.s3.accessKey }}
+    secret-key: {{ .Values.union.storage.s3.secretKey }}
+    {{- end }}
+{{- else if eq .Values.union.storage.type "gcs" }}
+  type: stow
+  stow:
+    kind: google
+    config:
+      json: ""
+      project_id: {{ .Values.union.storage.gcs.projectId }}
+      scopes: https://www.googleapis.com/auth/devstorage.read_write
+  container: {{ .Values.union.storage.bucketName | quote }}
+{{- else if eq .Values.union.storage.type "sandbox" }}
+  type: minio
+  container: {{ .Values.union.storage.bucketName | quote }}
+  stow:
+    kind: s3
+    config:
+      access_key_id: minio
+      auth_type: accesskey
+      secret_key: miniostorage
+      disable_ssl: true
+      endpoint: http://minio.{{ .Release.Namespace }}.svc.cluster.local:9000
+      region: us-east-1
+  signedUrl:
+    stowConfigOverride:
+      endpoint: http://localhost:30084
+{{- else if eq .Values.union.storage.type "custom" }}
+{{- with .Values.union.storage.custom -}}
+  {{ tpl (toYaml .) $ | nindent 2 }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "union-storage" -}}
+{{ include "union-storage.base" .}}
+  enable-multicontainer: {{ .Values.union.storage.enableMultiContainer }}
+  limits:
+    maxDownloadMBs: {{ .Values.union.storage.limits.maxDownloadMBs }}
 {{- end }}

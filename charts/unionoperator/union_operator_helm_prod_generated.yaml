@@ -76,6 +76,7 @@ metadata:
 type: Opaque
 stringData:
   app_secret: ghijklm
+  tunnel_token: ""
 ---
 # Source: union-operator/templates/secret.yaml
 apiVersion: v1
@@ -346,6 +347,7 @@ data:
         clientSecretLocation: /etc/union/secret/app_secret
     operator:
       enabled: true
+      enableTunnelService: false
       clusterId:
         organization: playground
       propellerHeartbeat:
@@ -364,6 +366,16 @@ data:
     logger:
       level: 4
       show-source: true
+  storage.yaml: | 
+    storage:
+      type: s3
+      container: "my-s3-bucket-prod"
+      connection:
+        auth-type: iam
+        region: us-east-2
+      enable-multicontainer: false
+      limits:
+        maxDownloadMBs: 10
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -575,6 +587,50 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
+  name: union-operator
+subjects:
+  - kind: ServiceAccount
+    name: union-operator
+    namespace: union
+---
+# Source: union-operator/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: union-operator
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - secrets
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+---
+# Source: union-operator/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: union-operator
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
   name: union-operator
 subjects:
   - kind: ServiceAccount
@@ -871,11 +927,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "a89aad1a7acfaee49700664376d48fcfc117dbfee665560c409a0781e067dc5"
+        configChecksum: "cd34e77efa0ab742afb2b9ab2f01e98d49b8c9b25983f8d9688a615ba2ed446"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "a89aad1a7acfaee49700664376d48fcfc117dbfee665560c409a0781e067dc5"
+        configChecksum: "cd34e77efa0ab742afb2b9ab2f01e98d49b8c9b25983f8d9688a615ba2ed446"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -895,7 +951,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:f03d060f44edac885afa978148b907730a49a0ab"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:66e7cba93b073e1a4e3ced8fc9773c7a5181c99e"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -922,15 +978,24 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: DEPLOYMENT_NAME
+              value: union-operator
           args:
             - operator
+            - serve
             - --config
             - /etc/union/config/*.yaml
             - --operator.clusterId.name
             - "$(CLUSTER_NAME)"
-            - --operator.clusterPoolName
-            - default
+            - --operator.tunnel.k8sSecretName
+            - union-operator
           ports:
+            - name: grpc
+              containerPort: 8080
+              protocol: TCP
+            - name: http
+              containerPort: 8089
+              protocol: TCP
             - name: debug
               containerPort: 10254
               protocol: TCP

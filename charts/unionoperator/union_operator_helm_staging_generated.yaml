@@ -28,6 +28,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     helm.sh/chart: union-v1.2.0-b1
     app.kubernetes.io/managed-by: Helm
+  annotations: 
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Create a Service Account for webhook
@@ -48,6 +50,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 ---
 # Source: union-operator/charts/union/templates/common/secret-auth.yaml
 apiVersion: v1
@@ -274,7 +278,7 @@ data:
           rate: 10
           type: bucket
         type: batch
-      rawoutput-prefix: 's3://my-s3-bucket'
+      rawoutput-prefix: 's3://opencompute-staging-sample-tenant'
       workers: 4
       workflow-reeval-duration: 30s
     webhook:
@@ -295,10 +299,7 @@ data:
     plugins:
       k8s:
         default-cpus: 100m
-        default-env-vars:
-        - FLYTE_AWS_ENDPOINT: http://minio.union.svc.cluster.local:9000
-        - FLYTE_AWS_ACCESS_KEY_ID: minio
-        - FLYTE_AWS_SECRET_ACCESS_KEY: miniostorage
+        default-env-vars: []
         default-memory: 100Mi
   logger.yaml: | 
     logger:
@@ -310,20 +311,11 @@ data:
         type: noop
   storage.yaml: | 
     storage:
-      type: minio
-      container: "my-s3-bucket-prod"
-      stow:
-        kind: s3
-        config:
-          access_key_id: minio
-          auth_type: accesskey
-          secret_key: miniostorage
-          disable_ssl: true
-          endpoint: http://minio.union.svc.cluster.local:9000
-          region: us-east-1
-      signedUrl:
-        stowConfigOverride:
-          endpoint: http://localhost:30084
+      type: s3
+      container: "opencompute-staging-sample-tenant"
+      connection:
+        auth-type: iam
+        region: us-east-2
       enable-multicontainer: false
       limits:
         maxDownloadMBs: 10
@@ -367,12 +359,12 @@ data:
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
-        metadataBucketPrefix: s3://my-s3-bucket
-        bucketName:  my-s3-bucket
+        metadataBucketPrefix: s3://opencompute-staging-sample-tenant
+        bucketName:  opencompute-staging-sample-tenant
         bucketRegion: us-east-2
         userRoleKey: foo
         userRole: bar
-        storageType: sandbox
+        storageType: s3
         gcpProjectId: dummy-gcs-projectId
   logger.yaml: |
     logger:
@@ -380,20 +372,11 @@ data:
       show-source: true
   storage.yaml: | 
     storage:
-      type: minio
-      container: "my-s3-bucket-prod"
-      stow:
-        kind: s3
-        config:
-          access_key_id: minio
-          auth_type: accesskey
-          secret_key: miniostorage
-          disable_ssl: true
-          endpoint: http://minio.union.svc.cluster.local:9000
-          region: us-east-1
-      signedUrl:
-        stowConfigOverride:
-          endpoint: http://localhost:30084
+      type: s3
+      container: "opencompute-staging-sample-tenant"
+      connection:
+        auth-type: iam
+        region: us-east-2
       enable-multicontainer: false
       limits:
         maxDownloadMBs: 10
@@ -527,6 +510,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 rules:
   # Allow Access to all resources under flyte.lyft.com
   - apiGroups:
@@ -605,6 +590,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -625,6 +612,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 rules:
   - apiGroups:
       - '*'
@@ -649,6 +638,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -675,34 +666,6 @@ spec:
       protocol: TCP
       port: 443
       targetPort: 9443
----
-# Source: union-operator/templates/minio/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: minio
-  namespace: union
-  labels: 
-    app.kubernetes.io/name: minio
-    app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-operator-v0.0.1
-    app.kubernetes.io/managed-by: Helm
-spec:
-  type: NodePort
-  ports:
-  - name: minio
-    nodePort: 30084
-    port: 9000
-    protocol: TCP
-    targetPort: minio
-  - name: minio-console
-    nodePort: 30087
-    port: 9001
-    protocol: TCP
-    targetPort: minio-console
-  selector: 
-    app.kubernetes.io/name: minio
-    app.kubernetes.io/instance: union-operator
 ---
 # Source: union-operator/templates/service.yaml
 apiVersion: v1
@@ -815,7 +778,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "cc209c96d5b175bbe0a430b17ba17f4f3c170755ac6b5e9c008f644b41a1403"
+        configChecksum: "b93daa012d179bb46ddfe231c3ed7fbbee6656e55132c643d6b337dfc8e87f8"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
@@ -892,7 +855,7 @@ spec:
         app.kubernetes.io/name: flyte-pod-webhook
         app.kubernetes.io/version: v1.2.0-b1
       annotations:
-        configChecksum: "cc209c96d5b175bbe0a430b17ba17f4f3c170755ac6b5e9c008f644b41a1403"
+        configChecksum: "b93daa012d179bb46ddfe231c3ed7fbbee6656e55132c643d6b337dfc8e87f8"
     spec:
       securityContext:
         fsGroup: 65534
@@ -976,11 +939,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "d072b14587bcd9f374da935b8a7c02695c07f35848bb66cc457ac20ef2cc43d"
+        configChecksum: "cb349aee67728b591d12ca5a8bd856ea3ec015637f3f71ddee6c2df917825bd"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "d072b14587bcd9f374da935b8a7c02695c07f35848bb66cc457ac20ef2cc43d"
+        configChecksum: "cb349aee67728b591d12ca5a8bd856ea3ec015637f3f71ddee6c2df917825bd"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -1000,7 +963,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:66e7cba93b073e1a4e3ced8fc9773c7a5181c99e"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:458f9abd0b2dd2277059dc88709f4e251679918b"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1067,61 +1030,6 @@ spec:
                   key: tunnel_token
                   optional: false
 ---
-# Source: union-operator/templates/minio/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: minio
-  namespace: union
-  labels: 
-    app.kubernetes.io/name: minio
-    app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-operator-v0.0.1
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 1
-  selector:
-    matchLabels: 
-      app.kubernetes.io/name: minio
-      app.kubernetes.io/instance: union-operator
-  template:
-    metadata:
-      labels: 
-        app.kubernetes.io/name: minio
-        app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-operator-v0.0.1
-        app.kubernetes.io/managed-by: Helm
-    spec:
-      containers:
-      - image: "ecr.flyte.org/bitnami/minio:2021.10.13-debian-10-r0"
-        imagePullPolicy: "IfNotPresent"
-        name: minio
-        env:
-          - name: MINIO_ACCESS_KEY
-            value: minio
-          - name: MINIO_SECRET_KEY
-            value: miniostorage
-          - name: MINIO_DEFAULT_BUCKETS
-            value: my-s3-bucket
-        ports:
-        - containerPort: 9000
-          name: minio
-        - containerPort: 9001
-          name: minio-console
-        resources: 
-          limits:
-            cpu: 200m
-            memory: 512Mi
-          requests:
-            cpu: 10m
-            memory: 128Mi
-        volumeMounts:
-        - name: minio-storage
-          mountPath: /data
-      volumes:
-      - name: minio-storage
-        emptyDir: {}
----
 # Source: union-operator/charts/union/templates/propeller/manager.yaml
 apiVersion: v1
 kind: PodTemplate
@@ -1131,7 +1039,7 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "cc209c96d5b175bbe0a430b17ba17f4f3c170755ac6b5e9c008f644b41a1403"
+      configChecksum: "b93daa012d179bb46ddfe231c3ed7fbbee6656e55132c643d6b337dfc8e87f8"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator

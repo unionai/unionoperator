@@ -1,4 +1,5 @@
 union:
+  enableTunnelService: false
   cloudUrl: https://playground.hosted.unionai.cloud
   appId: abcdef
   appSecret: ghijklm
@@ -18,5 +19,6 @@ union:
         iam.gke.io/gcp-service-account : "<Propeller IAM Permission>"
   unionoperator:
     priorityClassName: ""
-
-
+    serviceAccount:
+      annotations:
+        iam.gke.io/gcp-service-account : "<Propeller IAM Permission>"

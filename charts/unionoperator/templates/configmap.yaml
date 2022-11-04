@@ -15,6 +15,7 @@ data:
         clientSecretLocation: /etc/union/secret/app_secret
     operator:
       enabled: {{ tpl (.Values.union.enabled | toString) $ }}
+      enableTunnelService: {{ tpl (.Values.union.enableTunnelService | toString) $ }}
       clusterId:
         organization: {{ include "union-operator.org" . }}
       propellerHeartbeat:
@@ -40,3 +41,4 @@ data:
   config-overrides.yaml: |
   {{ toYaml . | nindent 4 }}
 {{- end }}
+  storage.yaml: | {{ tpl (include "union-storage" .) $ | nindent 4 }}

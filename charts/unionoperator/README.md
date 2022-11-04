@@ -49,7 +49,6 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.appSecret | string | `"<App Secret from uctl create app>"` |  |
 | union.cloudUrl | string | `"<Union Cloud URL>"` |  |
 | union.clusterName | string | `""` |  |
-| union.clusterPoolName | string | `"default"` |  |
 | union.cluster_resource_manager.config.cluster_resources.customData[0].production[0].projectQuotaCpu.value | string | `"64"` |  |
 | union.cluster_resource_manager.config.cluster_resources.customData[0].production[1].projectQuotaMemory.value | string | `"32Gi"` |  |
 | union.cluster_resource_manager.config.cluster_resources.customData[0].production[2].projectQuotaNvidiaGpu.value | string | `"1"` |  |
@@ -90,6 +89,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.configmap.task_logs | object | `{"plugins":{"logs":{"cloudwatch-enabled":false,"kubernetes-enabled":true}}}` | Section that configures how the Task logs are displayed on the UI. This has to be changed based on your actual logging provider. Refer to [structure](https://pkg.go.dev/github.com/lyft/flyteplugins/go/tasks/logs#LogConfig) to understand how to configure various logging engines |
 | union.configmap.task_logs.plugins.logs.cloudwatch-enabled | bool | `false` | One option is to enable cloudwatch logging for EKS, update the region and log group accordingly |
 | union.datacatalog.enabled | bool | `false` |  |
+| union.enableTunnelService | bool | `false` | Enable the usage of tunnel service using cloudflare tunnels. This works only if the union services has this service enabled. |
 | union.enabled | bool | `true` | Mark cluster as healthy and ready to accept incoming workflows |
 | union.flyteadmin.enabled | bool | `false` |  |
 | union.flyteconsole.enabled | bool | `false` |  |
@@ -122,7 +122,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"f03d060f44edac885afa978148b907730a49a0ab"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"66e7cba93b073e1a4e3ced8fc9773c7a5181c99e"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.userRoleAnnotationKey | string | `"foo"` |  |
 | union.userRoleAnnotationValue | string | `"bar"` |  |
 | union.webhook.enabled | bool | `true` | enable or disable secrets webhook |

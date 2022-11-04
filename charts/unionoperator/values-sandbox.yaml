@@ -1,4 +1,5 @@
 union:
+  enableTunnelService: true
   cloudUrl: dns:///playground.hosted.unionai.cloud
   appId: abcdef
   appSecret: ghijklm
