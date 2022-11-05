@@ -28,6 +28,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     helm.sh/chart: union-v1.2.0-b1
     app.kubernetes.io/managed-by: Helm
+  annotations: 
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Create a Service Account for webhook
@@ -48,6 +50,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
 ---
 # Source: union-operator/charts/union/templates/common/secret-auth.yaml
 apiVersion: v1
@@ -274,7 +278,7 @@ data:
           rate: 10
           type: bucket
         type: batch
-      rawoutput-prefix: 's3://my-s3-bucket-prod'
+      rawoutput-prefix: 's3://opencompute-production-sample-tenant'
       workers: 4
       workflow-reeval-duration: 30s
     webhook:
@@ -308,7 +312,7 @@ data:
   storage.yaml: | 
     storage:
       type: s3
-      container: "my-s3-bucket-prod"
+      container: "opencompute-production-sample-tenant"
       connection:
         auth-type: iam
         region: us-east-2
@@ -347,7 +351,7 @@ data:
         clientSecretLocation: /etc/union/secret/app_secret
     operator:
       enabled: true
-      enableTunnelService: false
+      enableTunnelService: true
       clusterId:
         organization: playground
       propellerHeartbeat:
@@ -355,8 +359,8 @@ data:
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
-        metadataBucketPrefix: s3://my-s3-bucket-prod
-        bucketName:  my-s3-bucket-prod
+        metadataBucketPrefix: s3://opencompute-production-sample-tenant
+        bucketName:  opencompute-production-sample-tenant
         bucketRegion: us-east-2
         userRoleKey: foo
         userRole: bar
@@ -369,7 +373,7 @@ data:
   storage.yaml: | 
     storage:
       type: s3
-      container: "my-s3-bucket-prod"
+      container: "opencompute-production-sample-tenant"
       connection:
         auth-type: iam
         region: us-east-2
@@ -506,6 +510,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
 rules:
   # Allow Access to all resources under flyte.lyft.com
   - apiGroups:
@@ -584,6 +590,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -604,6 +612,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
 rules:
   - apiGroups:
       - '*'
@@ -628,6 +638,8 @@ metadata:
     app.kubernetes.io/instance: union-operator
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -766,7 +778,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "7aa0c733433fc8f5a330dccd3110bfbed6ea43b9c6aad4bdf49158a5564c0ab"
+        configChecksum: "59cc9498537e81013616a3b9421907709028e3ffed330131c8e08556fd0afc9"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
@@ -843,7 +855,7 @@ spec:
         app.kubernetes.io/name: flyte-pod-webhook
         app.kubernetes.io/version: v1.2.0-b1
       annotations:
-        configChecksum: "7aa0c733433fc8f5a330dccd3110bfbed6ea43b9c6aad4bdf49158a5564c0ab"
+        configChecksum: "59cc9498537e81013616a3b9421907709028e3ffed330131c8e08556fd0afc9"
     spec:
       securityContext:
         fsGroup: 65534
@@ -927,11 +939,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "cd34e77efa0ab742afb2b9ab2f01e98d49b8c9b25983f8d9688a615ba2ed446"
+        configChecksum: "5def3587fc82af4e07ed4911407cfec83d459fa86ba5b04dedf532d3b3cfc7b"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "cd34e77efa0ab742afb2b9ab2f01e98d49b8c9b25983f8d9688a615ba2ed446"
+        configChecksum: "5def3587fc82af4e07ed4911407cfec83d459fa86ba5b04dedf532d3b3cfc7b"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -951,7 +963,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:66e7cba93b073e1a4e3ced8fc9773c7a5181c99e"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:458f9abd0b2dd2277059dc88709f4e251679918b"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -999,6 +1011,24 @@ spec:
             - name: debug
               containerPort: 10254
               protocol: TCP
+        - name: "tunnel"
+          securityContext:
+            {}
+          image: cloudflare/cloudflared:2022.6.3
+          imagePullPolicy: IfNotPresent
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: union-operator
+                  key: tunnel_token
+                  optional: false
 ---
 # Source: union-operator/charts/union/templates/propeller/manager.yaml
 apiVersion: v1
@@ -1009,7 +1039,7 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "7aa0c733433fc8f5a330dccd3110bfbed6ea43b9c6aad4bdf49158a5564c0ab"
+      configChecksum: "59cc9498537e81013616a3b9421907709028e3ffed330131c8e08556fd0afc9"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator
