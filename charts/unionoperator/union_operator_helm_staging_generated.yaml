@@ -131,7 +131,7 @@ data:
       hard:
         limits.cpu: {{ projectQuotaCpu }}
         limits.memory: {{ projectQuotaMemory }}
-        limits.nvidia.com/gpu: {{ projectQuotaNvidiaGpu }}
+        requests.nvidia.com/gpu: {{ projectQuotaNvidiaGpu }}
 ---
 # Source: union-operator/charts/union/templates/clusterresourcesync/configmap.yaml
 apiVersion: v1
@@ -150,33 +150,33 @@ data:
       customData:
       - production:
         - projectQuotaCpu:
-            value: "64"
+            value: "4096"
         - projectQuotaMemory:
-            value: 32Gi
+            value: 2Ti
         - projectQuotaNvidiaGpu:
-            value: "1"
+            value: "256"
         - defaultUserRoleKey:
             value: 'foo'
         - defaultUserRoleValue:
             value: 'bar'
       - staging:
         - projectQuotaCpu:
-            value: "64"
+            value: "4096"
         - projectQuotaMemory:
-            value: 32Gi
+            value: 2Ti
         - projectQuotaNvidiaGpu:
-            value: "1"
+            value: "256"
         - defaultUserRoleKey:
             value: 'foo'
         - defaultUserRoleValue:
             value: 'bar'
       - development:
         - projectQuotaCpu:
-            value: "64"
+            value: "4096"
         - projectQuotaMemory:
-            value: 32Gi
+            value: 2Ti
         - projectQuotaNvidiaGpu:
-            value: "1"
+            value: "256"
         - defaultUserRoleKey:
             value: 'foo'
         - defaultUserRoleValue:
@@ -721,7 +721,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "39d7866d5acf93aadced5374e4142c06a78b96d2a0648a9845737f1b7f54a96"
+        configChecksum: "af1fa26b81c7583eec6e1aab9e0f7b0b45de2b0295fc21aa21e5db0908cf041"
       labels: 
         app.kubernetes.io/name: flyteclusterresourcesync
         app.kubernetes.io/instance: union-operator

@@ -113,33 +113,33 @@ union:
         customData:
           - production:
               - projectQuotaCpu:
-                  value: "64"
+                  value: "4096"
               - projectQuotaMemory:
-                  value: "32Gi"
+                  value: "2Ti"
               - projectQuotaNvidiaGpu:
-                  value: "1"
+                  value: "256"
               - defaultUserRoleKey:
                   value: '{{ tpl .Values.userRoleAnnotationKey . }}'
               - defaultUserRoleValue:
                   value: '{{ tpl .Values.userRoleAnnotationValue . }}'
           - staging:
               - projectQuotaCpu:
-                  value: "64"
+                  value: "4096"
               - projectQuotaMemory:
-                  value: "32Gi"
+                  value: "2Ti"
               - projectQuotaNvidiaGpu:
-                  value: "1"
+                  value: "256"
               - defaultUserRoleKey:
                   value: '{{ tpl .Values.userRoleAnnotationKey . }}'
               - defaultUserRoleValue:
                   value: '{{ tpl .Values.userRoleAnnotationValue . }}'
           - development:
               - projectQuotaCpu:
-                  value: "64"
+                  value: "4096"
               - projectQuotaMemory:
-                  value: "32Gi"
+                  value: "2Ti"
               - projectQuotaNvidiaGpu:
-                  value: "1"
+                  value: "256"
               - defaultUserRoleKey:
                   value: '{{ tpl .Values.userRoleAnnotationKey . }}'
               - defaultUserRoleValue:
@@ -178,7 +178,7 @@ union:
             hard:
               limits.cpu: {{ projectQuotaCpu }}
               limits.memory: {{ projectQuotaMemory }}
-              limits.nvidia.com/gpu: {{ projectQuotaNvidiaGpu }}
+              requests.nvidia.com/gpu: {{ projectQuotaNvidiaGpu }}
 
   #
   # WEBHOOK SETTINGS
@@ -372,7 +372,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 870b5ab155f50170930283a85874fad995865360 # UNION_OPERATOR_TAG
+      tag: 5f78d4840488e7721a02b2164e8e768cb8ef1f16 # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""
