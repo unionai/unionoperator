@@ -3,4 +3,4 @@ dependencies:
   repository: https://flyteorg.github.io/flyte/
   version: v1.3.0-b3
 digest: sha256:b541c3096bf9c91102745dbca801f7e44493ba3297afc93067867296a21655bd
-generated: "2022-12-12T23:32:32.239797991Z"
+generated: "2022-12-15T03:29:31.977985189Z"
