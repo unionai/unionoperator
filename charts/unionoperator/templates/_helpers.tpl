@@ -5,6 +5,10 @@ Expand the name of the chart.
 {{- default .Chart.Name .Values.union.unionoperator.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
+{{- define "union-operator.namespace" -}}
+{{- default .Release.Namespace .Values.forceNamespace | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{- define "newClusterName" -}}
 {{- printf "c%v" (randAlphaNum 16 | nospace | lower) -}}
 {{- end -}}

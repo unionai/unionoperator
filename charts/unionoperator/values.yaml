@@ -106,7 +106,7 @@ union:
   cluster_resource_manager:
     enabled: true
     standalone_deploy: true
-    service_account_name: flytepropeller
+    service_account_name: clustersync-resource
     config:
       cluster_resources:
         standaloneDeployment: true
@@ -372,7 +372,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: d41852797fbcdc5945a5b25b987caa84f80020a5 # UNION_OPERATOR_TAG
+      tag: 9f693a8c7eed1a76b226d5822aa7dbf4177ddb85 # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""

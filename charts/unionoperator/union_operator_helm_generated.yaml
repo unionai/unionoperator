@@ -37,6 +37,19 @@ metadata:
   name: flyte-pod-webhook
   namespace: union
 ---
+# Source: union-operator/templates/cluster-resource-sync.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: clustersync-resource
+  namespace: union
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+---
 # Source: union-operator/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -528,6 +541,34 @@ rules:
       - update
       - patch
 ---
+# Source: union-operator/templates/cluster-resource-sync.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: clustersync-resource
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - ""
+      - rbac.authorization.k8s.io
+    resources:
+      - configmaps
+      - namespaces
+      - pods
+      - resourcequotas
+      - roles
+      - rolebindings
+      - secrets
+      - services
+      - serviceaccounts
+    verbs:
+      - '*'
+---
 # Source: union-operator/templates/serviceaccount.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -604,6 +645,26 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: flyte-pod-webhook
+    namespace: union
+---
+# Source: union-operator/templates/cluster-resource-sync.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: clustersync-resource
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: clustersync-resource
+subjects:
+  - kind: ServiceAccount
+    name: clustersync-resource
     namespace: union
 ---
 # Source: union-operator/templates/serviceaccount.yaml
@@ -796,7 +857,7 @@ spec:
             name: config-volume
           - mountPath: /var/run/credentials
             name: flyte-admin-secrets
-      serviceAccountName: flytepropeller
+      serviceAccountName: clustersync-resource
       volumes:
         
         - configMap:
@@ -1018,7 +1079,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:d41852797fbcdc5945a5b25b987caa84f80020a5"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:9f693a8c7eed1a76b226d5822aa7dbf4177ddb85"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
