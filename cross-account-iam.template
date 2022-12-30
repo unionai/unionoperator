@@ -1,0 +1,296 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  MasterAccountNumber:
+    Description: >-
+      The account where the AWS Trusted Advisor Explorer solution will be
+      deployed
+    Type: Number
+    Default: '479331373192'
+  CrossAccountRoleName:
+    Description: >-
+      Your Role Name (ex: OrganizationAccountAccessRole); This will need to be
+      the same across all of the Member Accounts
+    Type: String
+    Default: union-ai-admin
+Resources:
+  CrossAccountRoleForAWSTrustedAdvisorUnion:
+    Type: 'AWS::IAM::Role'
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W28
+            reason: The role name needs to be same in all of the member accounts.
+    Properties:
+      RoleName: !Ref CrossAccountRoleName
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Sub arn:aws:iam::${MasterAccountNumber}:root
+          Action:
+          - sts:AssumeRole
+  CrossAccountPolicyForAWSTrustedAdvisorUnion:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: UnionIAMPolicy
+      Roles: [!Ref CrossAccountRoleForAWSTrustedAdvisorUnion]
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: '0'
+            Effect: Allow
+            Action:
+              - 'logs:ListTagsLogGroup'
+              - 'logs:DescribeLogGroups'
+              - 'rds:DescribeDBSubnetGroups'
+              - 'logs:DeleteLogGroup'
+              - 's3:GetBucketLogging'
+              - 's3:CreateBucket'
+              - 's3:GetAccelerateConfiguration'
+              - 'eks:CreateNodegroup'
+              - 's3:GetBucketAcl'
+              - 's3:DeleteBucketPolicy'
+              - 'rds:CreateDBSubnetGroup'
+              - 'logs:CreateLogGroup'
+              - 'ec2:AllocateAddress'
+              - 'eks:DeleteCluster'
+              - 'rds:DeleteDBSubnetGroup'
+              - 'logs:TagLogGroup'
+              - 's3:GetBucketCORS'
+              - 'kms:CreateAlias'
+              - 'eks:DescribeCluster'
+              - 'logs:PutRetentionPolicy'
+              - 's3:DeleteBucket'
+              - 'kms:DeleteAlias'
+            Resource:
+              - !Sub 'arn:aws:s3:::opta-*'
+              - !Sub 'arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/*'
+              - !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:subgrp:*'
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:elastic-ip/*'
+              - !Sub 'arn:aws:eks:${AWS::Region}:${AWS::AccountId}:cluster/opta-*'
+              - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:opta-*'
+              - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group::log-stream*'
+              - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/eks/opta-*:*'
+          - Sid: '112'
+            Effect: Allow
+            Action:
+              - 'eks:TagResource'
+            Resource:
+              - !Sub 'arn:aws:eks:${AWS::Region}:${AWS::AccountId}:cluster/opta-*'
+          - Sid: '1'
+            Effect: Allow
+            Action:
+              - 'kms:EnableKeyRotation'
+              - 'kms:PutKeyPolicy'
+              - 'kms:GetKeyPolicy'
+              - 'ec2:AttachInternetGateway'
+              - 'kms:ListResourceTags'
+              - 'ec2:DetachInternetGateway'
+              - 'eks:DescribeNodegroup'
+              - 'kms:TagResource'
+              - 'kms:GetKeyRotationStatus'
+              - 'eks:DeleteNodegroup'
+              - 'ec2:CreateInternetGateway'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CreateAlias'
+              - 'kms:DescribeKey'
+              - 'ec2:DeleteInternetGateway'
+              - 'kms:DeleteAlias'
+              - 'kms:CreateGrant'
+            Resource:
+              - !Sub 'arn:aws:eks:${AWS::Region}:${AWS::AccountId}:nodegroup/*'
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:internet-gateway/*'
+              - !Sub 'arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/*'
+          - Sid: '2'
+            Effect: Allow
+            Action:
+              - 'ec2:CreateNatGateway'
+              - 'ec2:DeleteNatGateway'
+            Resource:
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:natgateway/*'
+          - Sid: '3'
+            Effect: Allow
+            Action:
+              - 'ec2:CreateRoute'
+              - 'ec2:DeleteRoute'
+              - 'ec2:CreateRouteTable'
+              - 'ec2:DeleteRouteTable'
+              - 'ec2:AssociateRouteTable'
+            Resource:
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:route-table/*'
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:subnet/subnet-*'
+          - Sid: '4'
+            Effect: Allow
+            Action:
+              - 'ec2:AuthorizeSecurityGroupEgress'
+              - 'ec2:AuthorizeSecurityGroupIngress'
+            Resource:
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:security-group-rule/*'
+          - Sid: '5'
+            Effect: Allow
+            Action:
+              - 'ec2:RevokeSecurityGroupIngress'
+              - 'ec2:AuthorizeSecurityGroupEgress'
+              - 'ec2:AuthorizeSecurityGroupIngress'
+              - 'ec2:CreateSecurityGroup'
+              - 'ec2:RevokeSecurityGroupEgress'
+              - 'ec2:DeleteSecurityGroup'
+            Resource:
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:security-group/*'
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/vpc-*'
+          - Sid: '6'
+            Effect: Allow
+            Action:
+              - 'ec2:DeleteSubnet'
+              - 'ec2:CreateNatGateway'
+              - 'ec2:CreateSubnet'
+              - 'ec2:ModifySubnetAttribute'
+            Resource:
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:subnet/*'
+          - Sid: '7'
+            Effect: Allow
+            Action:
+              - 'ec2:CreateNatGateway'
+            Resource:
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:elastic-ip/eipalloc-*'
+          - Sid: '8'
+            Effect: Allow
+            Action:
+              - 'ec2:DeleteFlowLogs'
+              - 'ec2:CreateFlowLogs'
+            Resource:
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc-flow-log/*'
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/vpc*'
+          - Sid: VisualEditor8
+            Effect: Allow
+            Action:
+              - 'ec2:CreateVpc'
+              - 'ec2:CreateRouteTable'
+              - 'ec2:AttachInternetGateway'
+              - 'ec2:ModifyVpcAttribute'
+              - 'ec2:DetachInternetGateway'
+              - 'ec2:DeleteVpc'
+              - 'ec2:CreateSubnet'
+              - 'ec2:DescribeVpcAttribute'
+            Resource:
+              - !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/*'
+          - Sid: VisualEditor9
+            Effect: Allow
+            Action:
+              - 'iam:DeleteOpenIDConnectProvider'
+              - 'iam:GetOpenIDConnectProvider'
+              - 'iam:CreateOpenIDConnectProvider'
+              - 'iam:TagOpenIDConnectProvider'
+            Resource:
+              - !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/*'
+          - Sid: VisualEditor10
+            Effect: Allow
+            Action:
+              - 'iam:CreatePolicy'
+              - 'iam:GetPolicyVersion'
+              - 'iam:GetPolicy'
+              - 'iam:ListPolicyVersions'
+              - 'iam:DeletePolicy'
+            Resource:
+              - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/*'
+          - Sid: VisualEditor111
+            Effect: Allow
+            Action:
+              - 'iam:GetRole'
+              - 'iam:TagRole'
+              - 'iam:CreateRole'
+              - 'iam:DeleteRole'
+              - 'iam:AttachRolePolicy'
+              - 'iam:PutRolePolicy'
+              - 'iam:ListInstanceProfilesForRole'
+              - 'iam:PassRole'
+              - 'iam:CreateServiceLinkedRole'
+              - 'iam:DetachRolePolicy'
+              - 'iam:ListAttachedRolePolicies'
+              - 'iam:DeleteRolePolicy'
+              - 'iam:ListRolePolicies'
+              - 'iam:GetRolePolicy'
+            Resource:
+              - !Sub 'arn:aws:iam::${AWS::AccountId}:role/*'
+          - Sid: VisualEditor11
+            Effect: Allow
+            Action:
+              - 'iam:TagPolicy'
+            Resource:
+              - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/opta-*'
+          - Sid: VisualEditor12
+            Effect: Allow
+            Action:
+              - 'ec2:DescribeAddresses'
+              - 'ec2:EnableEbsEncryptionByDefault'
+              - 'ec2:GetEbsEncryptionByDefault'
+              - 'ec2:DescribeFlowLogs'
+              - 'ec2:ResetEbsDefaultKmsKeyId'
+              - 'ec2:DescribeInternetGateways'
+              - 'ec2:DescribeNetworkInterfaces'
+              - 'ec2:DescribeAvailabilityZones'
+              - 'ec2:GetEbsDefaultKmsKeyId'
+              - 'ec2:DescribeAccountAttributes'
+              - 'kms:CreateKey'
+              - 'ec2:DescribeNetworkAcls'
+              - 'ec2:DescribeRouteTables'
+              - 'ec2:ModifyEbsDefaultKmsKeyId'
+              - 'eks:CreateCluster'
+              - 'ec2:ReleaseAddress'
+              - 'rds:AddTagsToResource'
+              - 'ec2:DescribeVpcClassicLinkDnsSupport'
+              - 'ec2:CreateTags'
+              - 'ec2:DescribeNatGateways'
+              - 'ec2:DisassociateRouteTable'
+              - 'ec2:DescribeSecurityGroups'
+              - 'ec2:DescribeVpcClassicLink'
+              - 'rds:ListTagsForResource'
+              - 'ec2:DescribeVpcs'
+              - 'kms:ListAliases'
+              - 'ec2:DisableEbsEncryptionByDefault'
+              - 'sts:GetCallerIdentity'
+              - 'ec2:DescribeSubnets'
+            Resource: '*'
+          - Sid: VisualEditor13
+            Effect: Allow
+            Action: 'dynamodb:*'
+            Resource:
+              - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/opta-*'
+          - Sid: VisualEditor14
+            Effect: Allow
+            Action: 's3:*'
+            Resource:
+              - 'arn:aws:s3:::opta-*'
+              - 'arn:aws:s3:::opta-*/'
+              - 'arn:aws:s3:::union-*'
+              - 'arn:aws:s3:::union-*/'
+          - Sid: ElastiCache
+            Effect: Allow
+            Action:
+              - 'elasticache:CreateCacheSubnetGroup'
+              - 'elasticache:AddTagsToResource'
+              - 'elasticache:DescribeCacheSubnetGroups'
+              - 'elasticache:ListTagsForResource'
+              - 'elasticache:DeleteCacheSubnetGroup'
+            Resource:
+              - !Sub 'arn:aws:elasticache:${AWS::Region}:${AWS::AccountId}:subnetgroup:opta-*'
+          - Sid: Cloudfront
+            Effect: Allow
+            Action:
+              - 'cloudfront:CreateCloudFrontOriginAccessIdentity'
+              - 'cloudfront:GetCloudFrontOriginAccessIdentity'
+              - 'cloudfront:DeleteCloudFrontOriginAccessIdentity'
+            Resource:
+              - !Sub 'arn:aws:cloudfront::${AWS::AccountId}:origin-access-identity/*'
+Metadata:
+  'AWS::CloudFormation::Designer': {}
+Outputs:
+  RoleId:
+    Description: The logical ID of the IAM role
+    Value: !Ref CrossAccountRoleForAWSTrustedAdvisorUnion
+  RoleArn:
+    Description: The ARN of the IAM role
+    Value: !GetAtt [CrossAccountRoleForAWSTrustedAdvisorUnion, Arn]
+  PolicyId:
+    Description: The logical ID of the IAM policy
+    Value: !Ref CrossAccountPolicyForAWSTrustedAdvisorUnion
