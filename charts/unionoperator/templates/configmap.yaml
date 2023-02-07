@@ -13,6 +13,7 @@ data:
         type: ClientSecret
         clientId: {{ tpl (.Values.union.appId | toString) $ }}
         clientSecretLocation: /etc/union/secret/app_secret
+        authorizationMetadataKey: "flyte-authorization"
     operator:
       enabled: {{ tpl (.Values.union.enabled | toString) $ }}
       enableTunnelService: {{ tpl (.Values.union.enableTunnelService | toString) $ }}

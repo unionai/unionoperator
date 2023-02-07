@@ -382,6 +382,7 @@ data:
         type: ClientSecret
         clientId: abcdef
         clientSecretLocation: /etc/union/secret/app_secret
+        authorizationMetadataKey: "flyte-authorization"
     operator:
       enabled: true
       enableTunnelService: true
@@ -1055,11 +1056,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "d072b14587bcd9f374da935b8a7c02695c07f35848bb66cc457ac20ef2cc43d"
+        configChecksum: "8836b02bd4f2b9bf73afc7abe3b86be82fff6bde50a2813fafc01417333bab3"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "d072b14587bcd9f374da935b8a7c02695c07f35848bb66cc457ac20ef2cc43d"
+        configChecksum: "8836b02bd4f2b9bf73afc7abe3b86be82fff6bde50a2813fafc01417333bab3"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -1079,7 +1080,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:063105f18a40d1413edc01a4683887fdc63f5cc8"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:93643748d7ba36156b37a92e6f3f6bff800b29f8"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

@@ -374,6 +374,7 @@ data:
         type: ClientSecret
         clientId: abcdef
         clientSecretLocation: /etc/union/secret/app_secret
+        authorizationMetadataKey: "flyte-authorization"
     operator:
       enabled: true
       enableTunnelService: true
@@ -1018,11 +1019,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "cb349aee67728b591d12ca5a8bd856ea3ec015637f3f71ddee6c2df917825bd"
+        configChecksum: "ac2fe0b235b619d25eef646c4c0b17110e19302f43f751efd01429eb2a0ed8f"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "cb349aee67728b591d12ca5a8bd856ea3ec015637f3f71ddee6c2df917825bd"
+        configChecksum: "ac2fe0b235b619d25eef646c4c0b17110e19302f43f751efd01429eb2a0ed8f"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
