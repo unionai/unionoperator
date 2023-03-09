@@ -15,6 +15,8 @@ union:
   userRoleAnnotationKey: "foo"
   # Flyte user role with permissions to patch onto project service accounts e.g. arn:aws:iam::ACCOUNT_ID:role/flyte_project_role
   userRoleAnnotationValue: "bar"
+  collectUsages:
+    enabled: false
   #
   # STORAGE SETTINGS
   #
@@ -341,23 +343,24 @@ union:
         spark:
           # -- Spark default configuration
           spark-config-default:
-            # We override the default credentials chain provider for Hadoop so that
-            # it can use the serviceAccount based IAM role or ec2 metadata based.
-            # This is more in line with how AWS works
-            - spark.hadoop.fs.s3a.aws.credentials.provider: "com.amazonaws.auth.DefaultAWSCredentialsProviderChain"
-            - spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version: "2"
-            - spark.kubernetes.allocation.batch.size: "50"
-            - spark.hadoop.fs.s3a.acl.default: "BucketOwnerFullControl"
-            - spark.hadoop.fs.s3n.impl: "org.apache.hadoop.fs.s3a.S3AFileSystem"
+            - spark.driver.cores: "1"
+            - spark.executorEnv.HTTP2_DISABLE: "true"
+            - spark.hadoop.fs.AbstractFileSystem.s3.impl: "org.apache.hadoop.fs.s3a.S3A"
+            - spark.hadoop.fs.AbstractFileSystem.s3a.impl: "org.apache.hadoop.fs.s3a.S3A"
             - spark.hadoop.fs.AbstractFileSystem.s3n.impl: "org.apache.hadoop.fs.s3a.S3A"
             - spark.hadoop.fs.s3.impl: "org.apache.hadoop.fs.s3a.S3AFileSystem"
-            - spark.hadoop.fs.AbstractFileSystem.s3.impl: "org.apache.hadoop.fs.s3a.S3A"
+            - spark.hadoop.fs.s3a.acl.default: "BucketOwnerFullControl"
             - spark.hadoop.fs.s3a.impl: "org.apache.hadoop.fs.s3a.S3AFileSystem"
-            - spark.hadoop.fs.AbstractFileSystem.s3a.impl: "org.apache.hadoop.fs.s3a.S3A"
-            - spark.hadoop.fs.s3a.multipart.threshold: "536870912"
-            - spark.blacklist.enabled: "true"
-            - spark.blacklist.timeout: "5m"
-            - spark.task.maxfailures: "8"
+            - spark.hadoop.fs.s3n.impl: "org.apache.hadoop.fs.s3a.S3AFileSystem"
+            - spark.kubernetes.allocation.batch.size: "50"
+            - spark.kubernetes.driverEnv.HTTP2_DISABLE: "true"
+            - spark.network.timeout: 600s
+            - spark.executorEnv.KUBERNETES_REQUEST_TIMEOUT: 100000
+            - spark.executorEnv.AWS_METADATA_SERVICE_NUM_ATTEMPTS: 20
+            - spark.executorEnv.AWS_METADATA_SERVICE_TIMEOUT: 5
+            - spark.executor.heartbeatInterval: 60s
+            - spark.hadoop.fs.s3a.aws.credentials.provider: com.amazonaws.auth.WebIdentityTokenCredentialsProvider
+
   common:
     ingress:
       enabled: false
@@ -372,7 +375,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 93643748d7ba36156b37a92e6f3f6bff800b29f8 # UNION_OPERATOR_TAG
+      tag: e9f97effc7863607daf8beecb23d564167f4bd3a # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""
@@ -437,6 +440,60 @@ union:
     affinity: { }
 
     configmapOverrides: { }
+
+  unionoperatorSparkHistoryServer:
+    enabled: false
+    replicaCount: 1
+
+    image:
+      repository: ghcr.io/flyteorg/flytecookbook
+      tag: k8s_spark-a3b97943563cfc952b5683525763578685a93694
+      pullPolicy: IfNotPresent
+
+    serviceAccount:
+      # Specifies whether a service account should be created
+      create: true
+      # Annotations to add to the service account
+      annotations: { }
+      # The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template
+      name: ""
+
+    podSecurityContext: { }
+
+    securityContext:
+      allowPrivilegeEscalation: true
+      runAsUser: 0
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    resources:
+      limits:
+        cpu: "4"
+        ephemeral-storage: 500Mi
+        memory: "8Gi"
+      requests:
+        cpu: "1"
+        ephemeral-storage: 100Mi
+        memory: "500Mi"
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+
+    nodeSelector: { }
+
+    tolerations: [ ]
+
+    affinity: { }
+
+    configmapOverrides: { }
+
 minio:
   # -- Replicas count for Minio deployment
   replicaCount: 1
@@ -460,7 +517,7 @@ minio:
   # -- Service settings for Minio
   service:
     annotations: { }
-    type: NodePort
+    type: ClusterIP
   # -- Annotations for Minio pods
   podAnnotations: { }
   # -- nodeSelector for Minio deployment

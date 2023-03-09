@@ -26,7 +26,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.3.0-b3
+    helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
   annotations: 
     eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
@@ -121,7 +121,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.3.0-b3
+    helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
 data:
   a_namespace.yaml.yaml: | 
@@ -163,7 +163,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.3.0-b3
+    helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
 data:
   cluster_resources.yaml: | 
@@ -237,7 +237,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.3.0-b3
+    helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
 data:
   admin.yaml: | 
@@ -260,7 +260,7 @@ data:
     plugins:
       k8s:
         co-pilot:
-          image: cr.flyte.org/flyteorg/flytecopilot-release:v1.3.0-b3
+          image: cr.flyte.org/flyteorg/flytecopilot-release:v1.4.0
           name: flyte-copilot-
           start-timeout: 30s
   core.yaml: | 
@@ -303,7 +303,7 @@ data:
           rate: 10
           type: bucket
         type: batch
-      rawoutput-prefix: 's3://opencompute-production-sample-tenant'
+      rawoutput-prefix: 's3://opencompute-staging-sample-tenant'
       workers: 4
       workflow-reeval-duration: 30s
     webhook:
@@ -385,13 +385,15 @@ data:
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
-        metadataBucketPrefix: s3://opencompute-production-sample-tenant
-        bucketName:  opencompute-production-sample-tenant
+        metadataBucketPrefix: s3://opencompute-staging-sample-tenant
+        bucketName:  opencompute-staging-sample-tenant
         bucketRegion: us-east-2
         userRoleKey: foo
         userRole: bar
         storageType: s3
         gcpProjectId: dummy-gcs-projectId
+      collectUsages: 
+        enabled: false
   logger.yaml: |
     logger:
       level: 4
@@ -439,7 +441,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.3.0-b3
+    helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
 rules:
 # Allow RO access to PODS
@@ -606,7 +608,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.3.0-b3
+    helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -784,7 +786,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteclusterresourcesync
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.3.0-b3
+    helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -795,11 +797,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "e6a97c711036f3f25694c5d9ca569fdb44ab19942309eba02fd5f839324d993"
+        configChecksum: "7111fbd4f1d8e9c059814fb385ad72334746a4515f43d47cdb5b3a76217e9b0"
       labels: 
         app.kubernetes.io/name: flyteclusterresourcesync
         app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-v1.3.0-b3
+        helm.sh/chart: union-v1.4.0
         app.kubernetes.io/managed-by: Helm
     spec:
       containers:
@@ -809,7 +811,7 @@ spec:
             - /etc/flyte/config/*.yaml
             - clusterresource
             - run
-          image: "cr.flyte.org/flyteorg/flyteadmin-release:v1.3.0-b3"
+          image: "cr.flyte.org/flyteorg/flyteadmin-release:v1.4.0"
           imagePullPolicy: "IfNotPresent"
           name: sync-cluster-resources
           volumeMounts:
@@ -819,8 +821,6 @@ spec:
             name: resource-templates
           - mountPath: /etc/flyte/config
             name: config-volume
-          - mountPath: /var/run/credentials
-            name: flyte-admin-secrets
       serviceAccountName: clustersync-resource
       volumes:
         
@@ -830,9 +830,6 @@ spec:
         - configMap:
             name: flyte-clusterresourcesync-config
           name: config-volume
-        - name: flyte-admin-secrets
-          secret:
-            secretName: flyte-admin-secrets
         - name: auth
           secret:
             secretName: flyte-secret-auth
@@ -846,7 +843,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller-manager
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.3.0-b3
+    helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -857,11 +854,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "d274623ec11dbadb6e7740be55ec179dbed002374d69ce4c76c13063a35e26e"
+        configChecksum: "c428f4ace9935dad006199cd13f4d79c544d51c65bdd265fa5c9d5a604396dd"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-v1.3.0-b3
+        helm.sh/chart: union-v1.4.0
         app.kubernetes.io/managed-by: Helm
     spec:
       securityContext:
@@ -886,12 +883,12 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.3.0-b3"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.4.0"
         imagePullPolicy: "IfNotPresent"
         name: flytepropeller-manager
         ports:
         - containerPort: 10254
-        resources: 
+        resources:
           limits:
             cpu: "4"
             ephemeral-storage: 500Mi
@@ -901,10 +898,10 @@ spec:
             ephemeral-storage: 100Mi
             memory: 500Mi
         volumeMounts:
-          - name: config-volume
-            mountPath: /etc/flyte/config
-          - name: auth
-            mountPath: /etc/secrets/
+        - name: config-volume
+          mountPath: /etc/flyte/config
+        - name: auth
+          mountPath: /etc/secrets/
         terminationMessagePolicy: "FallbackToLogsOnError"
       serviceAccountName: flytepropeller
       volumes:
@@ -933,9 +930,9 @@ spec:
       labels:
         app: flyte-pod-webhook
         app.kubernetes.io/name: flyte-pod-webhook
-        app.kubernetes.io/version: v1.3.0-b3
+        app.kubernetes.io/version: v1.4.0
       annotations:
-        configChecksum: "d274623ec11dbadb6e7740be55ec179dbed002374d69ce4c76c13063a35e26e"
+        configChecksum: "c428f4ace9935dad006199cd13f4d79c544d51c65bdd265fa5c9d5a604396dd"
     spec:
       securityContext:
         fsGroup: 65534
@@ -944,7 +941,7 @@ spec:
       serviceAccountName: flyte-pod-webhook
       initContainers:
       - name: generate-secrets
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.3.0-b3"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.4.0"
         imagePullPolicy: "IfNotPresent"
         command:
           - flytepropeller
@@ -967,7 +964,7 @@ spec:
             mountPath: /etc/flyte/config
       containers:
         - name: webhook
-          image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.3.0-b3"
+          image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.4.0"
           imagePullPolicy: "IfNotPresent"
           command:
             - flytepropeller
@@ -1019,11 +1016,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "4d56b30233e7e8915c490cfceb0c6604ee268771315899314b600adcc3e307a"
+        configChecksum: "209c5896d7e50dbb4103df244dae7338e4e3ee892bb1c41b70c5131c4362fcb"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "4d56b30233e7e8915c490cfceb0c6604ee268771315899314b600adcc3e307a"
+        configChecksum: "209c5896d7e50dbb4103df244dae7338e4e3ee892bb1c41b70c5131c4362fcb"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -1119,11 +1116,11 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "d274623ec11dbadb6e7740be55ec179dbed002374d69ce4c76c13063a35e26e"
+      configChecksum: "c428f4ace9935dad006199cd13f4d79c544d51c65bdd265fa5c9d5a604396dd"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator
-      helm.sh/chart: union-v1.3.0-b3
+      helm.sh/chart: union-v1.4.0
       app.kubernetes.io/managed-by: Helm
       app: flytepropeller
   spec:
@@ -1141,7 +1138,7 @@ template:
         valueFrom:
           fieldRef:
             fieldPath: metadata.name
-      image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.3.0-b3"
+      image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.4.0"
       imagePullPolicy: "IfNotPresent"
       name: flytepropeller
       ports:

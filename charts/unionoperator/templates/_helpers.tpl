@@ -107,6 +107,37 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Spark history Server labels
+*/}}
+{{- define "unionoperatorSparkHistoryServer.labels" -}}
+helm.sh/chart: {{ include "union-operator.chart" . }}
+{{ include "unionoperatorSparkHistoryServer.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Spark history Server selector labels
+*/}}
+{{- define "unionoperatorSparkHistoryServer.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "union-operator.name" . }}-spark-hs
+app.kubernetes.io/instance: {{ .Release.Name }}-spark-hs
+{{- end }}
+
+{{/*
+Create the name of the service account to use for the spark history server
+*/}}
+{{- define "unionoperatorSparkHistoryServer.serviceAccountName" -}}
+{{- if  .Values.union.unionoperatorSparkHistoryServer.serviceAccount.create }}
+{{- default "union-operator-spark-hs"  .Values.union.unionoperatorSparkHistoryServer.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.union.unionoperatorSparkHistoryServer.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "union-operator.serviceAccountName" -}}

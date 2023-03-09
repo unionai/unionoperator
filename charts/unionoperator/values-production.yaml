@@ -3,7 +3,7 @@ union:
   cloudUrl: dns:///playground.hosted.unionai.cloud
   appId: abcdef
   appSecret: ghijklm
-  metadataBucketPrefix: s3://opencompute-production-sample-tenant
+  metadataBucketPrefix: s3://opencompute-staging-sample-tenant
   storage:
     # -- Sets the storage type. Supported values are sandbox, s3, gcs and custom.
     type: s3
@@ -52,3 +52,6 @@ union:
       # The name of the service account to use.
       # If not set and create is true, a name is generated using the fullname template
       name: ""
+
+  unionoperatorSparkHistoryServer:
+    enabled: false

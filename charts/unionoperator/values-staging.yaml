@@ -4,6 +4,10 @@ union:
   appId: abcdef
   appSecret: ghijklm
   metadataBucketPrefix: s3://opencompute-staging-sample-tenant
+  # Something like 'iam.gke.io/gcp-service-account' for GCP or 'eks.amazonaws.com/role-arn' for AWS
+  userRoleAnnotationKey: eks.amazonaws.com/role-arn
+  # Flyte user role with permissions to patch onto project service accounts e.g. arn:aws:iam::ACCOUNT_ID:role/flyte_project_role
+  userRoleAnnotationValue: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
   storage:
     # -- Sets the storage type. Supported values are sandbox, s3, gcs and custom.
     type: s3
@@ -52,3 +56,51 @@ union:
       # The name of the service account to use.
       # If not set and create is true, a name is generated using the fullname template
       name: ""
+
+  # -- Optional: Spark Plugin using the Spark Operator
+  sparkoperator:
+    # --- enable or disable Sparkoperator deployment installation
+    enabled: false
+
+  unionoperatorSparkHistoryServer:
+    enabled: false
+    replicaCount: 1
+
+    serviceAccount:
+      # Specifies whether a service account should be created
+      create: true
+      # Annotations to add to the service account
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
+      # The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template
+      name: ""
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    resources:
+      limits:
+        cpu: "4"
+        ephemeral-storage: 500Mi
+        memory: "8Gi"
+      requests:
+        cpu: "1"
+        ephemeral-storage: 100Mi
+        memory: "500Mi"
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+
+    nodeSelector: { }
+
+    tolerations: [ ]
+
+    affinity: { }
+
+    configmapOverrides: { }

@@ -22,3 +22,5 @@ union:
     serviceAccount:
       annotations:
         iam.gke.io/gcp-service-account : "<Propeller IAM Permission>"
+  unionoperatorSparkHistoryServer:
+    enabled: false

@@ -31,6 +31,8 @@ data:
         userRole: {{ tpl (.Values.union.userRoleAnnotationValue | toString) $ }}
         storageType: {{ tpl (.Values.union.storage.type | toString) $ }}
         gcpProjectId: {{ tpl (include "union-operator.gcpProjectId" . | toString) $ }}
+      collectUsages: 
+        enabled: {{ tpl (.Values.union.collectUsages.enabled | toString) $ }}
 {{- if  .Values.union.storage.customStorageConfig}}
         customStorageConfig: {{ tpl (.Values.union.storage.customStorageConfig | toString) $ }}
 {{- end }}

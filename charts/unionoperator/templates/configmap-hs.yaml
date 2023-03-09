@@ -1,0 +1,21 @@
+{{- if .Values.union.unionoperatorSparkHistoryServer.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "union-operator.fullname" . }}-spark-hs
+  labels:
+    {{- include "unionoperatorSparkHistoryServer.labels" . | nindent 4 }}
+data:
+  spark-properties: |
+    spark.hadoop.fs.s3a.multipart.threshold=536870912
+    spark.hadoop.fs.s3.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+    spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+    spark.hadoop.fs.s3a.aws.credentials.provider=com.amazonaws.auth.WebIdentityTokenCredentialsProvider
+    spark.history.fs.logDirectory={{ tpl (.Values.union.metadataBucketPrefix | toString) $ }}/spark-events
+    spark.ui.proxyBase=/spark-history-server
+    spark.hadoop.fs.s3a.acl.default=BucketOwnerFullControl
+    spark.history.fs.cleaner.enabled=true
+    spark.history.fs.cleaner.interval=1d
+    spark.history.fs.cleaner.maxAge=30d
+    spark.history.ui.maxApplications=2000
+{{- end }}

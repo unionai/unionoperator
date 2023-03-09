@@ -1,0 +1,17 @@
+{{- if .Values.union.unionoperatorSparkHistoryServer.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "union-operator.fullname" . }}-spark-hs
+  labels:
+    {{- include "unionoperatorSparkHistoryServer.labels" . | nindent 4 }}
+spec:
+  type: {{  .Values.union.unionoperatorSparkHistoryServer.service.type }}
+  ports:
+    - port: {{  .Values.union.unionoperatorSparkHistoryServer.service.port }}
+      targetPort:  18080
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "unionoperatorSparkHistoryServer.selectorLabels" . | nindent 4 }}
+{{- end }}

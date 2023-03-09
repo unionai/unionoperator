@@ -1,0 +1,77 @@
+{{- if .Values.union.unionoperatorSparkHistoryServer.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "union-operator.fullname" . }}-spark-hs
+  labels:
+    {{- include "unionoperatorSparkHistoryServer.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.union.unionoperatorSparkHistoryServer.autoscaling.enabled }}
+  replicas: {{ index .Values.union.unionoperatorSparkHistoryServer.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "unionoperatorSparkHistoryServer.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        configChecksum: {{ include (print .Template.BasePath "/configmap-hs.yaml") . | sha256sum | trunc 63 | quote }}
+      {{- with  .Values.union.unionoperatorSparkHistoryServer.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+        configChecksum: {{ include (print .Template.BasePath "/configmap-hs.yaml") . | sha256sum | trunc 63 | quote }}
+      labels:
+        {{- include "unionoperatorSparkHistoryServer.selectorLabels" . | nindent 8 }}
+    spec:
+      priorityClassName: {{ .Values.union.unionoperatorSparkHistoryServer.priorityClassName }}
+      {{- with .Values.union.unionoperatorSparkHistoryServer.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "unionoperatorSparkHistoryServer.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.union.unionoperatorSparkHistoryServer.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: '{{ include "union-operator.fullname" . }}-spark-hs'
+      containers:
+        - command:
+          - bash
+          - /opt/spark/sbin/spark-daemon.sh
+          - start
+          - org.apache.spark.deploy.history.HistoryServer
+          - "1"
+          - --properties-file
+          - /etc/union/config/spark-properties
+          env:
+          - name: SPARK_NO_DAEMONIZE
+            value: "false"
+          image: "{{ .Values.union.unionoperatorSparkHistoryServer.image.repository }}:{{ .Values.union.unionoperatorSparkHistoryServer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.union.unionoperatorSparkHistoryServer.image.pullPolicy }}
+          name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.union.unionoperatorSparkHistoryServer.securityContext | nindent 12 }}
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            {{- toYaml .Values.union.unionoperatorSparkHistoryServer.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /etc/union/config
+              name: config-volume
+          ports:
+            - name: http
+              containerPort: 18080
+              protocol: TCP
+      {{- with .Values.union.unionoperatorSparkHistoryServer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.union.unionoperatorSparkHistoryServer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.union.unionoperatorSparkHistoryServer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
