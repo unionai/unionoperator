@@ -7,7 +7,7 @@ union:
   storage:
     # -- Sets the storage type. Supported values are sandbox, s3, gcs and custom.
     type: s3
-    bucketName: opencompute-production-sample-tenant
+    bucketName: opencompute-staging-sample-tenant
     # -- settings for storage type s3
     s3:
       region: us-east-2
@@ -25,7 +25,7 @@ union:
       create: true
       # -- Annotations for ServiceAccount attached to FlytePropeller pods
       annotations:
-        eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
+        eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
       # -- ImapgePullSecrets to automatically assign to the service account
       imagePullSecrets: { }
 
@@ -48,7 +48,7 @@ union:
       create: true
       # Annotations to add to the service account
       annotations:
-        eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
+        eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
       # The name of the service account to use.
       # If not set and create is true, a name is generated using the fullname template
       name: ""

@@ -29,7 +29,7 @@ metadata:
     helm.sh/chart: union-v1.4.0
     app.kubernetes.io/managed-by: Helm
   annotations: 
-    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Create a Service Account for webhook
@@ -64,7 +64,7 @@ metadata:
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 ---
 # Source: union-operator/charts/union/templates/common/secret-auth.yaml
 apiVersion: v1
@@ -337,7 +337,7 @@ data:
   storage.yaml: | 
     storage:
       type: s3
-      container: "opencompute-production-sample-tenant"
+      container: "opencompute-staging-sample-tenant"
       connection:
         auth-type: iam
         region: us-east-2
@@ -401,7 +401,7 @@ data:
   storage.yaml: | 
     storage:
       type: s3
-      container: "opencompute-production-sample-tenant"
+      container: "opencompute-staging-sample-tenant"
       connection:
         auth-type: iam
         region: us-east-2
@@ -567,7 +567,7 @@ metadata:
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 rules:
   # Allow Access to all resources under flyte.lyft.com
   - apiGroups:
@@ -667,7 +667,7 @@ metadata:
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -689,7 +689,7 @@ metadata:
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 rules:
   - apiGroups:
       - '*'
@@ -715,7 +715,7 @@ metadata:
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-production-sample-tenant-role
+    eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -854,7 +854,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "c428f4ace9935dad006199cd13f4d79c544d51c65bdd265fa5c9d5a604396dd"
+        configChecksum: "fcad199e1973a94fdae1f190ddfa38f2bddd3f5f15231f37b1083ae06a71c73"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
@@ -932,7 +932,7 @@ spec:
         app.kubernetes.io/name: flyte-pod-webhook
         app.kubernetes.io/version: v1.4.0
       annotations:
-        configChecksum: "c428f4ace9935dad006199cd13f4d79c544d51c65bdd265fa5c9d5a604396dd"
+        configChecksum: "fcad199e1973a94fdae1f190ddfa38f2bddd3f5f15231f37b1083ae06a71c73"
     spec:
       securityContext:
         fsGroup: 65534
@@ -1016,11 +1016,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "209c5896d7e50dbb4103df244dae7338e4e3ee892bb1c41b70c5131c4362fcb"
+        configChecksum: "3718651e3473c098e072fe45700dd101a85337a173b28ff13fdeafdafdfa0a2"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "209c5896d7e50dbb4103df244dae7338e4e3ee892bb1c41b70c5131c4362fcb"
+        configChecksum: "3718651e3473c098e072fe45700dd101a85337a173b28ff13fdeafdafdfa0a2"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -1116,7 +1116,7 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "c428f4ace9935dad006199cd13f4d79c544d51c65bdd265fa5c9d5a604396dd"
+      configChecksum: "fcad199e1973a94fdae1f190ddfa38f2bddd3f5f15231f37b1083ae06a71c73"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator
