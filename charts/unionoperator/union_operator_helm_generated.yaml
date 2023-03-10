@@ -383,6 +383,7 @@ data:
         clientId: abcdef
         clientSecretLocation: /etc/union/secret/app_secret
         authorizationMetadataKey: "flyte-authorization"
+        tokenRefreshWindow: 5m
     operator:
       enabled: true
       enableTunnelService: true
@@ -1051,11 +1052,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "81b1f82fb10a846d511573e8d7c82baff72aa86a2bb7cd4e5032b8445991940"
+        configChecksum: "7bb5bf64bc0c2c6a534a688f9495513bfb7694a4b1d99fde4e6d7ef13fc75bd"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "81b1f82fb10a846d511573e8d7c82baff72aa86a2bb7cd4e5032b8445991940"
+        configChecksum: "7bb5bf64bc0c2c6a534a688f9495513bfb7694a4b1d99fde4e6d7ef13fc75bd"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -1075,7 +1076,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:443e91cc0795e8dc7dc12037c39ced32daa02e59"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:9037f2ae0c46b6f724b675183e9f4e1fb3dc3b27"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

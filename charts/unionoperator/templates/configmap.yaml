@@ -14,6 +14,7 @@ data:
         clientId: {{ tpl (.Values.union.appId | toString) $ }}
         clientSecretLocation: /etc/union/secret/app_secret
         authorizationMetadataKey: "flyte-authorization"
+        tokenRefreshWindow: 5m
     operator:
       enabled: {{ tpl (.Values.union.enabled | toString) $ }}
       enableTunnelService: {{ tpl (.Values.union.enableTunnelService | toString) $ }}
