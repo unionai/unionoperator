@@ -375,7 +375,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 9037f2ae0c46b6f724b675183e9f4e1fb3dc3b27 # UNION_OPERATOR_TAG
+      tag: df2bc2a52bef6cb4735d44d1ef5aa0a3b63301ce # UNION_OPERATOR_TAG
 
     imagePullSecrets: [ ]
     nameOverride: ""

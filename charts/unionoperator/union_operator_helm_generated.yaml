@@ -1076,7 +1076,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:9037f2ae0c46b6f724b675183e9f4e1fb3dc3b27"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:df2bc2a52bef6cb4735d44d1ef5aa0a3b63301ce"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
