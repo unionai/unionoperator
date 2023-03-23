@@ -1,0 +1,17 @@
+{{- if .Values.union.unionoperatorMonitoring.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "union-operator.fullname" . }}-kube-state-metrics
+  labels:
+    {{- include "unionoperatorMonitoring.kubeStateMetrics.labels" . | nindent 4 }}
+spec:
+  type: {{  .Values.union.unionoperatorMonitoring.kubeStateMetrics.service.type }}
+  ports:
+    - port: {{  .Values.union.unionoperatorMonitoring.kubeStateMetrics.service.port }}
+      targetPort:  8080
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "unionoperatorMonitoring.kubeStateMetrics.selectorLabels" . | nindent 4 }}
+{{- end }}

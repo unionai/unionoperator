@@ -57,6 +57,9 @@ union:
       # If not set and create is true, a name is generated using the fullname template
       name: ""
 
+  collectUsages:
+    enabled: true
+
   # -- Optional: Spark Plugin using the Spark Operator
   sparkoperator:
     # --- enable or disable Sparkoperator deployment installation
@@ -104,3 +107,6 @@ union:
     affinity: { }
 
     configmapOverrides: { }
+
+  unionoperatorMonitoring:
+    enabled: true

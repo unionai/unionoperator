@@ -138,6 +138,68 @@ Create the name of the service account to use for the spark history server
 {{- end }}
 
 {{/*
+Prometheus  Server labels
+*/}}
+{{- define "unionoperatorMonitoring.prometheus.labels" -}}
+helm.sh/chart: {{ include "union-operator.chart" . }}
+{{ include "unionoperatorMonitoring.prometheus.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Prometheus Server selector labels
+*/}}
+{{- define "unionoperatorMonitoring.prometheus.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "union-operator.name" . }}-prometheus
+app.kubernetes.io/instance: {{ .Release.Name }}-prometheus
+{{- end }}
+
+{{/*
+Create the name of the service account to use for the prometheus server
+*/}}
+{{- define "unionoperatorMonitoring.prometheus.serviceAccountName" -}}
+{{- if  .Values.union.unionoperatorMonitoring.prometheus.serviceAccount.create }}
+{{- default "union-operator-prometheus"  .Values.union.unionoperatorMonitoring.prometheus.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.union.unionoperatorMonitoring.prometheus.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Kube State metrics  Server labels
+*/}}
+{{- define "unionoperatorMonitoring.kubeStateMetrics.labels" -}}
+helm.sh/chart: {{ include "union-operator.chart" . }}
+{{ include "unionoperatorMonitoring.kubeStateMetrics.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Kube State metrics  Server selector labels
+*/}}
+{{- define "unionoperatorMonitoring.kubeStateMetrics.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "union-operator.name" . }}-kube-state-metrics
+app.kubernetes.io/instance: {{ .Release.Name }}-kube-state-metrics
+{{- end }}
+
+{{/*
+Create the name of the service account to use for the Kube State metrics server
+*/}}
+{{- define "unionoperatorMonitoring.kubeStateMetrics.serviceAccountName" -}}
+{{- if  .Values.union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.create }}
+{{- default "union-operator-kube-state-metrics"  .Values.union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "union-operator.serviceAccountName" -}}

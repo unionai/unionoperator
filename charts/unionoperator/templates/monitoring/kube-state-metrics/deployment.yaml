@@ -1,0 +1,80 @@
+{{- if .Values.union.unionoperatorMonitoring.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "union-operator.fullname" . }}-kube-state-metrics
+  labels:
+    {{- include "unionoperatorMonitoring.kubeStateMetrics.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.union.unionoperatorMonitoring.kubeStateMetrics.autoscaling.enabled }}
+  replicas: {{ index .Values.union.unionoperatorMonitoring.kubeStateMetrics.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "unionoperatorMonitoring.kubeStateMetrics.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+      {{- with  .Values.union.unionoperatorMonitoring.kubeStateMetrics.podAnnotations }}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "unionoperatorMonitoring.kubeStateMetrics.selectorLabels" . | nindent 8 }}
+    spec:
+      priorityClassName: {{ .Values.union.unionoperatorMonitoring.kubeStateMetrics.priorityClassName }}
+      {{- with .Values.union.unionoperatorMonitoring.kubeStateMetrics.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "unionoperatorMonitoring.kubeStateMetrics.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.union.unionoperatorMonitoring.kubeStateMetrics.podSecurityContext | nindent 8 }}
+      containers:
+        - args:
+            - --port=8080
+            - --resources=certificatesigningrequests,configmaps,cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,ingresses,jobs,leases,limitranges,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,secrets,services,statefulsets,storageclasses,validatingwebhookconfigurations,volumeattachments
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: {{ .Chart.Name }}
+          image: "{{ .Values.union.unionoperatorMonitoring.kubeStateMetrics.image.repository }}:{{ .Values.union.unionoperatorMonitoring.kubeStateMetrics.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.union.unionoperatorMonitoring.kubeStateMetrics.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.union.unionoperatorMonitoring.kubeStateMetrics.securityContext | nindent 12 }}
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            {{- toYaml .Values.union.unionoperatorMonitoring.kubeStateMetrics.resources | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+      {{- with .Values.union.unionoperatorMonitoring.kubeStateMetrics.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.union.unionoperatorMonitoring.kubeStateMetrics.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.union.unionoperatorMonitoring.kubeStateMetrics.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- end }}
