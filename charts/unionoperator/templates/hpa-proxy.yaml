@@ -1,0 +1,28 @@
+{{- if .Values.union.unionoperator.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "union-operator.fullname" . }}-proxy
+  labels:
+    {{- include "union-operator.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "union-operator.fullname" . }}-proxy
+  minReplicas: {{ .Values.union.proxy.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.union.proxy.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.union.proxy.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.union.proxy.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.union.proxy.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.union.proxy.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

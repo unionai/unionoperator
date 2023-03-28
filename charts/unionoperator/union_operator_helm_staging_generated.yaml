@@ -76,6 +76,18 @@ metadata:
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
+# Source: union-operator/templates/serviceaccount-logproxy.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+---
 # Source: union-operator/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -405,8 +417,11 @@ data:
       enableTunnelService: true
       clusterId:
         organization: playground
-      propellerHeartbeat:
-        endpoint: http://flytepropeller.union.svc.cluster.local:10254
+      dependenciesHeartbeat:
+        propeller:
+          endpoint: http://flytepropeller.union.svc.cluster.local:10254
+        proxy:
+          endpoint: http://union-operator-proxy.union.svc.cluster.local:10254
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
@@ -631,6 +646,25 @@ rules:
       - ingresses
     verbs: ["get", "list", "watch"]
 ---
+# Source: union-operator/templates/serviceaccount-logproxy.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - "pods/log"
+    verbs:
+      - get
+---
 # Source: union-operator/templates/serviceaccount.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -743,6 +777,26 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: union-operator-kube-state-metrics
+    namespace: union
+---
+# Source: union-operator/templates/serviceaccount-logproxy.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: union-operator-proxy
+subjects:
+  - kind: ServiceAccount
+    name: union-operator-proxy
     namespace: union
 ---
 # Source: union-operator/templates/serviceaccount.yaml
@@ -876,6 +930,32 @@ spec:
   selector:
     app.kubernetes.io/name: union-operator-prometheus
     app.kubernetes.io/instance: union-operator-prometheus
+---
+# Source: union-operator/templates/service-proxy.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-proxy
+    app.kubernetes.io/instance: union-operator-proxy
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: "v0.0.1"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 10254
+      targetPort: debug
+      protocol: TCP
+      name: debug
+  selector:
+    app.kubernetes.io/name: union-operator-proxy
+    app.kubernetes.io/instance: union-operator-proxy
 ---
 # Source: union-operator/templates/service.yaml
 apiVersion: v1
@@ -1130,6 +1210,69 @@ spec:
           secret:
             secretName: flyte-pod-webhook
 ---
+# Source: union-operator/templates/deployment-proxy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-proxy
+    app.kubernetes.io/instance: union-operator-proxy
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: "v0.0.1"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: union-operator-proxy
+      app.kubernetes.io/instance: union-operator-proxy
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "10254"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: union-operator-proxy
+        app.kubernetes.io/instance: union-operator-proxy
+    spec:
+      priorityClassName: system-cluster-critical
+      serviceAccountName: union-operator-proxy
+      securityContext:
+        {}
+      containers:
+        - name: union-operator-proxy
+          securityContext:
+            {}
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:458f9abd0b2dd2277059dc88709f4e251679918b"
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            limits:
+              cpu: "4"
+              ephemeral-storage: 500Mi
+              memory: 8Gi
+            requests:
+              cpu: "1"
+              ephemeral-storage: 100Mi
+              memory: 500Mi
+          args:
+            - operator
+            - proxy
+          ports:
+            - name: http
+              containerPort: 8089
+              protocol: TCP
+            - name: debug
+              containerPort: 10254
+              protocol: TCP
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+---
 # Source: union-operator/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -1150,11 +1293,10 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "9481b80388dc0c195a285d1b89fbf712b78598b057912d342937d2ed6c2517e"
+        configChecksum: "f6c867504c77bd6b53813c2e5dc3e686dd9a45ab7721a70590bd1a5c079bbbf"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "9481b80388dc0c195a285d1b89fbf712b78598b057912d342937d2ed6c2517e"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator

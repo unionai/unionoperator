@@ -20,8 +20,15 @@ data:
       enableTunnelService: {{ tpl (.Values.union.enableTunnelService | toString) $ }}
       clusterId:
         organization: {{ include "union-operator.org" . }}
-      propellerHeartbeat:
-        endpoint: {{ print "http://flytepropeller." .Release.Namespace ".svc.cluster.local:" (index .Values.union.configmap.core.propeller "prof-port") }}
+      dependenciesHeartbeat:
+        propeller:
+          endpoint: http://flytepropeller.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.configmap.core.propeller "prof-port") }}
+        proxy:
+          endpoint: http://union-operator-proxy.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
+{{- if .Values.union.unionoperatorSparkHistoryServer.enabled }}
+        - spark-hs:
+          endpoint: http://union-operator-spark-hs.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
+{{- end }}
       clusterData:
         appId: {{ tpl (.Values.union.appId | toString) $ }}
         cloudHostName: {{ tpl (include "union-operator.cloudHostName" . | toString) $ }}

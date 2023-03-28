@@ -107,15 +107,35 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Proxy labels
+*/}}
+{{- define "proxy.labels" -}}
+helm.sh/chart: {{ include "union-operator.chart" . }}
+{{ include "proxy.selectorLabels" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+{{- end }}
+
+{{/*
 Spark history Server labels
 */}}
 {{- define "unionoperatorSparkHistoryServer.labels" -}}
 helm.sh/chart: {{ include "union-operator.chart" . }}
 {{ include "unionoperatorSparkHistoryServer.selectorLabels" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Proxy selector labels
+*/}}
+{{- define "proxy.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "union-operator.name" . }}-proxy
+app.kubernetes.io/instance: {{ .Release.Name }}-proxy
 {{- end }}
 
 {{/*

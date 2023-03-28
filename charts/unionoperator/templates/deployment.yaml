@@ -18,7 +18,6 @@ spec:
       {{- with .Values.union.unionoperator.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-        configChecksum: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum | trunc 63 | quote }}
       labels:
         {{- include "union-operator.selectorLabels" . | nindent 8 }}
     spec:

@@ -50,6 +50,18 @@ metadata:
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
+# Source: union-operator/templates/serviceaccount-logproxy.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+---
 # Source: union-operator/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -389,8 +401,11 @@ data:
       enableTunnelService: true
       clusterId:
         organization: playground
-      propellerHeartbeat:
-        endpoint: http://flytepropeller.union.svc.cluster.local:10254
+      dependenciesHeartbeat:
+        propeller:
+          endpoint: http://flytepropeller.union.svc.cluster.local:10254
+        proxy:
+          endpoint: http://union-operator-proxy.union.svc.cluster.local:10254
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
@@ -573,6 +588,25 @@ rules:
     verbs:
       - '*'
 ---
+# Source: union-operator/templates/serviceaccount-logproxy.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - "pods/log"
+    verbs:
+      - get
+---
 # Source: union-operator/templates/serviceaccount.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -669,6 +703,26 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: clustersync-resource
+    namespace: union
+---
+# Source: union-operator/templates/serviceaccount-logproxy.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: union-operator-proxy
+subjects:
+  - kind: ServiceAccount
+    name: union-operator-proxy
     namespace: union
 ---
 # Source: union-operator/templates/serviceaccount.yaml
@@ -778,6 +832,32 @@ spec:
   selector: 
     app.kubernetes.io/name: minio
     app.kubernetes.io/instance: union-operator
+---
+# Source: union-operator/templates/service-proxy.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-proxy
+    app.kubernetes.io/instance: union-operator-proxy
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: "v0.0.1"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 10254
+      targetPort: debug
+      protocol: TCP
+      name: debug
+  selector:
+    app.kubernetes.io/name: union-operator-proxy
+    app.kubernetes.io/instance: union-operator-proxy
 ---
 # Source: union-operator/templates/service.yaml
 apiVersion: v1
@@ -1032,6 +1112,69 @@ spec:
           secret:
             secretName: flyte-pod-webhook
 ---
+# Source: union-operator/templates/deployment-proxy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: union-operator-proxy
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-proxy
+    app.kubernetes.io/instance: union-operator-proxy
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: "v0.0.1"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: union-operator-proxy
+      app.kubernetes.io/instance: union-operator-proxy
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "10254"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: union-operator-proxy
+        app.kubernetes.io/instance: union-operator-proxy
+    spec:
+      priorityClassName: system-cluster-critical
+      serviceAccountName: union-operator-proxy
+      securityContext:
+        {}
+      containers:
+        - name: union-operator-proxy
+          securityContext:
+            {}
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:aaee7c8be51a983478a4648a60df5063444796ed"
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            limits:
+              cpu: "4"
+              ephemeral-storage: 500Mi
+              memory: 8Gi
+            requests:
+              cpu: "1"
+              ephemeral-storage: 100Mi
+              memory: 500Mi
+          args:
+            - operator
+            - proxy
+          ports:
+            - name: http
+              containerPort: 8089
+              protocol: TCP
+            - name: debug
+              containerPort: 10254
+              protocol: TCP
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+---
 # Source: union-operator/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -1052,11 +1195,10 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "7bb5bf64bc0c2c6a534a688f9495513bfb7694a4b1d99fde4e6d7ef13fc75bd"
+        configChecksum: "8ac36b3aca289af44adbe984deb6fa7cde9e9a0be7fc9d29d065c3950209281"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        configChecksum: "7bb5bf64bc0c2c6a534a688f9495513bfb7694a4b1d99fde4e6d7ef13fc75bd"
       labels:
         app.kubernetes.io/name: union-operator
         app.kubernetes.io/instance: union-operator
@@ -1076,7 +1218,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:6467a99c0cb1c9917d048b30ab3dd91b91e1fe33"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:aaee7c8be51a983478a4648a60df5063444796ed"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

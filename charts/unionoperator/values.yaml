@@ -80,7 +80,7 @@ union:
       # -- Annotations for ServiceAccount attached to FlytePropeller pods
       annotations: { }
       # -- ImapgePullSecrets to automatically assign to the service account
-      imagePullSecrets: { }
+      imagePullSecrets: []
     # -- Annotations for Flytepropeller pods
     podAnnotations: { }
     # -- nodeSelector for Flytepropeller deployment
@@ -196,7 +196,7 @@ union:
       # -- Annotations for ServiceAccount attached to the webhook
       annotations: { }
       # -- ImapgePullSecrets to automatically assign to the service account
-      imagePullSecrets: { }
+      imagePullSecrets: []
     # -- Annotations for webhook pods
     podAnnotations: { }
     # -- Service settings for the webhook
@@ -364,6 +364,41 @@ union:
   common:
     ingress:
       enabled: false
+  proxy:
+    prof-port: 10254
+    replicaCount: 2
+    service:
+      port: 8080
+    serviceAccount:
+      # Specifies whether a service account should be created
+      create: true
+      # Annotations to add to the service account
+      annotations: { }
+      # The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template
+      name: ""
+
+    resources:
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      limits:
+        cpu: "4"
+        ephemeral-storage: 500Mi
+        memory: "8Gi"
+      requests:
+        cpu: "1"
+        ephemeral-storage: 100Mi
+        memory: "500Mi"
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
   # -----------------------------------------------------
   # Core dependencies that should be configured for Flyte to work on any platform
   # ------------------------------------------------------
@@ -375,9 +410,9 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 6467a99c0cb1c9917d048b30ab3dd91b91e1fe33 # UNION_OPERATOR_TAG
+      tag: aaee7c8be51a983478a4648a60df5063444796ed # UNION_OPERATOR_TAG
 
-    imagePullSecrets: [ ]
+    imagePullSecrets: []
     nameOverride: ""
     fullnameOverride: ""
 

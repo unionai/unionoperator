@@ -31,7 +31,7 @@ union:
       annotations:
         eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
       # -- ImapgePullSecrets to automatically assign to the service account
-      imagePullSecrets: { }
+      imagePullSecrets: []
 
   unionoperator:
     priorityClassName: "system-cluster-critical"
@@ -43,7 +43,7 @@ union:
       # Overrides the image tag whose default is the chart appVersion.
       tag: "458f9abd0b2dd2277059dc88709f4e251679918b" # UNION_OPERATOR_TAG
 
-    imagePullSecrets: [ ]
+    imagePullSecrets: []
     nameOverride: ""
     fullnameOverride: ""
 

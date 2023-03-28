@@ -105,13 +105,29 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.flytepropeller.podAnnotations | object | `{}` | Annotations for Flytepropeller pods |
 | union.flytepropeller.replicaCount | int | `1` | Replicas count for Flytepropeller deployment |
 | union.flytepropeller.resources | object | `{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}}` | Default resources requests and limits for Flytepropeller deployment |
-| union.flytepropeller.serviceAccount | object | `{"annotations":{},"create":true,"imagePullSecrets":{}}` | Configuration for service accounts for FlytePropeller |
+| union.flytepropeller.serviceAccount | object | `{"annotations":{},"create":true,"imagePullSecrets":[]}` | Configuration for service accounts for FlytePropeller |
 | union.flytepropeller.serviceAccount.annotations | object | `{}` | Annotations for ServiceAccount attached to FlytePropeller pods |
 | union.flytepropeller.serviceAccount.create | bool | `true` | Should a service account be created for FlytePropeller |
-| union.flytepropeller.serviceAccount.imagePullSecrets | object | `{}` | ImapgePullSecrets to automatically assign to the service account |
+| union.flytepropeller.serviceAccount.imagePullSecrets | list | `[]` | ImapgePullSecrets to automatically assign to the service account |
 | union.flytepropeller.tolerations | list | `[]` | tolerations for Flytepropeller deployment |
 | union.flytescheduler.enabled | bool | `false` |  |
 | union.metadataBucketPrefix | string | `"s3://my-s3-bucket"` |  |
+| union.proxy.autoscaling.enabled | bool | `false` |  |
+| union.proxy.autoscaling.maxReplicas | int | `100` |  |
+| union.proxy.autoscaling.minReplicas | int | `1` |  |
+| union.proxy.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| union.proxy.prof-port | int | `10254` |  |
+| union.proxy.replicaCount | int | `2` |  |
+| union.proxy.resources.limits.cpu | string | `"4"` |  |
+| union.proxy.resources.limits.ephemeral-storage | string | `"500Mi"` |  |
+| union.proxy.resources.limits.memory | string | `"8Gi"` |  |
+| union.proxy.resources.requests.cpu | string | `"1"` |  |
+| union.proxy.resources.requests.ephemeral-storage | string | `"100Mi"` |  |
+| union.proxy.resources.requests.memory | string | `"500Mi"` |  |
+| union.proxy.service.port | int | `8080` |  |
+| union.proxy.serviceAccount.annotations | object | `{}` |  |
+| union.proxy.serviceAccount.create | bool | `true` |  |
+| union.proxy.serviceAccount.name | string | `""` |  |
 | union.secrets.adminOauthClientCredentials.clientSecret | string | `"{{ tpl .Values.appSecret . }}"` |  |
 | union.secrets.create | bool | `true` |  |
 | union.sparkoperator | object | `{"enabled":false,"plugin_config":{"plugins":{"spark":{"spark-config-default":[{"spark.driver.cores":"1"},{"spark.executorEnv.HTTP2_DISABLE":"true"},{"spark.hadoop.fs.AbstractFileSystem.s3.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.AbstractFileSystem.s3a.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.AbstractFileSystem.s3n.impl":"org.apache.hadoop.fs.s3a.S3A"},{"spark.hadoop.fs.s3.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.s3a.acl.default":"BucketOwnerFullControl"},{"spark.hadoop.fs.s3a.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.hadoop.fs.s3n.impl":"org.apache.hadoop.fs.s3a.S3AFileSystem"},{"spark.kubernetes.allocation.batch.size":"50"},{"spark.kubernetes.driverEnv.HTTP2_DISABLE":"true"},{"spark.network.timeout":"600s"},{"spark.executorEnv.KUBERNETES_REQUEST_TIMEOUT":100000},{"spark.executorEnv.AWS_METADATA_SERVICE_NUM_ATTEMPTS":20},{"spark.executorEnv.AWS_METADATA_SERVICE_TIMEOUT":5},{"spark.executor.heartbeatInterval":"60s"},{"spark.hadoop.fs.s3a.aws.credentials.provider":"com.amazonaws.auth.WebIdentityTokenCredentialsProvider"}]}}}}` | Optional: Spark Plugin using the Spark Operator |
@@ -123,7 +139,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"6467a99c0cb1c9917d048b30ab3dd91b91e1fe33"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"aaee7c8be51a983478a4648a60df5063444796ed"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.unionoperatorMonitoring.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.autoscaling.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -194,7 +210,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.webhook.enabled | bool | `true` | enable or disable secrets webhook |
 | union.webhook.podAnnotations | object | `{}` | Annotations for webhook pods |
 | union.webhook.service | object | `{"annotations":{"projectcontour.io/upstream-protocol.h2c":"grpc"},"type":"ClusterIP"}` | Service settings for the webhook |
-| union.webhook.serviceAccount | object | `{"annotations":{},"create":true,"imagePullSecrets":{}}` | Configuration for service accounts for the webhook |
+| union.webhook.serviceAccount | object | `{"annotations":{},"create":true,"imagePullSecrets":[]}` | Configuration for service accounts for the webhook |
 | union.webhook.serviceAccount.annotations | object | `{}` | Annotations for ServiceAccount attached to the webhook |
 | union.webhook.serviceAccount.create | bool | `true` | Should a service account be created for the webhook |
-| union.webhook.serviceAccount.imagePullSecrets | object | `{}` | ImapgePullSecrets to automatically assign to the service account |
+| union.webhook.serviceAccount.imagePullSecrets | list | `[]` | ImapgePullSecrets to automatically assign to the service account |
