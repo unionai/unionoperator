@@ -58,7 +58,7 @@ union:
       name: ""
 
   collectUsages:
-    enabled: true
+    enabled: false
 
   # -- Optional: Spark Plugin using the Spark Operator
   sparkoperator:
