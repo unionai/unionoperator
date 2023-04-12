@@ -1,0 +1,43 @@
+{{- if .Values.union.unionoperatorMonitoring.enabled -}}
+{{- if .Values.union.unionoperatorMonitoring.prometheus.serviceAccount.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "unionoperatorMonitoring.prometheus.serviceAccountName" . }}
+  labels:
+    {{- include "unionoperatorMonitoring.prometheus.labels" . | nindent 4 }}
+  {{- with .Values.union.unionoperatorMonitoring.prometheus.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - nodes
+      - nodes/proxy
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "unionoperatorMonitoring.prometheus.serviceAccountName" . }}
+  labels:
+    {{- include "unionoperatorMonitoring.prometheus.labels" . | nindent 4 }}
+  {{- with .Values.union.unionoperatorMonitoring.prometheus.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "unionoperatorMonitoring.prometheus.serviceAccountName" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "unionoperatorMonitoring.prometheus.serviceAccountName" . }}
+    namespace: {{ template "flyte.namespace" . }}
+{{- end }}
+{{- end }}

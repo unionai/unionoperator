@@ -20,6 +20,10 @@ spec:
       labels:
         {{- include "proxy.selectorLabels" . | nindent 8 }}
     spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "union-operator.fullname" . }}
       priorityClassName: {{ .Values.union.unionoperator.priorityClassName }}
       {{- with .Values.union.unionoperator.imagePullSecrets }}
       imagePullSecrets:
@@ -37,9 +41,14 @@ spec:
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {{- toYaml .Values.union.proxy.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /etc/union/config
+              name: config-volume
           args:
             - operator
             - proxy
+            - --config
+            - /etc/union/config/*.yaml
           ports:
             - name: http
               containerPort: 8089

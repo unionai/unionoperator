@@ -1139,6 +1139,10 @@ spec:
         app.kubernetes.io/name: union-operator-proxy
         app.kubernetes.io/instance: union-operator-proxy
     spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: union-operator
       priorityClassName: system-cluster-critical
       serviceAccountName: union-operator-proxy
       securityContext:
@@ -1147,7 +1151,7 @@ spec:
         - name: union-operator-proxy
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:04983f840add6585c059bda5baf80414a4e4ce43"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:2a391cdb8aa87d672b2f3a2f22207d0533aefed3"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1159,9 +1163,14 @@ spec:
               cpu: "1"
               ephemeral-storage: 100Mi
               memory: 500Mi
+          volumeMounts:
+            - mountPath: /etc/union/config
+              name: config-volume
           args:
             - operator
             - proxy
+            - --config
+            - /etc/union/config/*.yaml
           ports:
             - name: http
               containerPort: 8089
@@ -1218,7 +1227,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:04983f840add6585c059bda5baf80414a4e4ce43"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:2a391cdb8aa87d672b2f3a2f22207d0533aefed3"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

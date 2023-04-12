@@ -480,6 +480,44 @@ data:
       - job_name: 'kube-state-metrics'
         static_configs:
         - targets: ['union-operator-kube-state-metrics.union.svc.cluster.local:8080']
+        metric_relabel_configs:
+        - separator: ;
+          source_labels: [__name__]
+          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests
+          action: keep
+      - job_name: kubernetes-cadvisor
+        metrics_path: /metrics
+        scheme: https
+        kubernetes_sd_configs:
+        - api_server: null
+          role: node
+          namespaces:
+            names: []
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: false
+        metric_relabel_configs:
+        - separator: ;
+          source_labels: [__name__]
+          regex: container_cpu_usage_seconds_total|container_memory_working_set_bytes
+          action: keep
+        relabel_configs:
+        - separator: ;
+          regex: __meta_kubernetes_node_label_(.+)
+          replacement: $1
+          action: labelmap
+        - separator: ;
+          regex: (.*)
+          target_label: __address__
+          replacement: kubernetes.default.svc:443
+          action: replace
+        - source_labels: [__meta_kubernetes_node_name]
+          separator: ;
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+          action: replace
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -646,6 +684,28 @@ rules:
       - ingresses
     verbs: ["get", "list", "watch"]
 ---
+# Source: union-operator/templates/monitoring/prometheus/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: union-operator-prometheus
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - nodes
+      - nodes/proxy
+    verbs:
+      - get
+      - list
+      - watch
+---
 # Source: union-operator/templates/serviceaccount-logproxy.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -777,6 +837,26 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: union-operator-kube-state-metrics
+    namespace: union
+---
+# Source: union-operator/templates/monitoring/prometheus/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: union-operator-prometheus
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: union-operator-prometheus
+subjects:
+  - kind: ServiceAccount
+    name: union-operator-prometheus
     namespace: union
 ---
 # Source: union-operator/templates/serviceaccount-logproxy.yaml
@@ -1237,6 +1317,10 @@ spec:
         app.kubernetes.io/name: union-operator-proxy
         app.kubernetes.io/instance: union-operator-proxy
     spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: union-operator
       priorityClassName: system-cluster-critical
       serviceAccountName: union-operator-proxy
       securityContext:
@@ -1257,9 +1341,14 @@ spec:
               cpu: "1"
               ephemeral-storage: 100Mi
               memory: 500Mi
+          volumeMounts:
+            - mountPath: /etc/union/config
+              name: config-volume
           args:
             - operator
             - proxy
+            - --config
+            - /etc/union/config/*.yaml
           ports:
             - name: http
               containerPort: 8089
@@ -1475,7 +1564,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "8c556d3e91bfdcb1affaf3b9350fc94f00b0456a67a1ada8f801117e8b604f1"
+        configChecksum: "265d5ef8be2bc8ebb367e240873f8802a5cee0cad6992555387a6b858d4871c"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus

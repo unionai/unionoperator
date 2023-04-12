@@ -1104,6 +1104,10 @@ spec:
         app.kubernetes.io/name: union-operator-proxy
         app.kubernetes.io/instance: union-operator-proxy
     spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: union-operator
       priorityClassName: system-cluster-critical
       serviceAccountName: union-operator-proxy
       securityContext:
@@ -1124,9 +1128,14 @@ spec:
               cpu: "1"
               ephemeral-storage: 100Mi
               memory: 500Mi
+          volumeMounts:
+            - mountPath: /etc/union/config
+              name: config-volume
           args:
             - operator
             - proxy
+            - --config
+            - /etc/union/config/*.yaml
           ports:
             - name: http
               containerPort: 8089
