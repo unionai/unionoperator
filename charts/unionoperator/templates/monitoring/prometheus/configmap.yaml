@@ -28,7 +28,7 @@ data:
         metric_relabel_configs:
         - separator: ;
           source_labels: [__name__]
-          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests
+          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests|kube_pod_status_phase
           action: keep
       - job_name: kubernetes-cadvisor
         metrics_path: /metrics

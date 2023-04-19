@@ -483,7 +483,7 @@ data:
         metric_relabel_configs:
         - separator: ;
           source_labels: [__name__]
-          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests
+          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests|kube_pod_status_phase
           action: keep
       - job_name: kubernetes-cadvisor
         metrics_path: /metrics
@@ -1564,7 +1564,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "265d5ef8be2bc8ebb367e240873f8802a5cee0cad6992555387a6b858d4871c"
+        configChecksum: "7ffb1f5c8d9dc61015a07df296e146de8c3872deada2ffd3a8ae9e66fec72ef"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus
