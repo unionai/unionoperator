@@ -1,0 +1,18 @@
+{{- if .Values.union.unionoperatorMonitoring.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "union-operator.fullname" . }}-dcgm-exporter
+  labels:
+    {{- include "unionoperatorMonitoring.dcgmExporter.labels" . | nindent 4 }}
+    app.kubernetes.io/component: "dcgm-exporter"
+spec:
+  type: {{  .Values.union.unionoperatorMonitoring.dcgmExporter.service.type }}
+  ports:
+    - port: {{  .Values.union.unionoperatorMonitoring.dcgmExporter.service.port }}
+      targetPort:  {{  .Values.union.unionoperatorMonitoring.dcgmExporter.service.port }}
+      protocol: TCP
+      name: "metrics"
+  selector:
+    {{- include "unionoperatorMonitoring.dcgmExporter.selectorLabels" . | nindent 4 }}
+{{- end }}

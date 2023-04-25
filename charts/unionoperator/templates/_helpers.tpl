@@ -216,6 +216,37 @@ Create the name of the service account to use for the Kube State metrics server
 {{- end }}
 
 {{/*
+DCGM exporter labels
+*/}}
+{{- define "unionoperatorMonitoring.dcgmExporter.labels" -}}
+helm.sh/chart: {{ include "union-operator.chart" . }}
+{{ include "unionoperatorMonitoring.dcgmExporter.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+DCGM exporter selector labels
+*/}}
+{{- define "unionoperatorMonitoring.dcgmExporter.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "union-operator.name" . }}-dcgm-exporter
+app.kubernetes.io/instance: {{ .Release.Name }}-dcgm-exporter
+{{- end }}
+
+{{/*
+Create the name of the service account to use for the DCGM exporter
+*/}}
+{{- define "unionoperatorMonitoring.dcgmExporter.serviceAccountName" -}}
+{{- if  .Values.union.unionoperatorMonitoring.dcgmExporter.serviceAccount.create }}
+{{- default "union-operator-dcgm-exporter"  .Values.union.unionoperatorMonitoring.dcgmExporter.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.union.unionoperatorMonitoring.dcgmExporter.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "union-operator.serviceAccountName" -}}

@@ -139,7 +139,36 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"720756e54e29155e194943415d46fb22f3e661ee"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"b4044ab13c8643529535e52e81b6409a4356778c"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperatorMonitoring.dcgmExporter.arguments[0] | string | `"-f"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.arguments[1] | string | `"/etc/dcgm-exporter/dcp-metrics-included.csv"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.image.pullPolicy | string | `"IfNotPresent"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.image.repository | string | `"nvcr.io/nvidia/k8s/dcgm-exporter"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.image.tag | string | `"3.1.7-3.1.4-ubuntu20.04"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.kubeletPath | string | `"/var/lib/kubelet/pod-resources"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.nodeSelector.ami_type | string | `"AL2_x86_64_GPU"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.podSecurityContext | object | `{}` |  |
+| union.unionoperatorMonitoring.dcgmExporter.resources.limits.cpu | string | `"100m"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.resources.limits.ephemeral-storage | string | `"500Mi"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.resources.limits.memory | string | `"128Mi"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.resources.requests.cpu | string | `"100m"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.resources.requests.ephemeral-storage | string | `"500Mi"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.resources.requests.memory | string | `"128Mi"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.securityContext.capabilities.add[0] | string | `"SYS_ADMIN"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.securityContext.runAsNonRoot | bool | `false` |  |
+| union.unionoperatorMonitoring.dcgmExporter.securityContext.runAsUser | int | `0` |  |
+| union.unionoperatorMonitoring.dcgmExporter.service.address | string | `":9400"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.service.port | int | `9400` |  |
+| union.unionoperatorMonitoring.dcgmExporter.service.type | string | `"ClusterIP"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.serviceAccount.annotations | object | `{}` |  |
+| union.unionoperatorMonitoring.dcgmExporter.serviceAccount.create | bool | `true` |  |
+| union.unionoperatorMonitoring.dcgmExporter.serviceAccount.name | string | `""` |  |
+| union.unionoperatorMonitoring.dcgmExporter.tolerations[0].effect | string | `"NoSchedule"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.tolerations[0].key | string | `"nvidia.com/gpu"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.tolerations[0].operator | string | `"Exists"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.tolerations[1].effect | string | `"NoSchedule"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.tolerations[1].key | string | `"flyte.org/node-role"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.tolerations[1].operator | string | `"Exists"` |  |
 | union.unionoperatorMonitoring.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.autoscaling.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.image.pullPolicy | string | `"IfNotPresent"` |  |

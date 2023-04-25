@@ -26,7 +26,7 @@ data:
         proxy:
           endpoint: http://union-operator-proxy.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
 {{- if .Values.union.unionoperatorSparkHistoryServer.enabled }}
-        - spark-hs:
+        spark-hs:
           endpoint: http://union-operator-spark-hs.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
 {{- end }}
       clusterData:

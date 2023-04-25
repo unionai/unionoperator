@@ -52,6 +52,18 @@ metadata:
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
+# Source: union-operator/templates/monitoring/dcgm-exporter/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: union-operator-dcgm-exporter
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-dcgm-exporter
+    app.kubernetes.io/instance: union-operator-dcgm-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+---
 # Source: union-operator/templates/monitoring/kube-state-metrics/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -485,6 +497,9 @@ data:
           source_labels: [__name__]
           regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests|kube_pod_status_phase
           action: keep
+      - job_name: 'gpu-metrics'
+        static_configs:
+        - targets: ['union-operator-dcgm-exporter.union.svc.cluster.local:9400']
       - job_name: kubernetes-cadvisor
         metrics_path: /metrics
         scheme: https
@@ -967,6 +982,29 @@ spec:
       port: 443
       targetPort: 9443
 ---
+# Source: union-operator/templates/monitoring/dcgm-exporter/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: union-operator-dcgm-exporter
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-dcgm-exporter
+    app.kubernetes.io/instance: union-operator-dcgm-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: "dcgm-exporter"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9400
+      targetPort:  9400
+      protocol: TCP
+      name: "metrics"
+  selector:
+    app.kubernetes.io/name: union-operator-dcgm-exporter
+    app.kubernetes.io/instance: union-operator-dcgm-exporter
+---
 # Source: union-operator/templates/monitoring/kube-state-metrics/service.yaml
 apiVersion: v1
 kind: Service
@@ -1070,6 +1108,101 @@ spec:
   selector:
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
+---
+# Source: union-operator/templates/monitoring/dcgm-exporter/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: union-operator-dcgm-exporter
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-dcgm-exporter
+    app.kubernetes.io/instance: union-operator-dcgm-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: "dcgm-exporter"
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: union-operator-dcgm-exporter
+      app.kubernetes.io/instance: union-operator-dcgm-exporter
+      app.kubernetes.io/component: "dcgm-exporter"
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: union-operator-dcgm-exporter
+        app.kubernetes.io/instance: union-operator-dcgm-exporter
+        app.kubernetes.io/component: "dcgm-exporter"
+    spec:
+      priorityClassName: system-node-critical
+      serviceAccountName: union-operator-dcgm-exporter
+      securityContext:
+        {}
+      volumes:
+        - name: "pod-gpu-resources"
+          hostPath:
+            path: /var/lib/kubelet/pod-resources
+      containers:
+        - name: exporter
+          image: "nvcr.io/nvidia/k8s/dcgm-exporter:3.1.7-3.1.4-ubuntu20.04"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities:
+              add:
+              - SYS_ADMIN
+            runAsNonRoot: false
+            runAsUser: 0
+          args:
+          - -f
+          - /etc/dcgm-exporter/dcp-metrics-included.csv
+          env:
+            - name: "DCGM_EXPORTER_KUBERNETES"
+              value: "true"
+            - name: "DCGM_EXPORTER_LISTEN"
+              value: ":9400"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          ports:
+            - name: "metrics"
+              containerPort: 9400
+          volumeMounts:
+            - name: "pod-gpu-resources"
+              readOnly: true
+              mountPath: "/var/lib/kubelet/pod-resources"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9400
+            initialDelaySeconds: 45
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9400
+            initialDelaySeconds: 45
+          resources:
+            limits:
+              cpu: 100m
+              ephemeral-storage: 500Mi
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 500Mi
+              memory: 128Mi
+      nodeSelector:
+        ami_type: AL2_x86_64_GPU
+      tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
+        - effect: NoSchedule
+          key: flyte.org/node-role
+          operator: Exists
 ---
 # Source: union-operator/charts/union/templates/clusterresourcesync/deployment.yaml
 apiVersion: apps/v1
@@ -1564,7 +1697,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "7ffb1f5c8d9dc61015a07df296e146de8c3872deada2ffd3a8ae9e66fec72ef"
+        configChecksum: "79b6e185aba5e7b9c4fd22111a0b1f7e6e9a0f840ab5963fcc1ef2e4b3a3b20"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus
