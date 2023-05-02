@@ -1,6 +1,10 @@
-{{- if .Values.union.unionoperatorMonitoring.enabled -}}
+{{- if .Values.union.unionoperatorMonitoring.enabled }}
 apiVersion: apps/v1
+{{- if .Values.union.unionoperatorMonitoring.prometheus.storage.persistent }}
+kind: StatefulSet
+{{- else }}
 kind: Deployment
+{{- end }}
 metadata:
   name: {{ include "union-operator.fullname" . }}-prometheus
   labels:
@@ -28,16 +32,40 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "unionoperatorMonitoring.prometheus.serviceAccountName" . }}
+      {{- $psc := .Values.union.unionoperatorMonitoring.prometheus.podSecurityContext }}
+      {{- if ge (int .Capabilities.KubeVersion.Minor) 23 }}
       securityContext:
-        {{- toYaml .Values.union.unionoperatorMonitoring.prometheus.podSecurityContext | nindent 8 }}
+        {{- toYaml (merge $psc (dict "fsGroupChangePolicy" "OnRootMismatch")) | nindent 12 }}
+      {{- else }}
+      securityContext:
+        {{- toYaml $psc | nindent 12 }}
+      {{- end }}
+      {{- if .Values.union.unionoperatorMonitoring.prometheus.storage.persistent }}
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              {{- include "unionoperatorMonitoring.prometheus.selectorLabels" . | nindent 14 }}
+          maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+      {{- end }}
       volumes:
         - name: prometheus-config-volume
           configMap:
             name: '{{ include "union-operator.fullname" . }}-prometheus'
+        {{- if .Values.union.unionoperatorMonitoring.prometheus.storage.persistent }}
+        - name: prometheus-pvc
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+        {{- end }}
       containers:
         - args:
             - --config.file=/etc/prometheus/prometheus.yml
             - --web.external-url=/prometheus/
+            - --storage.tsdb.retention.size={{ .Values.union.unionoperatorMonitoring.prometheus.storage.retention.size }}
+          {{- if .Values.union.unionoperatorMonitoring.prometheus.storage.persistent }}
+            - --storage.tsdb.path=/prometheus
+          {{- end }}
           image: "{{ .Values.union.unionoperatorMonitoring.prometheus.image.repository }}:{{ .Values.union.unionoperatorMonitoring.prometheus.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.union.unionoperatorMonitoring.prometheus.image.pullPolicy }}
           name: {{ .Chart.Name }}
@@ -49,10 +77,31 @@ spec:
           volumeMounts:
             - mountPath: /etc/prometheus
               name: prometheus-config-volume
+          {{- if (.Values.union.unionoperatorMonitoring.prometheus.storage.persistent) }}
+            - mountPath: /prometheus
+              name: prometheus-pvc
+          {{- end }}
           ports:
             - name: http
               containerPort: 18080
               protocol: TCP
+      {{- if and (.Values.union.unionoperatorMonitoring.prometheus.storage.persistent) (lt (int .Capabilities.KubeVersion.Minor) 23)}}
+      initContainers:
+        - command:
+            - chown
+            - -R
+            - 65534:65534
+            - /data
+          image: prom/prometheus:latest
+          imagePullPolicy: IfNotPresent
+          name: init-chown-data
+          resources: { }
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /data
+              name: prometheus-pvc
+      {{- end }}
       {{- with .Values.union.unionoperatorMonitoring.prometheus.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -65,4 +114,20 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  {{- if .Values.union.unionoperatorMonitoring.prometheus.storage.persistent }}
+  serviceName: {{ include "union-operator.fullname" . }}-prometheus
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: prometheus-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.union.unionoperatorMonitoring.prometheus.storage.sizePerReplica }}
+        storageClassName: gp2
+        volumeMode: Filesystem
+  {{- end }}
   {{- end }}

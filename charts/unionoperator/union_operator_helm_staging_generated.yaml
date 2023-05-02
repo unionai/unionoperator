@@ -17,6 +17,21 @@ kind: Namespace
 metadata:
   name: flytesnacks-production
 ---
+# Source: union-operator/charts/opencost/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+  namespace: union
+automountServiceAccountToken: true
+---
 # Source: union-operator/charts/union/templates/propeller/rbac.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -444,7 +459,7 @@ data:
         userRole: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
         storageType: s3
         gcpProjectId: dummy-gcs-projectId
-      collectUsages: 
+      collectUsages:
         enabled: false
   logger.yaml: |
     logger:
@@ -533,6 +548,16 @@ data:
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
           action: replace
+      - job_name: 'opencost'
+        honor_labels: true
+        scrape_interval: 1m
+        static_configs:
+        - targets: ['opencost.union.svc.cluster.local:9003']
+        metric_relabel_configs:
+        - separator: ;
+          source_labels: [__name__]
+          regex: container_.*|.*_labels|.*_cost
+          action: keep
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -557,6 +582,94 @@ spec:
           type: object
           x-kubernetes-preserve-unknown-fields: true
           properties:
+---
+# Source: union-operator/charts/opencost/templates/clusterrole.yaml
+# Cluster role giving opencost to get, list, watch required resources
+# No write permissions are required
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+  namespace: union
+rules:
+  - apiGroups: [""]
+    resources:
+      - configmaps
+      - deployments
+      - nodes
+      - pods
+      - services
+      - resourcequotas
+      - replicationcontrollers
+      - limitranges
+      - persistentvolumeclaims
+      - persistentvolumes
+      - namespaces
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - daemonsets
+      - deployments
+      - replicasets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets
+      - deployments
+      - daemonsets
+      - replicasets
+    verbs:
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - cronjobs
+      - jobs
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - autoscaling
+    resources:
+      - horizontalpodautoscalers
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - policy
+    resources:
+      - poddisruptionbudgets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - storage.k8s.io
+    resources:
+      - storageclasses
+    verbs:
+      - get
+      - list
+      - watch
 ---
 # Source: union-operator/charts/union/templates/propeller/rbac.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -785,6 +898,27 @@ rules:
       - update
       - delete
 ---
+# Source: union-operator/charts/opencost/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: opencost
+subjects:
+  - kind: ServiceAccount
+    name: opencost
+    namespace: union
+---
 # Source: union-operator/charts/union/templates/propeller/rbac.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -963,6 +1097,30 @@ subjects:
   - kind: ServiceAccount
     name: union-operator
     namespace: union
+---
+# Source: union-operator/charts/opencost/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+  namespace: union
+spec:
+  selector:
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9003
+      targetPort: 9003
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Service
@@ -1189,7 +1347,7 @@ spec:
             limits:
               cpu: 100m
               ephemeral-storage: 500Mi
-              memory: 128Mi
+              memory: 400Mi
             requests:
               cpu: 100m
               ephemeral-storage: 500Mi
@@ -1203,6 +1361,79 @@ spec:
         - effect: NoSchedule
           key: flyte.org/node-role
           operator: Exists
+---
+# Source: union-operator/charts/opencost/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+  namespace: union
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opencost
+      app.kubernetes.io/instance: union-operator
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: opencost
+        app.kubernetes.io/instance: union-operator
+    spec:
+      securityContext:
+        {}
+      serviceAccountName: opencost
+      tolerations:
+        []
+      containers:
+        - image: "quay.io/kubecost1/kubecost-cost-model:prod-1.102.0"
+          name: opencost
+          resources:
+            limits:
+              cpu: 999m
+              memory: 1Gi
+            requests:
+              cpu: 10m
+              memory: 55Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 200
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 10
+          ports:
+            - containerPort: 9003
+              name: http
+          securityContext:
+            {}
+          env:
+            - name: PROMETHEUS_SERVER_ENDPOINT
+              value: "http://union-operator-prometheus.sample-tenant.svc:80/prometheus"
+            - name: CLUSTER_ID
+              value: "default-cluster"
+            # If username, password or bearer_token are defined, pull from secrets
+            # Add any additional provided variables
+          imagePullPolicy: Always
 ---
 # Source: union-operator/charts/union/templates/clusterresourcesync/deployment.yaml
 apiVersion: apps/v1
@@ -1515,7 +1746,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "ff4e6e1ded3d1fccfb19531593c9fd1ef38929a5813058a77422a46b6bdd2c3"
+        configChecksum: "a2e6de24d1911f7e87e5f851fae8fadb7c5b8c123dfd8abeef09b8d4d2a9716"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
@@ -1697,7 +1928,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "79b6e185aba5e7b9c4fd22111a0b1f7e6e9a0f840ab5963fcc1ef2e4b3a3b20"
+        configChecksum: "14bb2a3b51c88f919a07df356441ba041601eb8557a80d75de4b3d007c908ca"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus
@@ -1705,7 +1936,7 @@ spec:
       priorityClassName: 
       serviceAccountName: union-operator-prometheus
       securityContext:
-        {}
+            fsGroupChangePolicy: OnRootMismatch
       volumes:
         - name: prometheus-config-volume
           configMap:
@@ -1714,7 +1945,8 @@ spec:
         - args:
             - --config.file=/etc/prometheus/prometheus.yml
             - --web.external-url=/prometheus/
-          image: "prom/prometheus:latest"
+            - --storage.tsdb.retention.size=400MB
+          image: "prom/prometheus:v2.43.0"
           imagePullPolicy: IfNotPresent
           name: union-operator
           securityContext:
@@ -1723,11 +1955,11 @@ spec:
           resources:
             limits:
               cpu: "4"
-              ephemeral-storage: 500Mi
+              ephemeral-storage: 1Gi
               memory: 8Gi
             requests:
               cpu: "1"
-              ephemeral-storage: 100Mi
+              ephemeral-storage: 500Mi
               memory: 500Mi
           volumeMounts:
             - mountPath: /etc/prometheus

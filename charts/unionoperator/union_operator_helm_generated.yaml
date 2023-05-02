@@ -416,7 +416,7 @@ data:
         userRole: bar
         storageType: sandbox
         gcpProjectId: dummy-gcs-projectId
-      collectUsages: 
+      collectUsages:
         enabled: false
   logger.yaml: |
     logger:
@@ -1151,7 +1151,7 @@ spec:
         - name: union-operator-proxy
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:b4044ab13c8643529535e52e81b6409a4356778c"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:7dd17e7a34122782cd6e819e3fc0580a90a58117"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1204,7 +1204,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "8ac36b3aca289af44adbe984deb6fa7cde9e9a0be7fc9d29d065c3950209281"
+        configChecksum: "c592a981999d64bd09e1e3486d91c69a1a7d49a140ab072a08a10e6a3d55e71"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
@@ -1227,7 +1227,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:b4044ab13c8643529535e52e81b6409a4356778c"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:7dd17e7a34122782cd6e819e3fc0580a90a58117"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

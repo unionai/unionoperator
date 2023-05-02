@@ -410,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: b4044ab13c8643529535e52e81b6409a4356778c # UNION_OPERATOR_TAG
+      tag: 7dd17e7a34122782cd6e819e3fc0580a90a58117 # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -533,9 +533,15 @@ union:
     enabled: false
     prometheus:
       replicaCount: 1
+      storage:
+        persistent: false
+        sizePerReplica: 1Gi
+        retention:
+          # size should strictly be less than the sizePerReplica in case of persistent
+          size: 400MB
       image:
         repository: prom/prometheus
-        tag: latest
+        tag: v2.43.0
         pullPolicy: IfNotPresent
 
       serviceAccount:
@@ -559,11 +565,11 @@ union:
       resources:
         limits:
           cpu: "4"
-          ephemeral-storage: 500Mi
+          ephemeral-storage: 1Gi
           memory: "8Gi"
         requests:
           cpu: "1"
-          ephemeral-storage: 100Mi
+          ephemeral-storage: 500Mi
           memory: "500Mi"
 
       autoscaling:
@@ -648,13 +654,30 @@ union:
         limits:
           cpu: 100m
           ephemeral-storage: 500Mi
-          memory: 128Mi
+          memory: 400Mi
         requests:
           cpu: 100m
           ephemeral-storage: 500Mi
           memory: 128Mi
       kubeletPath: "/var/lib/kubelet/pod-resources"
+    opencost:
+      enabled: false
+      scrape: false
 
+opencost:
+  # Values documented at https://github.com/opencost/opencost-helm-chart/tree/main/charts/opencost
+  fullnameOverride: opencost
+  opencost:
+    # By default, disable prometheus. This runs opencost in exporter mode: https://www.opencost.io/docs/opencost-exporter
+    # Set internal or external values to populate the PROMETHEUS_SERVER_ENDPOINT env var
+    prometheus:
+      external:
+        enabled: false
+      internal:
+        enabled: false
+
+    ui:
+      enabled: false
 
 minio:
   # -- Replicas count for Minio deployment

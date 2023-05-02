@@ -408,7 +408,7 @@ data:
         userRole: bar
         storageType: s3
         gcpProjectId: dummy-gcs-projectId
-      collectUsages: 
+      collectUsages:
         enabled: false
   logger.yaml: |
     logger:
@@ -1169,7 +1169,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "cc51c91c2af3c170e3996af6a53cce4f90ba0df65b768cbd47eae589dda5ddf"
+        configChecksum: "3509005c59e4c5b808445df6d5d350b00f5597a4fde030eee60fa6162da392a"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"

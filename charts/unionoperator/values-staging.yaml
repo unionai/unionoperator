@@ -110,3 +110,13 @@ union:
 
   unionoperatorMonitoring:
     enabled: true
+    opencost:
+      enabled: true
+      scrape: true
+
+opencost:
+  opencost:
+    prometheus:
+      external:
+        enabled: true
+        url: "http://union-operator-prometheus.sample-tenant.svc:80/prometheus"

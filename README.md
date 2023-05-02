@@ -9,6 +9,7 @@ Deploys Union Operator to onboard a k8s cluster to Union Cloud
 | Repository | Name | Version |
 |------------|------|---------|
 | https://flyteorg.github.io/flyte/ | union(flyte-core) | v1.4.0 |
+| https://opencost.github.io/opencost-helm-chart | opencost | v1.12.0 |
 
 ### SANDBOX INSTALLATION:
 - [Install helm 3](https://helm.sh/docs/intro/install/)
@@ -45,6 +46,10 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | minio.resources.requests | object | `{"cpu":"10m","memory":"128Mi"}` | Requests are the minimum set of resources needed for this pod |
 | minio.service | object | `{"annotations":{},"type":"ClusterIP"}` | Service settings for Minio |
 | minio.tolerations | list | `[]` | tolerations for Minio deployment |
+| opencost.fullnameOverride | string | `"opencost"` |  |
+| opencost.opencost.prometheus.external.enabled | bool | `false` |  |
+| opencost.opencost.prometheus.internal.enabled | bool | `false` |  |
+| opencost.opencost.ui.enabled | bool | `false` |  |
 | union.appId | string | `"<App Id from uctl create app>"` |  |
 | union.appSecret | string | `"<App Secret from uctl create app>"` |  |
 | union.cloudUrl | string | `"<Union Cloud URL>"` |  |
@@ -139,7 +144,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"b4044ab13c8643529535e52e81b6409a4356778c"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"7dd17e7a34122782cd6e819e3fc0580a90a58117"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.unionoperatorMonitoring.dcgmExporter.arguments[0] | string | `"-f"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.arguments[1] | string | `"/etc/dcgm-exporter/dcp-metrics-included.csv"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -150,7 +155,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.unionoperatorMonitoring.dcgmExporter.podSecurityContext | object | `{}` |  |
 | union.unionoperatorMonitoring.dcgmExporter.resources.limits.cpu | string | `"100m"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.resources.limits.ephemeral-storage | string | `"500Mi"` |  |
-| union.unionoperatorMonitoring.dcgmExporter.resources.limits.memory | string | `"128Mi"` |  |
+| union.unionoperatorMonitoring.dcgmExporter.resources.limits.memory | string | `"400Mi"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.resources.requests.cpu | string | `"100m"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.resources.requests.ephemeral-storage | string | `"500Mi"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.resources.requests.memory | string | `"128Mi"` |  |
@@ -188,17 +193,19 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.annotations | object | `{}` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.create | bool | `true` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.name | string | `""` |  |
+| union.unionoperatorMonitoring.opencost.enabled | bool | `false` |  |
+| union.unionoperatorMonitoring.opencost.scrape | bool | `false` |  |
 | union.unionoperatorMonitoring.prometheus.autoscaling.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.prometheus.image.pullPolicy | string | `"IfNotPresent"` |  |
 | union.unionoperatorMonitoring.prometheus.image.repository | string | `"prom/prometheus"` |  |
-| union.unionoperatorMonitoring.prometheus.image.tag | string | `"latest"` |  |
+| union.unionoperatorMonitoring.prometheus.image.tag | string | `"v2.43.0"` |  |
 | union.unionoperatorMonitoring.prometheus.podSecurityContext | object | `{}` |  |
 | union.unionoperatorMonitoring.prometheus.replicaCount | int | `1` |  |
 | union.unionoperatorMonitoring.prometheus.resources.limits.cpu | string | `"4"` |  |
-| union.unionoperatorMonitoring.prometheus.resources.limits.ephemeral-storage | string | `"500Mi"` |  |
+| union.unionoperatorMonitoring.prometheus.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | union.unionoperatorMonitoring.prometheus.resources.limits.memory | string | `"8Gi"` |  |
 | union.unionoperatorMonitoring.prometheus.resources.requests.cpu | string | `"1"` |  |
-| union.unionoperatorMonitoring.prometheus.resources.requests.ephemeral-storage | string | `"100Mi"` |  |
+| union.unionoperatorMonitoring.prometheus.resources.requests.ephemeral-storage | string | `"500Mi"` |  |
 | union.unionoperatorMonitoring.prometheus.resources.requests.memory | string | `"500Mi"` |  |
 | union.unionoperatorMonitoring.prometheus.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | union.unionoperatorMonitoring.prometheus.service.port | int | `80` |  |
@@ -206,6 +213,9 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.unionoperatorMonitoring.prometheus.serviceAccount.annotations | object | `{}` |  |
 | union.unionoperatorMonitoring.prometheus.serviceAccount.create | bool | `true` |  |
 | union.unionoperatorMonitoring.prometheus.serviceAccount.name | string | `""` |  |
+| union.unionoperatorMonitoring.prometheus.storage.persistent | bool | `false` |  |
+| union.unionoperatorMonitoring.prometheus.storage.retention.size | string | `"400MB"` |  |
+| union.unionoperatorMonitoring.prometheus.storage.sizePerReplica | string | `"1Gi"` |  |
 | union.unionoperatorSparkHistoryServer.affinity | object | `{}` |  |
 | union.unionoperatorSparkHistoryServer.autoscaling.enabled | bool | `false` |  |
 | union.unionoperatorSparkHistoryServer.autoscaling.maxReplicas | int | `10` |  |
