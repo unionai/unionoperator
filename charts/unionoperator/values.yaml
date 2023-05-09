@@ -410,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 7dd17e7a34122782cd6e819e3fc0580a90a58117 # UNION_OPERATOR_TAG
+      tag: 404fc388df2d42caff8602b73172d70f9876f38b # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -533,12 +533,15 @@ union:
     enabled: false
     prometheus:
       replicaCount: 1
+      externalUrl: /prometheus/
+
       storage:
         persistent: false
         sizePerReplica: 1Gi
         retention:
           # size should strictly be less than the sizePerReplica in case of persistent
           size: 400MB
+
       image:
         repository: prom/prometheus
         tag: v2.43.0
