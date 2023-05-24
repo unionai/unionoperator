@@ -29,6 +29,10 @@ data:
         spark-hs:
           endpoint: http://union-operator-spark-hs.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
 {{- end }}
+{{- if .Values.union.unionoperatorMonitoring.enabled }}
+        prometheus:
+          endpoint: http://{{ include "union-operator.fullname" . }}-prometheus.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ printf "%d%sapi/v1/targets" (int (index .Values.union.unionoperatorMonitoring.prometheus.service "port")) "/prometheus/" }}
+{{- end }}
       clusterData:
         appId: {{ tpl (.Values.union.appId | toString) $ }}
         cloudHostName: {{ tpl (include "union-operator.cloudHostName" . | toString) $ }}

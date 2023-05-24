@@ -38,7 +38,12 @@ spec:
           mountPath: /data
       volumes:
       - name: minio-storage
+{{- if .Values.minio.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.minio.persistence.persistentVolumeClaimName | default (include "minio.name" .) }}
+{{- else }}
         emptyDir: {}
+{{- end }}
       {{- with .Values.minio.nodeSelector }}
       nodeSelector: {{ tpl (toYaml .) $ | nindent 8 }}
       {{- end }}

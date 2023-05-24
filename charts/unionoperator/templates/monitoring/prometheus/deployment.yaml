@@ -33,12 +33,11 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "unionoperatorMonitoring.prometheus.serviceAccountName" . }}
       {{- $psc := .Values.union.unionoperatorMonitoring.prometheus.podSecurityContext }}
-      {{- if ge (int .Capabilities.KubeVersion.Minor) 23 }}
+      {{- if ge (int (mustRegexFind "[0-9]+" .Capabilities.KubeVersion.Minor)) 23 }}
       securityContext:
         {{- toYaml (merge $psc (dict "fsGroupChangePolicy" "OnRootMismatch")) | nindent 12 }}
       {{- else }}
-      securityContext:
-        {{- toYaml $psc | nindent 12 }}
+      securityContext: {}
       {{- end }}
       {{- if .Values.union.unionoperatorMonitoring.prometheus.storage.persistent }}
       topologySpreadConstraints:
@@ -86,7 +85,7 @@ spec:
             - name: http
               containerPort: 18080
               protocol: TCP
-      {{- if and (.Values.union.unionoperatorMonitoring.prometheus.storage.persistent) (lt (int .Capabilities.KubeVersion.Minor) 23)}}
+      {{- if and (.Values.union.unionoperatorMonitoring.prometheus.storage.persistent) (lt (int (mustRegexFind "[0-9]+" .Capabilities.KubeVersion.Minor)) 23)}}
       initContainers:
         - command:
             - chown
@@ -128,7 +127,7 @@ spec:
         resources:
           requests:
             storage: {{ .Values.union.unionoperatorMonitoring.prometheus.storage.sizePerReplica }}
-        storageClassName: gp2
+        storageClassName: {{ .Values.union.unionoperatorMonitoring.prometheus.storage.className }}
         volumeMode: Filesystem
   {{- end }}
   {{- end }}

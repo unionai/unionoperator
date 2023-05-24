@@ -410,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 404fc388df2d42caff8602b73172d70f9876f38b # UNION_OPERATOR_TAG
+      tag: f3daaa50601b17f691654a3467a18930e3733ee2 # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -537,6 +537,7 @@ union:
 
       storage:
         persistent: false
+        className: gp2
         sizePerReplica: 1Gi
         retention:
           # size should strictly be less than the sizePerReplica in case of persistent
@@ -556,7 +557,10 @@ union:
         # If not set and create is true, a name is generated using the fullname template
         name: ""
 
-      podSecurityContext: { }
+      podSecurityContext:
+        fsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 1000
 
       securityContext:
         allowPrivilegeEscalation: false
@@ -714,3 +718,6 @@ minio:
   tolerations: [ ]
   # -- affinity for Minio deployment
   affinity: { }
+  persistence:
+    enabled: false
+    persistentVolumeClaimName: ""

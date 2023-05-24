@@ -1151,7 +1151,7 @@ spec:
         - name: union-operator-proxy
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:404fc388df2d42caff8602b73172d70f9876f38b"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:f3daaa50601b17f691654a3467a18930e3733ee2"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1227,7 +1227,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:404fc388df2d42caff8602b73172d70f9876f38b"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:f3daaa50601b17f691654a3467a18930e3733ee2"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

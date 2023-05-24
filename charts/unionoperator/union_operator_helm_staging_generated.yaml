@@ -449,6 +449,8 @@ data:
           endpoint: http://flytepropeller.union.svc.cluster.local:10254
         proxy:
           endpoint: http://union-operator-proxy.union.svc.cluster.local:10254
+        prometheus:
+          endpoint: http://union-operator-prometheus.union.svc.cluster.local:80/prometheus/api/v1/targets
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
@@ -498,6 +500,9 @@ data:
     global:
       scrape_interval:     15s
       evaluation_interval: 15s
+      external_labels:
+        organization: union
+        cluster_name: clustername
     alerting:
       alertmanagers:
       - static_configs:
@@ -1746,7 +1751,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "a2e6de24d1911f7e87e5f851fae8fadb7c5b8c123dfd8abeef09b8d4d2a9716"
+        configChecksum: "a1ceb4327853c40471e59447a129ef14cc96fd8134c653fe8e683f7799c7bba"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
@@ -1928,7 +1933,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "14bb2a3b51c88f919a07df356441ba041601eb8557a80d75de4b3d007c908ca"
+        configChecksum: "1d2d3349af192568f0f868ab473f227e1507ea444a4313905f81b1f62d5612c"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus
@@ -1936,7 +1941,10 @@ spec:
       priorityClassName: 
       serviceAccountName: union-operator-prometheus
       securityContext:
+            fsGroup: 2000
             fsGroupChangePolicy: OnRootMismatch
+            runAsNonRoot: true
+            runAsUser: 1000
       volumes:
         - name: prometheus-config-volume
           configMap:

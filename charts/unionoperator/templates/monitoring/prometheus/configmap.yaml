@@ -16,6 +16,11 @@ data:
     global:
       scrape_interval:     15s
       evaluation_interval: 15s
+      external_labels:
+        organization: {{ include "union-operator.namespace" . }}
+        {{- with .Values.union.clusterName }}
+        cluster_name: {{ . }}
+        {{- end }}
     alerting:
       alertmanagers:
       - static_configs:

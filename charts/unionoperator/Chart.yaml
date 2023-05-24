@@ -2,6 +2,7 @@ apiVersion: v2
 name: union-operator
 description: Deploys Union Operator to onboard a k8s cluster to Union Cloud
 type: application
+icon: "https://i.ibb.co/JxfDQsL/Union-Symbol-yellow-2.png"
 version: v0.0.1 # VERSION
 appVersion: v0.0.1 # APP_VERSION
 dependencies:
