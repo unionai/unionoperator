@@ -9,7 +9,7 @@ dependencies:
   - name: flyte-core
     alias: union
     repository: https://flyteorg.github.io/flyte/
-    version: v1.5.0  # FLYTE_VERSION
+    version: v1.6.0  # FLYTE_VERSION
   - name: opencost
     repository: https://opencost.github.io/opencost-helm-chart
     version: v1.12.0
