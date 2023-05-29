@@ -146,7 +146,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"d16bb9892ee0919296f6e462542bb1c6e54823fd"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"d8a2b4b8d573eb11cb0275530304c19a2d4639a9"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.unionoperatorMonitoring.dcgmExporter.arguments[0] | string | `"-f"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.arguments[1] | string | `"/etc/dcgm-exporter/dcp-metrics-included.csv"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -202,9 +202,9 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.unionoperatorMonitoring.prometheus.image.pullPolicy | string | `"IfNotPresent"` |  |
 | union.unionoperatorMonitoring.prometheus.image.repository | string | `"prom/prometheus"` |  |
 | union.unionoperatorMonitoring.prometheus.image.tag | string | `"v2.43.0"` |  |
-| union.unionoperatorMonitoring.prometheus.podSecurityContext.fsGroup | int | `2000` |  |
+| union.unionoperatorMonitoring.prometheus.podSecurityContext.fsGroup | int | `65534` |  |
 | union.unionoperatorMonitoring.prometheus.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| union.unionoperatorMonitoring.prometheus.podSecurityContext.runAsUser | int | `1000` |  |
+| union.unionoperatorMonitoring.prometheus.podSecurityContext.runAsUser | int | `65534` |  |
 | union.unionoperatorMonitoring.prometheus.replicaCount | int | `1` |  |
 | union.unionoperatorMonitoring.prometheus.resources.limits.cpu | string | `"4"` |  |
 | union.unionoperatorMonitoring.prometheus.resources.limits.ephemeral-storage | string | `"1Gi"` |  |

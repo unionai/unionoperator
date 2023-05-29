@@ -410,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: d16bb9892ee0919296f6e462542bb1c6e54823fd # UNION_OPERATOR_TAG
+      tag: d8a2b4b8d573eb11cb0275530304c19a2d4639a9 # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -558,9 +558,9 @@ union:
         name: ""
 
       podSecurityContext:
-        fsGroup: 2000
+        fsGroup: 65534
         runAsNonRoot: true
-        runAsUser: 1000
+        runAsUser: 65534
 
       securityContext:
         allowPrivilegeEscalation: false

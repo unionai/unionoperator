@@ -603,7 +603,8 @@ rules:
   - apiGroups:
       - '*'
     resources:
-      - "pods/log"
+      - pods/log
+      - pods
     verbs:
       - get
 ---
@@ -1151,7 +1152,7 @@ spec:
         - name: union-operator-proxy
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:d16bb9892ee0919296f6e462542bb1c6e54823fd"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:d8a2b4b8d573eb11cb0275530304c19a2d4639a9"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1227,7 +1228,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:d16bb9892ee0919296f6e462542bb1c6e54823fd"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:d8a2b4b8d573eb11cb0275530304c19a2d4639a9"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

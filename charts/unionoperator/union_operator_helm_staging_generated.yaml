@@ -854,7 +854,8 @@ rules:
   - apiGroups:
       - '*'
     resources:
-      - "pods/log"
+      - pods/log
+      - pods
     verbs:
       - get
 ---
@@ -1941,10 +1942,10 @@ spec:
       priorityClassName: 
       serviceAccountName: union-operator-prometheus
       securityContext:
-            fsGroup: 2000
+            fsGroup: 65534
             fsGroupChangePolicy: OnRootMismatch
             runAsNonRoot: true
-            runAsUser: 1000
+            runAsUser: 65534
       volumes:
         - name: prometheus-config-volume
           configMap:

@@ -17,6 +17,21 @@ kind: Namespace
 metadata:
   name: flytesnacks-production
 ---
+# Source: union-operator/charts/opencost/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+  namespace: union
+automountServiceAccountToken: true
+---
 # Source: union-operator/charts/union/templates/propeller/rbac.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -49,6 +64,42 @@ metadata:
     helm.sh/chart: union-operator-v0.0.1
     app.kubernetes.io/name: union-operator
     app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: union-operator/templates/monitoring/dcgm-exporter/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: union-operator-dcgm-exporter
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-dcgm-exporter
+    app.kubernetes.io/instance: union-operator-dcgm-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: union-operator/templates/monitoring/kube-state-metrics/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: union-operator-kube-state-metrics
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-kube-state-metrics
+    app.kubernetes.io/instance: union-operator-kube-state-metrics
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: union-operator/templates/monitoring/prometheus/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: union-operator-prometheus
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
     app.kubernetes.io/version: "v0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -398,6 +449,8 @@ data:
           endpoint: http://flytepropeller.union.svc.cluster.local:10254
         proxy:
           endpoint: http://union-operator-proxy.union.svc.cluster.local:10254
+        prometheus:
+          endpoint: http://union-operator-prometheus.union.svc.cluster.local:80/prometheus/api/v1/targets
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
@@ -425,6 +478,92 @@ data:
       limits:
         maxDownloadMBs: 10
 ---
+# Source: union-operator/templates/monitoring/prometheus/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: union-operator-prometheus
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+data:
+  # Current config support scraping from configured kube state metrics service which serves request and limit metrics of
+  # all the pods running in the data plane.(We will later restrict this to serve only from configured namespaces where
+  # user pods are running). Also apart from request and limit it scrapes other metrics which come out of the box by installing
+  # the service.We will further refine them to set of useful metrics that should be scraped in next iteration.
+  # This installation of prometheus doesn't support scaling or retention and would be taken as immediate next step.
+  # The scrape interval is of 15 sec from state metrics endpoint.
+  prometheus.yml: |
+    global:
+      scrape_interval:     15s
+      evaluation_interval: 15s
+      external_labels:
+        organization: union
+        cluster_name: clustername
+    alerting:
+      alertmanagers:
+      - static_configs:
+        - targets:
+    rule_files:
+    scrape_configs:
+      - job_name: 'kube-state-metrics'
+        static_configs:
+        - targets: ['union-operator-kube-state-metrics.union.svc.cluster.local:8080']
+        metric_relabel_configs:
+        - separator: ;
+          source_labels: [__name__]
+          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests|kube_pod_status_phase
+          action: keep
+      - job_name: 'gpu-metrics'
+        static_configs:
+        - targets: ['union-operator-dcgm-exporter.union.svc.cluster.local:9400']
+      - job_name: kubernetes-cadvisor
+        metrics_path: /metrics
+        scheme: https
+        kubernetes_sd_configs:
+        - api_server: null
+          role: node
+          namespaces:
+            names: []
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: false
+        metric_relabel_configs:
+        - separator: ;
+          source_labels: [__name__]
+          regex: container_cpu_usage_seconds_total|container_memory_working_set_bytes
+          action: keep
+        relabel_configs:
+        - separator: ;
+          regex: __meta_kubernetes_node_label_(.+)
+          replacement: $1
+          action: labelmap
+        - separator: ;
+          regex: (.*)
+          target_label: __address__
+          replacement: kubernetes.default.svc:443
+          action: replace
+        - source_labels: [__meta_kubernetes_node_name]
+          separator: ;
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+          action: replace
+      - job_name: 'opencost'
+        honor_labels: true
+        scrape_interval: 1m
+        static_configs:
+        - targets: ['opencost.union.svc.cluster.local:9003']
+        metric_relabel_configs:
+        - separator: ;
+          source_labels: [__name__]
+          regex: container_.*|.*_labels|.*_cost
+          action: keep
+---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -448,6 +587,94 @@ spec:
           type: object
           x-kubernetes-preserve-unknown-fields: true
           properties:
+---
+# Source: union-operator/charts/opencost/templates/clusterrole.yaml
+# Cluster role giving opencost to get, list, watch required resources
+# No write permissions are required
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+  namespace: union
+rules:
+  - apiGroups: [""]
+    resources:
+      - configmaps
+      - deployments
+      - nodes
+      - pods
+      - services
+      - resourcequotas
+      - replicationcontrollers
+      - limitranges
+      - persistentvolumeclaims
+      - persistentvolumes
+      - namespaces
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - daemonsets
+      - deployments
+      - replicasets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets
+      - deployments
+      - daemonsets
+      - replicasets
+    verbs:
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - cronjobs
+      - jobs
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - autoscaling
+    resources:
+      - horizontalpodautoscalers
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - policy
+    resources:
+      - poddisruptionbudgets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - storage.k8s.io
+    resources:
+      - storageclasses
+    verbs:
+      - get
+      - list
+      - watch
 ---
 # Source: union-operator/charts/union/templates/propeller/rbac.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -571,6 +798,47 @@ rules:
     verbs:
       - '*'
 ---
+# Source: union-operator/templates/monitoring/kube-state-metrics/cluster-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: union-operator-kube-state-metrics
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs: ["get", "list", "watch"]
+---
+# Source: union-operator/templates/monitoring/prometheus/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: union-operator-prometheus
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - nodes
+      - nodes/proxy
+    verbs:
+      - get
+      - list
+      - watch
+---
 # Source: union-operator/templates/serviceaccount-logproxy.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -586,7 +854,8 @@ rules:
   - apiGroups:
       - '*'
     resources:
-      - "pods/log"
+      - pods/log
+      - pods
     verbs:
       - get
 ---
@@ -634,6 +903,27 @@ rules:
       - create
       - update
       - delete
+---
+# Source: union-operator/charts/opencost/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: opencost
+subjects:
+  - kind: ServiceAccount
+    name: opencost
+    namespace: union
 ---
 # Source: union-operator/charts/union/templates/propeller/rbac.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -688,6 +978,40 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: clustersync-resource
+    namespace: union
+---
+# Source: union-operator/templates/monitoring/kube-state-metrics/cluster-role-binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: union-operator-kube-state-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: union-operator-kube-state-metrics
+subjects:
+  - kind: ServiceAccount
+    name: union-operator-kube-state-metrics
+    namespace: union
+---
+# Source: union-operator/templates/monitoring/prometheus/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: union-operator-prometheus
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: union-operator-prometheus
+subjects:
+  - kind: ServiceAccount
+    name: union-operator-prometheus
     namespace: union
 ---
 # Source: union-operator/templates/serviceaccount-logproxy.yaml
@@ -780,6 +1104,30 @@ subjects:
     name: union-operator
     namespace: union
 ---
+# Source: union-operator/charts/opencost/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+  namespace: union
+spec:
+  selector:
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9003
+      targetPort: 9003
+---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Service
 apiVersion: v1
@@ -797,6 +1145,73 @@ spec:
       protocol: TCP
       port: 443
       targetPort: 9443
+---
+# Source: union-operator/templates/monitoring/dcgm-exporter/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: union-operator-dcgm-exporter
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-dcgm-exporter
+    app.kubernetes.io/instance: union-operator-dcgm-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: "dcgm-exporter"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9400
+      targetPort:  9400
+      protocol: TCP
+      name: "metrics"
+  selector:
+    app.kubernetes.io/name: union-operator-dcgm-exporter
+    app.kubernetes.io/instance: union-operator-dcgm-exporter
+---
+# Source: union-operator/templates/monitoring/kube-state-metrics/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: union-operator-kube-state-metrics
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-kube-state-metrics
+    app.kubernetes.io/instance: union-operator-kube-state-metrics
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort:  8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: union-operator-kube-state-metrics
+    app.kubernetes.io/instance: union-operator-kube-state-metrics
+---
+# Source: union-operator/templates/monitoring/prometheus/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: union-operator-prometheus
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort:  9090
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
 ---
 # Source: union-operator/templates/service-proxy.yaml
 apiVersion: v1
@@ -857,6 +1272,174 @@ spec:
   selector:
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
+---
+# Source: union-operator/templates/monitoring/dcgm-exporter/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: union-operator-dcgm-exporter
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-dcgm-exporter
+    app.kubernetes.io/instance: union-operator-dcgm-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: "dcgm-exporter"
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: union-operator-dcgm-exporter
+      app.kubernetes.io/instance: union-operator-dcgm-exporter
+      app.kubernetes.io/component: "dcgm-exporter"
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: union-operator-dcgm-exporter
+        app.kubernetes.io/instance: union-operator-dcgm-exporter
+        app.kubernetes.io/component: "dcgm-exporter"
+    spec:
+      priorityClassName: system-node-critical
+      serviceAccountName: union-operator-dcgm-exporter
+      securityContext:
+        {}
+      volumes:
+        - name: "pod-gpu-resources"
+          hostPath:
+            path: /var/lib/kubelet/pod-resources
+      containers:
+        - name: exporter
+          image: "nvcr.io/nvidia/k8s/dcgm-exporter:3.1.7-3.1.4-ubuntu20.04"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities:
+              add:
+              - SYS_ADMIN
+            runAsNonRoot: false
+            runAsUser: 0
+          args:
+          - -f
+          - /etc/dcgm-exporter/dcp-metrics-included.csv
+          env:
+            - name: "DCGM_EXPORTER_KUBERNETES"
+              value: "true"
+            - name: "DCGM_EXPORTER_LISTEN"
+              value: ":9400"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          ports:
+            - name: "metrics"
+              containerPort: 9400
+          volumeMounts:
+            - name: "pod-gpu-resources"
+              readOnly: true
+              mountPath: "/var/lib/kubelet/pod-resources"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9400
+            initialDelaySeconds: 45
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9400
+            initialDelaySeconds: 45
+          resources:
+            limits:
+              cpu: 100m
+              ephemeral-storage: 500Mi
+              memory: 400Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 500Mi
+              memory: 128Mi
+      nodeSelector:
+        ami_type: AL2_x86_64_GPU
+      tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
+        - effect: NoSchedule
+          key: flyte.org/node-role
+          operator: Exists
+---
+# Source: union-operator/charts/opencost/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    helm.sh/chart: opencost-1.12.0
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/instance: union-operator
+    app.kubernetes.io/version: "1.102.0"
+    app.kubernetes.io/part-of: opencost
+    app.kubernetes.io/managed-by: Helm
+  name: opencost
+  namespace: union
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opencost
+      app.kubernetes.io/instance: union-operator
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: opencost
+        app.kubernetes.io/instance: union-operator
+    spec:
+      securityContext:
+        {}
+      serviceAccountName: opencost
+      tolerations:
+        []
+      containers:
+        - image: "quay.io/kubecost1/kubecost-cost-model:prod-1.102.0"
+          name: opencost
+          resources:
+            limits:
+              cpu: 999m
+              memory: 1Gi
+            requests:
+              cpu: 10m
+              memory: 55Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 200
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 10
+          ports:
+            - containerPort: 9003
+              name: http
+          securityContext:
+            {}
+          env:
+            - name: PROMETHEUS_SERVER_ENDPOINT
+              value: "http://union-operator-prometheus.sample-tenant.svc:80/prometheus"
+            - name: CLUSTER_ID
+              value: "default-cluster"
+            # If username, password or bearer_token are defined, pull from secrets
+            # Add any additional provided variables
+          imagePullPolicy: Always
 ---
 # Source: union-operator/charts/union/templates/clusterresourcesync/deployment.yaml
 apiVersion: apps/v1
@@ -1169,7 +1752,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "3509005c59e4c5b808445df6d5d350b00f5597a4fde030eee60fa6162da392a"
+        configChecksum: "2416fefd8fd5b88733cade184333b5bb4fbe6556b6b078b251947831cf00bdc"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
@@ -1258,6 +1841,143 @@ spec:
                   name: union-operator
                   key: tunnel_token
                   optional: false
+---
+# Source: union-operator/templates/monitoring/kube-state-metrics/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: union-operator-kube-state-metrics
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-kube-state-metrics
+    app.kubernetes.io/instance: union-operator-kube-state-metrics
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: union-operator-kube-state-metrics
+      app.kubernetes.io/instance: union-operator-kube-state-metrics
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: union-operator-kube-state-metrics
+        app.kubernetes.io/instance: union-operator-kube-state-metrics
+    spec:
+      priorityClassName: 
+      serviceAccountName: union-operator-kube-state-metrics
+      securityContext:
+        {}
+      containers:
+        - args:
+            - --port=8080
+            - --resources=certificatesigningrequests,configmaps,cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,ingresses,jobs,leases,limitranges,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,secrets,services,statefulsets,storageclasses,validatingwebhookconfigurations,volumeattachments
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: union-operator
+          image: "registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.8.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            limits:
+              cpu: "4"
+              ephemeral-storage: 500Mi
+              memory: 8Gi
+            requests:
+              cpu: "1"
+              ephemeral-storage: 100Mi
+              memory: 500Mi
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+---
+# Source: union-operator/templates/monitoring/prometheus/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: union-operator-prometheus
+  labels:
+    helm.sh/chart: union-operator-v0.0.1
+    app.kubernetes.io/name: union-operator-prometheus
+    app.kubernetes.io/instance: union-operator-prometheus
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: union-operator-prometheus
+      app.kubernetes.io/instance: union-operator-prometheus
+  template:
+    metadata:
+      annotations:
+        configChecksum: "1d2d3349af192568f0f868ab473f227e1507ea444a4313905f81b1f62d5612c"
+      labels:
+        app.kubernetes.io/name: union-operator-prometheus
+        app.kubernetes.io/instance: union-operator-prometheus
+    spec:
+      priorityClassName: 
+      serviceAccountName: union-operator-prometheus
+      securityContext:
+            fsGroup: 65534
+            fsGroupChangePolicy: OnRootMismatch
+            runAsNonRoot: true
+            runAsUser: 65534
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            name: 'union-operator-prometheus'
+      containers:
+        - args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --web.external-url=/prometheus/
+            - --web.route-prefix=/prometheus/
+            - --storage.tsdb.retention.size=400MB
+          image: "prom/prometheus:v2.43.0"
+          imagePullPolicy: IfNotPresent
+          name: union-operator
+          securityContext:
+            allowPrivilegeEscalation: false
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            limits:
+              cpu: "4"
+              ephemeral-storage: 1Gi
+              memory: 8Gi
+            requests:
+              cpu: "1"
+              ephemeral-storage: 500Mi
+              memory: 500Mi
+          volumeMounts:
+            - mountPath: /etc/prometheus
+              name: prometheus-config-volume
+          ports:
+            - name: http
+              containerPort: 18080
+              protocol: TCP
 ---
 # Source: union-operator/charts/union/templates/propeller/manager.yaml
 apiVersion: v1
