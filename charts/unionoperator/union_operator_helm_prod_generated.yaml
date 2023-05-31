@@ -807,14 +807,7 @@ rules:
   - apiGroups: [""]
     resources:
       - nodes
-      - services
-      - endpoints
       - pods
-    verbs: ["get", "list", "watch"]
-  - apiGroups:
-      - extensions
-    resources:
-      - ingresses
     verbs: ["get", "list", "watch"]
 ---
 # Source: union-operator/templates/monitoring/prometheus/rbac.yaml
@@ -1873,7 +1866,7 @@ spec:
       containers:
         - args:
             - --port=8080
-            - --resources=certificatesigningrequests,configmaps,cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,ingresses,jobs,leases,limitranges,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,secrets,services,statefulsets,storageclasses,validatingwebhookconfigurations,volumeattachments
+            - --resources=nodes,pods
           livenessProbe:
             failureThreshold: 3
             httpGet:
