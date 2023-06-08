@@ -500,14 +500,12 @@ data:
     global:
       scrape_interval:     15s
       evaluation_interval: 15s
-      external_labels:
-        organization: union
-        cluster_name: clustername
     alerting:
       alertmanagers:
       - static_configs:
         - targets:
     rule_files:
+      - rules.yml
     scrape_configs:
       - job_name: 'kube-state-metrics'
         static_configs:
@@ -515,7 +513,7 @@ data:
         metric_relabel_configs:
         - separator: ;
           source_labels: [__name__]
-          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests|kube_pod_status_phase
+          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests|kube_pod_status_phase|kube_node_labels|kube_node_status_condition
           action: keep
       - job_name: 'gpu-metrics'
         static_configs:
@@ -563,6 +561,12 @@ data:
           source_labels: [__name__]
           regex: container_.*|.*_labels|.*_cost
           action: keep
+  rules.yml: |
+    groups:
+      - name: rollup
+        rules:
+        - record: instance_type:kube_node_labels:sum
+          expr: sum by (label_node_kubernetes_io_instance_type, label_eks_amazonaws_com_capacity_type, label_cloud_google_com_gke_preemptible, label_cloud_google_com_gke_accelerator, label_node_group_name, label_node_pool_name, label_topology_kubernetes_io_region) (kube_node_labels{job="kube-state-metrics"})
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -1867,6 +1871,7 @@ spec:
         - args:
             - --port=8080
             - --resources=nodes,pods
+            - --metric-labels-allowlist=nodes=[eks.amazonaws.com/capacityType,cloud.google.com/gke-preemptible,cloud.google.com/gke-accelerator,node.kubernetes.io/instance-type,topology.kubernetes.io/region,topology.kubernetes.io/zone,node_group_name,node_pool_name]
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -1927,7 +1932,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "1d2d3349af192568f0f868ab473f227e1507ea444a4313905f81b1f62d5612c"
+        configChecksum: "696eb1ad5c8225ade99e71ccc7bb33d42eaa76d44c0fcb442c14ed1717839d2"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus
