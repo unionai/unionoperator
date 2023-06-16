@@ -56,6 +56,9 @@ union:
 
   flytepropeller:
     enabled: true
+    image:
+      repository: "cr.flyte.org/flyteorg/flytepropeller"
+      tag: "v1.1.98"
     # -- Replicas count for Flytepropeller deployment
     replicaCount: 1
     # -- Default resources requests and limits for Flytepropeller deployment
@@ -410,7 +413,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 54a9b549062639cf84a3b524560372409b7aad68 # UNION_OPERATOR_TAG
+      tag: ecd264326df602ac27e122969f0ef8e831a40260 # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
