@@ -257,6 +257,21 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+{{- define "flyteagent.name" -}}
+flyteagent
+{{- end -}}
+
+{{- define "flyteagent.selectorLabels" -}}
+app.kubernetes.io/name: {{ template "flyteagent.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{- define "flyteagent.labels" -}}
+{{ include "flyteagent.selectorLabels" . }}
+helm.sh/chart: {{ include "flyte.chart" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
 {{- define "union-storage.base" -}}
 storage:
 {{- if eq .Values.union.storage.type "s3" }}

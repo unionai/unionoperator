@@ -34,6 +34,29 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| flyteagent.additionalContainers | list | `[]` | Appends additional containers to the deployment spec. May include template values. |
+| flyteagent.additionalVolumeMounts | list | `[]` | Appends additional volume mounts to the main container's spec. May include template values. |
+| flyteagent.additionalVolumes | list | `[]` | Appends additional volumes to the deployment spec. May include template values. |
+| flyteagent.affinity | object | `{}` | affinity for flyteagent deployment |
+| flyteagent.configPath | string | `"/etc/flyteagent/config/*.yaml"` | Default regex string for searching configuration files |
+| flyteagent.enabled | bool | `false` |  |
+| flyteagent.extraArgs | object | `{}` | Appends extra command line arguments to the main command |
+| flyteagent.image.pullPolicy | string | `"IfNotPresent"` | Docker image pull policy |
+| flyteagent.image.repository | string | `"ghcr.io/flyteorg/flyteagent"` | Docker image for flyteagent deployment |
+| flyteagent.image.tag | string | `"1.6.2b1"` | Docker image tag |
+| flyteagent.nodeSelector | object | `{}` | nodeSelector for flyteagent deployment |
+| flyteagent.podAnnotations | object | `{}` | Annotations for flyteagent pods |
+| flyteagent.ports.containerPort | int | `8000` |  |
+| flyteagent.ports.name | string | `"agent-grpc"` |  |
+| flyteagent.priorityClassName | string | `""` | Sets priorityClassName for datacatalog pod(s). |
+| flyteagent.replicaCount | int | `1` | Replicas count for flyteagent deployment |
+| flyteagent.resources | object | `{"limits":{"cpu":"500m","ephemeral-storage":"100Mi","memory":"500Mi"},"requests":{"cpu":"10m","ephemeral-storage":"50Mi","memory":"50Mi"}}` | Default resources requests and limits for flyteagent deployment |
+| flyteagent.service | object | `{"type":"ClusterIP"}` | Service settings for flyteagent |
+| flyteagent.serviceAccount | object | `{"annotations":{},"create":true,"imagePullSecrets":[]}` | Configuration for service accounts for flyteagent |
+| flyteagent.serviceAccount.annotations | object | `{}` | Annotations for ServiceAccount attached to flyteagent pods |
+| flyteagent.serviceAccount.create | bool | `true` | Should a service account be created for flyteagent |
+| flyteagent.serviceAccount.imagePullSecrets | list | `[]` | ImagePullSecrets to automatically assign to the service account |
+| flyteagent.tolerations | list | `[]` | tolerations for flyteagent deployment |
 | minio.affinity | object | `{}` | affinity for Minio deployment |
 | minio.image.pullPolicy | string | `"IfNotPresent"` | Docker image pull policy |
 | minio.image.repository | string | `"ecr.flyte.org/bitnami/minio"` | Docker image for Minio deployment |
@@ -148,7 +171,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"2c451e34f9ab66ad93af1f752fb8bb424f83eb61"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"50273feeaef49b32533129bc0c4e4172cbfe95a8"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.unionoperatorMonitoring.dcgmExporter.arguments[0] | string | `"-f"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.arguments[1] | string | `"/etc/dcgm-exporter/dcp-metrics-included.csv"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.image.pullPolicy | string | `"IfNotPresent"` |  |
