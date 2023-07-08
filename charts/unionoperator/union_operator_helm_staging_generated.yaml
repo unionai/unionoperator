@@ -566,7 +566,7 @@ data:
       - name: rollup
         rules:
         - record: instance_type:kube_node_labels:sum
-          expr: sum by (label_node_kubernetes_io_instance_type, label_eks_amazonaws_com_capacity_type, label_cloud_google_com_gke_preemptible, label_cloud_google_com_gke_accelerator, label_node_group_name, label_node_pool_name, label_topology_kubernetes_io_region) (kube_node_labels{job="kube-state-metrics"})
+          expr: sum by (label_cloud_google_com_gke_accelerator, label_cloud_google_com_gke_preemptible, label_eks_amazonaws_com_capacity_type, label_flyte_org_node_role, label_node_group_name, label_node_kubernetes_io_instance_type, label_node_pool_name, label_topology_kubernetes_io_region) (kube_node_labels{job="kube-state-metrics"})
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -1871,7 +1871,7 @@ spec:
         - args:
             - --port=8080
             - --resources=nodes,pods
-            - --metric-labels-allowlist=nodes=[eks.amazonaws.com/capacityType,cloud.google.com/gke-preemptible,cloud.google.com/gke-accelerator,node.kubernetes.io/instance-type,topology.kubernetes.io/region,topology.kubernetes.io/zone,node_group_name,node_pool_name]
+            - --metric-labels-allowlist=nodes=[cloud.google.com/gke-accelerator,cloud.google.com/gke-preemptible,eks.amazonaws.com/capacityType,flyte.org/node-role,node.kubernetes.io/instance-type,node_group_name,node_pool_name,topology.kubernetes.io/region,topology.kubernetes.io/zone]
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -1932,7 +1932,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "696eb1ad5c8225ade99e71ccc7bb33d42eaa76d44c0fcb442c14ed1717839d2"
+        configChecksum: "d40a810fd52231ee7a8eabcfe10c52c4552385400dad9e53888982dd0f05425"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus

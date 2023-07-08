@@ -33,7 +33,7 @@ spec:
         - args:
             - --port=8080
             - --resources=nodes,pods
-            - --metric-labels-allowlist=nodes=[eks.amazonaws.com/capacityType,cloud.google.com/gke-preemptible,cloud.google.com/gke-accelerator,node.kubernetes.io/instance-type,topology.kubernetes.io/region,topology.kubernetes.io/zone,node_group_name,node_pool_name]
+            - --metric-labels-allowlist=nodes=[cloud.google.com/gke-accelerator,cloud.google.com/gke-preemptible,eks.amazonaws.com/capacityType,flyte.org/node-role,node.kubernetes.io/instance-type,node_group_name,node_pool_name,topology.kubernetes.io/region,topology.kubernetes.io/zone]
           livenessProbe:
             failureThreshold: 3
             httpGet:

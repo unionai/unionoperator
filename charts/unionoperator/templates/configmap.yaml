@@ -25,7 +25,7 @@ data:
           endpoint: http://flytepropeller.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.configmap.core.propeller "prof-port") }}
         proxy:
           endpoint: http://union-operator-proxy.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
-{{- if .Values.union.unionoperatorSparkHistoryServer.enabled }}
+{{- if and .Values.union.unionoperatorSparkHistoryServer.enabled .Values.union.unionoperatorSparkHistoryServer.dependencyCheckEnabled}}
         spark-hs:
           endpoint: http://union-operator-spark-hs.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
 {{- end }}
