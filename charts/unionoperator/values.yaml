@@ -369,7 +369,7 @@ union:
       enabled: false
   proxy:
     prof-port: 10254
-    replicaCount: 2
+    replicaCount: &minReplicaCount 2
     service:
       port: 8080
     serviceAccount:
@@ -397,7 +397,7 @@ union:
 
     autoscaling:
       enabled: false
-      minReplicas: 1
+      minReplicas: *minReplicaCount
       maxReplicas: 100
       targetCPUUtilizationPercentage: 80
       # targetMemoryUtilizationPercentage: 80
@@ -407,13 +407,13 @@ union:
   # ------------------------------------------------------
   unionoperator:
     priorityClassName: "system-cluster-critical"
-    replicaCount: 1
+    replicaCount: &minReplicaCount 1
 
     image:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 6f9d87d04196f77fd31da30c9e796e15621452e4 # UNION_OPERATOR_TAG
+      tag: 5327f34690fa2497e851e06483548fd6519b0b56 # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -466,7 +466,7 @@ union:
 
     autoscaling:
       enabled: false
-      minReplicas: 1
+      minReplicas: *minReplicaCount
       maxReplicas: 100
       targetCPUUtilizationPercentage: 80
       # targetMemoryUtilizationPercentage: 80
@@ -481,7 +481,7 @@ union:
 
   unionoperatorSparkHistoryServer:
     enabled: false
-    replicaCount: 1
+    replicaCount: &minReplicaCount 1
 
     image:
       repository: ghcr.io/flyteorg/flytecookbook
@@ -519,7 +519,7 @@ union:
 
     autoscaling:
       enabled: false
-      minReplicas: 1
+      minReplicas: *minReplicaCount
       maxReplicas: 10
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
