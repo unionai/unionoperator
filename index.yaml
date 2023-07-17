@@ -2,8 +2,28 @@ apiVersion: v1
 entries:
   union-operator:
   - apiVersion: v2
+    appVersion: v0.0.69
+    created: "2023-07-17T16:56:24.303412678Z"
+    dependencies:
+    - alias: union
+      name: flyte-core
+      repository: https://flyteorg.github.io/flyte/
+      version: v1.8.0
+    - condition: union.unionoperatorMonitoring.opencost.enabled
+      name: opencost
+      repository: https://opencost.github.io/opencost-helm-chart
+      version: v1.12.0
+    description: Deploys Union Operator to onboard a k8s cluster to Union Cloud
+    digest: 4decffc992d400761458007f77d410811e7091258fb7f162b946336814358330
+    icon: https://i.ibb.co/JxfDQsL/Union-Symbol-yellow-2.png
+    name: union-operator
+    type: application
+    urls:
+    - https://unionai.github.io/unionoperator/union-operator-v0.0.69.tgz
+    version: v0.0.69
+  - apiVersion: v2
     appVersion: v0.0.68
-    created: "2023-07-12T00:44:19.38690084Z"
+    created: "2023-07-17T16:56:24.292704373Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -23,7 +43,7 @@ entries:
     version: v0.0.68
   - apiVersion: v2
     appVersion: v0.0.67
-    created: "2023-07-12T00:44:19.374857864Z"
+    created: "2023-07-17T16:56:24.283164579Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -43,7 +63,7 @@ entries:
     version: v0.0.67
   - apiVersion: v2
     appVersion: v0.0.66
-    created: "2023-07-12T00:44:19.363167904Z"
+    created: "2023-07-17T16:56:24.27210647Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -63,7 +83,7 @@ entries:
     version: v0.0.66
   - apiVersion: v2
     appVersion: v0.0.65
-    created: "2023-07-12T00:44:19.351727857Z"
+    created: "2023-07-17T16:56:24.262677377Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -83,7 +103,7 @@ entries:
     version: v0.0.65
   - apiVersion: v2
     appVersion: v0.0.64
-    created: "2023-07-12T00:44:19.339732583Z"
+    created: "2023-07-17T16:56:24.251439966Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -103,7 +123,7 @@ entries:
     version: v0.0.64
   - apiVersion: v2
     appVersion: v0.0.63
-    created: "2023-07-12T00:44:19.328871664Z"
+    created: "2023-07-17T16:56:24.242077174Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -123,7 +143,7 @@ entries:
     version: v0.0.63
   - apiVersion: v2
     appVersion: v0.0.62
-    created: "2023-07-12T00:44:19.31626486Z"
+    created: "2023-07-17T16:56:24.232150976Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -143,7 +163,7 @@ entries:
     version: v0.0.62
   - apiVersion: v2
     appVersion: v0.0.61
-    created: "2023-07-12T00:44:19.304051176Z"
+    created: "2023-07-17T16:56:24.221927975Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -163,7 +183,7 @@ entries:
     version: v0.0.61
   - apiVersion: v2
     appVersion: v0.0.60
-    created: "2023-07-12T00:44:19.293312862Z"
+    created: "2023-07-17T16:56:24.212636284Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -183,7 +203,7 @@ entries:
     version: v0.0.60
   - apiVersion: v2
     appVersion: v0.0.59
-    created: "2023-07-12T00:44:19.274109344Z"
+    created: "2023-07-17T16:56:24.196538625Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -203,7 +223,7 @@ entries:
     version: v0.0.59
   - apiVersion: v2
     appVersion: v0.0.58
-    created: "2023-07-12T00:44:19.260959515Z"
+    created: "2023-07-17T16:56:24.18585242Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -223,7 +243,7 @@ entries:
     version: v0.0.58
   - apiVersion: v2
     appVersion: v0.0.57
-    created: "2023-07-12T00:44:19.24977918Z"
+    created: "2023-07-17T16:56:24.176443127Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -242,7 +262,7 @@ entries:
     version: v0.0.57
   - apiVersion: v2
     appVersion: v0.0.56
-    created: "2023-07-12T00:44:19.23829273Z"
+    created: "2023-07-17T16:56:24.166496029Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -261,7 +281,7 @@ entries:
     version: v0.0.56
   - apiVersion: v2
     appVersion: v0.0.55
-    created: "2023-07-12T00:44:19.225681027Z"
+    created: "2023-07-17T16:56:24.157236338Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -276,7 +296,7 @@ entries:
     version: v0.0.55
   - apiVersion: v2
     appVersion: v0.0.54
-    created: "2023-07-12T00:44:19.216636094Z"
+    created: "2023-07-17T16:56:24.148515752Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -291,7 +311,7 @@ entries:
     version: v0.0.54
   - apiVersion: v2
     appVersion: v0.0.53
-    created: "2023-07-12T00:44:19.206472808Z"
+    created: "2023-07-17T16:56:24.136942338Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -306,7 +326,7 @@ entries:
     version: v0.0.53
   - apiVersion: v2
     appVersion: v0.0.52
-    created: "2023-07-12T00:44:19.197585883Z"
+    created: "2023-07-17T16:56:24.129358264Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -321,7 +341,7 @@ entries:
     version: v0.0.52
   - apiVersion: v2
     appVersion: v0.0.51
-    created: "2023-07-12T00:44:19.187252088Z"
+    created: "2023-07-17T16:56:24.120565277Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -336,7 +356,7 @@ entries:
     version: v0.0.51
   - apiVersion: v2
     appVersion: v0.0.50
-    created: "2023-07-12T00:44:19.178407065Z"
+    created: "2023-07-17T16:56:24.113106404Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -351,7 +371,7 @@ entries:
     version: v0.0.50
   - apiVersion: v2
     appVersion: v0.0.49
-    created: "2023-07-12T00:44:19.161241644Z"
+    created: "2023-07-17T16:56:24.099258467Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -366,7 +386,7 @@ entries:
     version: v0.0.49
   - apiVersion: v2
     appVersion: v0.0.48
-    created: "2023-07-12T00:44:19.151694187Z"
+    created: "2023-07-17T16:56:24.09035148Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -381,7 +401,7 @@ entries:
     version: v0.0.48
   - apiVersion: v2
     appVersion: v0.0.47
-    created: "2023-07-12T00:44:19.143533897Z"
+    created: "2023-07-17T16:56:24.08332061Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -396,7 +416,7 @@ entries:
     version: v0.0.47
   - apiVersion: v2
     appVersion: v0.0.46
-    created: "2023-07-12T00:44:19.134081345Z"
+    created: "2023-07-17T16:56:24.075362132Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -411,7 +431,7 @@ entries:
     version: v0.0.46
   - apiVersion: v2
     appVersion: v0.0.45
-    created: "2023-07-12T00:44:19.126394677Z"
+    created: "2023-07-17T16:56:24.068686866Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -426,7 +446,7 @@ entries:
     version: v0.0.45
   - apiVersion: v2
     appVersion: v0.0.44
-    created: "2023-07-12T00:44:19.116676312Z"
+    created: "2023-07-17T16:56:24.061780798Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -441,7 +461,7 @@ entries:
     version: v0.0.44
   - apiVersion: v2
     appVersion: v0.0.43
-    created: "2023-07-12T00:44:19.10932636Z"
+    created: "2023-07-17T16:56:24.054240124Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -456,7 +476,7 @@ entries:
     version: v0.0.43
   - apiVersion: v2
     appVersion: v0.0.42
-    created: "2023-07-12T00:44:19.100609043Z"
+    created: "2023-07-17T16:56:24.047916562Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -471,7 +491,7 @@ entries:
     version: v0.0.42
   - apiVersion: v2
     appVersion: v0.0.41
-    created: "2023-07-12T00:44:19.093336296Z"
+    created: "2023-07-17T16:56:24.040052784Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -486,7 +506,7 @@ entries:
     version: v0.0.41
   - apiVersion: v2
     appVersion: v0.0.40
-    created: "2023-07-12T00:44:19.084805587Z"
+    created: "2023-07-17T16:56:24.033722722Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -501,7 +521,7 @@ entries:
     version: v0.0.40
   - apiVersion: v2
     appVersion: v0.0.39
-    created: "2023-07-12T00:44:19.071042529Z"
+    created: "2023-07-17T16:56:24.0213747Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -516,7 +536,7 @@ entries:
     version: v0.0.39
   - apiVersion: v2
     appVersion: v0.0.38
-    created: "2023-07-12T00:44:19.061938993Z"
+    created: "2023-07-17T16:56:24.015163139Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -531,7 +551,7 @@ entries:
     version: v0.0.38
   - apiVersion: v2
     appVersion: v0.0.37
-    created: "2023-07-12T00:44:19.054904757Z"
+    created: "2023-07-17T16:56:24.008326472Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -546,7 +566,7 @@ entries:
     version: v0.0.37
   - apiVersion: v2
     appVersion: v0.0.36
-    created: "2023-07-12T00:44:19.04514729Z"
+    created: "2023-07-17T16:56:24.001347103Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -561,7 +581,7 @@ entries:
     version: v0.0.36
   - apiVersion: v2
     appVersion: v0.0.35
-    created: "2023-07-12T00:44:19.037953446Z"
+    created: "2023-07-17T16:56:23.995081841Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -576,7 +596,7 @@ entries:
     version: v0.0.35
   - apiVersion: v2
     appVersion: v0.0.34
-    created: "2023-07-12T00:44:19.029586546Z"
+    created: "2023-07-17T16:56:23.988749379Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -591,7 +611,7 @@ entries:
     version: v0.0.34
   - apiVersion: v2
     appVersion: v0.0.33
-    created: "2023-07-12T00:44:19.022584811Z"
+    created: "2023-07-17T16:56:23.981981612Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -606,7 +626,7 @@ entries:
     version: v0.0.33
   - apiVersion: v2
     appVersion: v0.0.32
-    created: "2023-07-12T00:44:19.014698233Z"
+    created: "2023-07-17T16:56:23.975976453Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -621,7 +641,7 @@ entries:
     version: v0.0.32
   - apiVersion: v2
     appVersion: v0.0.31
-    created: "2023-07-12T00:44:19.007828805Z"
+    created: "2023-07-17T16:56:23.969801892Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -636,7 +656,7 @@ entries:
     version: v0.0.31
   - apiVersion: v2
     appVersion: v0.0.30
-    created: "2023-07-12T00:44:19.000925375Z"
+    created: "2023-07-17T16:56:23.96352833Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -651,7 +671,7 @@ entries:
     version: v0.0.30
   - apiVersion: v2
     appVersion: v0.0.29
-    created: "2023-07-12T00:44:18.986294775Z"
+    created: "2023-07-17T16:56:23.952384221Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -666,7 +686,7 @@ entries:
     version: v0.0.29
   - apiVersion: v2
     appVersion: v0.0.17-b3
-    created: "2023-07-12T00:44:18.978420098Z"
+    created: "2023-07-17T16:56:23.946051958Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -681,7 +701,7 @@ entries:
     version: v0.0.28
   - apiVersion: v2
     appVersion: v0.0.17-b1
-    created: "2023-07-12T00:44:18.970133501Z"
+    created: "2023-07-17T16:56:23.940293202Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -696,7 +716,7 @@ entries:
     version: v0.0.27
   - apiVersion: v2
     appVersion: v0.0.16
-    created: "2023-07-12T00:44:18.962276826Z"
+    created: "2023-07-17T16:56:23.932417724Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -711,7 +731,7 @@ entries:
     version: v0.0.26
   - apiVersion: v2
     appVersion: v0.0.16
-    created: "2023-07-12T00:44:18.953355899Z"
+    created: "2023-07-17T16:56:23.926776268Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -726,7 +746,7 @@ entries:
     version: v0.0.25
   - apiVersion: v2
     appVersion: v0.0.16
-    created: "2023-07-12T00:44:18.944172059Z"
+    created: "2023-07-17T16:56:23.920648708Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -741,7 +761,7 @@ entries:
     version: v0.0.24
   - apiVersion: v2
     appVersion: v0.0.16-b3
-    created: "2023-07-12T00:44:18.937032818Z"
+    created: "2023-07-17T16:56:23.914062243Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -756,7 +776,7 @@ entries:
     version: v0.0.23
   - apiVersion: v2
     appVersion: v0.0.15
-    created: "2023-07-12T00:44:18.927531363Z"
+    created: "2023-07-17T16:56:23.908419088Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -771,7 +791,7 @@ entries:
     version: v0.0.22
   - apiVersion: v2
     appVersion: v0.0.15
-    created: "2023-07-12T00:44:18.919079759Z"
+    created: "2023-07-17T16:56:23.900891313Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -786,7 +806,7 @@ entries:
     version: v0.0.21
   - apiVersion: v2
     appVersion: v0.0.14
-    created: "2023-07-12T00:44:18.910347341Z"
+    created: "2023-07-17T16:56:23.895149557Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -801,7 +821,7 @@ entries:
     version: v0.0.20
   - apiVersion: v2
     appVersion: v0.0.12
-    created: "2023-07-12T00:44:18.896827795Z"
+    created: "2023-07-17T16:56:23.883171139Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -816,7 +836,7 @@ entries:
     version: v0.0.19
   - apiVersion: v2
     appVersion: v0.0.11
-    created: "2023-07-12T00:44:18.887923069Z"
+    created: "2023-07-17T16:56:23.877377282Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -831,7 +851,7 @@ entries:
     version: v0.0.18
   - apiVersion: v2
     appVersion: v0.0.10
-    created: "2023-07-12T00:44:18.879692875Z"
+    created: "2023-07-17T16:56:23.871240721Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -846,7 +866,7 @@ entries:
     version: v0.0.17
   - apiVersion: v2
     appVersion: v0.0.10
-    created: "2023-07-12T00:44:18.871757395Z"
+    created: "2023-07-17T16:56:23.864919459Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -861,7 +881,7 @@ entries:
     version: v0.0.16
   - apiVersion: v2
     appVersion: v0.0.10
-    created: "2023-07-12T00:44:18.863123482Z"
+    created: "2023-07-17T16:56:23.859062601Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -876,7 +896,7 @@ entries:
     version: v0.0.15
   - apiVersion: v2
     appVersion: v0.0.10
-    created: "2023-07-12T00:44:18.856028743Z"
+    created: "2023-07-17T16:56:23.851420926Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -891,7 +911,7 @@ entries:
     version: v0.0.14
   - apiVersion: v2
     appVersion: v0.0.9
-    created: "2023-07-12T00:44:18.847332627Z"
+    created: "2023-07-17T16:56:23.845622269Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -906,7 +926,7 @@ entries:
     version: v0.0.13
   - apiVersion: v2
     appVersion: v0.0.9
-    created: "2023-07-12T00:44:18.8405085Z"
+    created: "2023-07-17T16:56:23.835230767Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -921,7 +941,7 @@ entries:
     version: v0.0.12
   - apiVersion: v2
     appVersion: v0.0.9
-    created: "2023-07-12T00:44:18.83088324Z"
+    created: "2023-07-17T16:56:23.829183607Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -936,7 +956,7 @@ entries:
     version: v0.0.11
   - apiVersion: v2
     appVersion: v0.0.8
-    created: "2023-07-12T00:44:18.822793853Z"
+    created: "2023-07-17T16:56:23.817493392Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -951,7 +971,7 @@ entries:
     version: v0.0.10
   - apiVersion: v2
     appVersion: v0.0.8
-    created: "2023-07-12T00:44:19.407029103Z"
+    created: "2023-07-17T16:56:24.321377555Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -966,7 +986,7 @@ entries:
     version: v0.0.9
   - apiVersion: v2
     appVersion: v0.0.6
-    created: "2023-07-12T00:44:19.400031268Z"
+    created: "2023-07-17T16:56:24.315638298Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -981,7 +1001,7 @@ entries:
     version: v0.0.8
   - apiVersion: v2
     appVersion: v0.0.3
-    created: "2023-07-12T00:44:19.393465454Z"
+    created: "2023-07-17T16:56:24.308625429Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -996,7 +1016,7 @@ entries:
     version: v0.0.7
   - apiVersion: v2
     appVersion: v0.0.3
-    created: "2023-07-12T00:44:19.280805964Z"
+    created: "2023-07-17T16:56:24.201750977Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -1011,7 +1031,7 @@ entries:
     version: v0.0.6
   - apiVersion: v2
     appVersion: v0.0.3
-    created: "2023-07-12T00:44:19.167384538Z"
+    created: "2023-07-17T16:56:24.104419518Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -1026,7 +1046,7 @@ entries:
     version: v0.0.5
   - apiVersion: v2
     appVersion: v0.0.2
-    created: "2023-07-12T00:44:19.077112419Z"
+    created: "2023-07-17T16:56:24.026890454Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -1041,7 +1061,7 @@ entries:
     version: v0.0.4
   - apiVersion: v2
     appVersion: v0.0.2
-    created: "2023-07-12T00:44:18.992580675Z"
+    created: "2023-07-17T16:56:23.957698573Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -1056,7 +1076,7 @@ entries:
     version: v0.0.3
   - apiVersion: v2
     appVersion: v0.0.1
-    created: "2023-07-12T00:44:18.903263102Z"
+    created: "2023-07-17T16:56:23.887968086Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -1071,7 +1091,7 @@ entries:
     version: v0.0.2
   - apiVersion: v2
     appVersion: v0.0.1
-    created: "2023-07-12T00:44:18.814648163Z"
+    created: "2023-07-17T16:56:23.81119323Z"
     dependencies:
     - alias: union
       name: flyte-core
@@ -1084,4 +1104,4 @@ entries:
     urls:
     - https://unionai.github.io/unionoperator/union-operator-v0.0.1.tgz
     version: v0.0.1
-generated: "2023-07-12T00:44:18.807591825Z"
+generated: "2023-07-17T16:56:23.804403263Z"
