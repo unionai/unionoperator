@@ -1,9 +1,9 @@
 dependencies:
 - name: flyte-core
   repository: https://flyteorg.github.io/flyte/
-  version: v1.6.0
+  version: v1.8.0
 - name: opencost
   repository: https://opencost.github.io/opencost-helm-chart
   version: 1.12.0
-digest: sha256:3620c4e75c7414c2d73aca5d4afa0a5a9b0c1ccf0a814b3310b801056e4ee39e
-generated: "2023-07-12T00:43:09.691366664Z"
+digest: sha256:c1dc2d98b35e0bbbd5e5d8cc84c68e8dea126f6d16eb34df4f9d38c3b554f13f
+generated: "2023-07-17T16:55:20.96693382Z"
