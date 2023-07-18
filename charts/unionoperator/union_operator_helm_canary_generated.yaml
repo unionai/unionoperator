@@ -578,6 +578,9 @@ data:
           source_labels: [__name__]
           regex: container_.*|.*_labels|.*_cost
           action: keep
+      - job_name: 'union-metrics'
+        static_configs:
+        - targets: ['union-operator.union.svc.cluster.local']
   rules.yml: |
     groups:
       - name: rollup
@@ -2020,7 +2023,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "d40a810fd52231ee7a8eabcfe10c52c4552385400dad9e53888982dd0f05425"
+        configChecksum: "b4a42d9d85353c22806c5b3bc9b66c992a69cf6011ec88f46da9a2cb7c64590"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus

@@ -79,6 +79,9 @@ data:
           regex: container_.*|.*_labels|.*_cost
           action: keep
       {{- end}}
+      - job_name: 'union-metrics'
+        static_configs:
+        - targets: ['{{ include "union-operator.fullname" . }}.{{ include "union-operator.namespace" . }}.svc.cluster.local']
   rules.yml: |
     groups:
       - name: rollup
