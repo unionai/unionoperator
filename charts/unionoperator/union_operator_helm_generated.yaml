@@ -1088,7 +1088,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: "cr.flyte.org/flyteorg/flytepropeller:v1.1.98"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.8.0"
         imagePullPolicy: "IfNotPresent"
         name: flytepropeller-manager
         ports:
@@ -1135,7 +1135,7 @@ spec:
       labels:
         app: flyte-pod-webhook
         app.kubernetes.io/name: flyte-pod-webhook
-        app.kubernetes.io/version: v1.1.98
+        app.kubernetes.io/version: v1.8.0
       annotations:
         configChecksum: "12853edabc9ba141a587a12e35a081af1d17e45722edd9ca45fba4a8ead67fc"
     spec:
@@ -1146,7 +1146,7 @@ spec:
       serviceAccountName: flyte-pod-webhook
       initContainers:
       - name: generate-secrets
-        image: "cr.flyte.org/flyteorg/flytepropeller:v1.1.98"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.8.0"
         imagePullPolicy: "IfNotPresent"
         command:
           - flytepropeller
@@ -1169,7 +1169,7 @@ spec:
             mountPath: /etc/flyte/config
       containers:
         - name: webhook
-          image: "cr.flyte.org/flyteorg/flytepropeller:v1.1.98"
+          image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.8.0"
           imagePullPolicy: "IfNotPresent"
           command:
             - flytepropeller
@@ -1240,7 +1240,7 @@ spec:
         - name: union-operator-proxy
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:ecb82bf4b7066111359cfa45666f840669fb21a8"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:26ed349acb652e33e0d18c90cdef875f1c7d5a55"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1316,7 +1316,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:ecb82bf4b7066111359cfa45666f840669fb21a8"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:26ed349acb652e33e0d18c90cdef875f1c7d5a55"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1469,7 +1469,7 @@ template:
         valueFrom:
           fieldRef:
             fieldPath: metadata.name
-      image: "cr.flyte.org/flyteorg/flytepropeller:v1.1.98"
+      image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.8.0"
       imagePullPolicy: "IfNotPresent"
       name: flytepropeller
       ports:

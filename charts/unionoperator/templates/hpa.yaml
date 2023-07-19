@@ -1,5 +1,5 @@
 {{- if .Values.union.unionoperator.autoscaling.enabled }}
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "union-operator.fullname" . }}
@@ -17,12 +17,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.union.unionoperator.autoscaling.targetCPUUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.union.unionoperator.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
     {{- if .Values.union.unionoperator.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.union.unionoperator.autoscaling.targetMemoryUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.union.unionoperator.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}
