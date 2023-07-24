@@ -2,7 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "union-operator.fullname" . }}-kube-state-metrics
+  name: kube-state-metrics
+  namespace: kube-system
   labels:
     {{- include "unionoperatorMonitoring.kubeStateMetrics.labels" . | nindent 4 }}
 spec:
@@ -21,7 +22,7 @@ spec:
       labels:
         {{- include "unionoperatorMonitoring.kubeStateMetrics.selectorLabels" . | nindent 8 }}
     spec:
-      priorityClassName: {{ .Values.union.unionoperatorMonitoring.kubeStateMetrics.priorityClassName }}
+      priorityClassName: {{ .Values.union.unionoperatorMonitoring.kubeStateMetrics.priorityClassName | default "system-cluster-critical"  }}
       {{- with .Values.union.unionoperatorMonitoring.kubeStateMetrics.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

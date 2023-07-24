@@ -2,13 +2,13 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "union-operator.fullname" . }}-kube-state-metrics
+  name: kube-state-metrics
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "union-operator.fullname" . }}-kube-state-metrics
+  name: kube-state-metrics
 subjects:
   - kind: ServiceAccount
     name: {{ include "unionoperatorMonitoring.kubeStateMetrics.serviceAccountName" . }}
-    namespace: {{ include "union-operator.namespace" . }}
+    namespace: kube-system
 {{- end }}

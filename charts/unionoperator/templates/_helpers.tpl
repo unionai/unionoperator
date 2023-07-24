@@ -200,7 +200,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Kube State metrics  Server selector labels
 */}}
 {{- define "unionoperatorMonitoring.kubeStateMetrics.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "union-operator.name" . }}-kube-state-metrics
+app.kubernetes.io/name: kube-state-metrics
 app.kubernetes.io/instance: {{ .Release.Name }}-kube-state-metrics
 {{- end }}
 
@@ -209,7 +209,7 @@ Create the name of the service account to use for the Kube State metrics server
 */}}
 {{- define "unionoperatorMonitoring.kubeStateMetrics.serviceAccountName" -}}
 {{- if  .Values.union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.create }}
-{{- default "union-operator-kube-state-metrics"  .Values.union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.name }}
+{{- default "kube-state-metrics"  .Values.union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.union.unionoperatorMonitoring.kubeStateMetrics.serviceAccount.name }}
 {{- end }}
@@ -231,7 +231,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 DCGM exporter selector labels
 */}}
 {{- define "unionoperatorMonitoring.dcgmExporter.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "union-operator.name" . }}-dcgm-exporter
+app.kubernetes.io/name: dcgm-exporter
 app.kubernetes.io/instance: {{ .Release.Name }}-dcgm-exporter
 {{- end }}
 
@@ -240,7 +240,7 @@ Create the name of the service account to use for the DCGM exporter
 */}}
 {{- define "unionoperatorMonitoring.dcgmExporter.serviceAccountName" -}}
 {{- if  .Values.union.unionoperatorMonitoring.dcgmExporter.serviceAccount.create }}
-{{- default "union-operator-dcgm-exporter"  .Values.union.unionoperatorMonitoring.dcgmExporter.serviceAccount.name }}
+{{- default "dcgm-exporter"  .Values.union.unionoperatorMonitoring.dcgmExporter.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.union.unionoperatorMonitoring.dcgmExporter.serviceAccount.name }}
 {{- end }}

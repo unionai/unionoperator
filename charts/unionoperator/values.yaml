@@ -410,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 37e47fbf15e413ccd6a514c4c1c5d936e648fd3c # UNION_OPERATOR_TAG
+      tag: 98738c4e2a3228ea3073fb814516b46cee39ae54 # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -641,6 +641,7 @@ union:
       securityContext:
         runAsNonRoot: false
         runAsUser: 0
+        privileged: true
         capabilities:
           add: [ "SYS_ADMIN" ]
 
@@ -648,8 +649,18 @@ union:
         type: ClusterIP
         port: 9400
         address: ":9400"
-      nodeSelector:
-        ami_type: AL2_x86_64_GPU
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ami_type
+                operator: In
+                values:
+                - AL2_x86_64_GPU
+            - matchExpressions:
+              - key: cloud.google.com/gke-accelerator
+                operator: Exists
       tolerations:
         - effect: NoSchedule
           key: nvidia.com/gpu
@@ -667,6 +678,14 @@ union:
           ephemeral-storage: 500Mi
           memory: 128Mi
       kubeletPath: "/var/lib/kubelet/pod-resources"
+      extraHostVolumes:
+        - name: nvidia-install-dir-host
+          hostPath: /home/kubernetes/bin/nvidia
+      extraVolumeMounts:
+        - name: nvidia-install-dir-host
+          mountPath: /usr/local/nvidia
+          readOnly: true
+
     opencost:
       enabled: false
       scrape: false

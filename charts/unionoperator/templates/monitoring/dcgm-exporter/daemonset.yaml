@@ -2,7 +2,8 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ include "union-operator.fullname" . }}-dcgm-exporter
+  name: dcgm-exporter
+  namespace: kube-system
   labels:
     {{- include "unionoperatorMonitoring.dcgmExporter.labels" . | nindent 4 }}
     app.kubernetes.io/component: "dcgm-exporter"
@@ -39,11 +40,11 @@ spec:
         - name: "pod-gpu-resources"
           hostPath:
             path: {{ .Values.union.unionoperatorMonitoring.dcgmExporter.kubeletPath }}
-      {{- range .Values.union.unionoperatorMonitoring.dcgmExporter.extraHostVolumes }}
-      - name: {{ .name | quote }}
-        hostPath:
-          path: {{ .hostPath | quote }}
-      {{- end }}
+        {{- range .Values.union.unionoperatorMonitoring.dcgmExporter.extraHostVolumes }}
+        - name: {{ .name | quote }}
+          hostPath:
+            path: {{ .hostPath | quote }}
+        {{- end }}
       {{- with .Values.union.unionoperatorMonitoring.dcgmExporter.extraConfigMapVolumes }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
@@ -67,7 +68,7 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
           {{- if .Values.union.unionoperatorMonitoring.dcgmExporter.extraEnv }}
-          {{- toYaml .Values.union.unionoperatorMonitoring.dcgmExporter.extraEnv | nindent 8 }}
+          {{- toYaml .Values.union.unionoperatorMonitoring.dcgmExporter.extraEnv | nindent 12 }}
           {{- end }}
           ports:
             - name: "metrics"
@@ -77,7 +78,7 @@ spec:
               readOnly: true
               mountPath: "/var/lib/kubelet/pod-resources"
           {{- if .Values.union.unionoperatorMonitoring.dcgmExporter.extraVolumeMounts }}
-          {{- toYaml .Values.union.unionoperatorMonitoring.dcgmExporter.extraVolumeMounts | nindent 8 }}
+          {{- toYaml .Values.union.unionoperatorMonitoring.dcgmExporter.extraVolumeMounts | nindent 12 }}
           {{- end }}
           livenessProbe:
             httpGet:
