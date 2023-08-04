@@ -88,4 +88,6 @@ data:
         rules:
         - record: instance_type:kube_node_labels:sum
           expr: sum by (label_cloud_google_com_gke_accelerator, label_cloud_google_com_gke_preemptible, label_eks_amazonaws_com_capacity_type, label_flyte_org_node_role, label_node_group_name, label_node_kubernetes_io_instance_type, label_node_pool_name, label_topology_kubernetes_io_region) (kube_node_labels{job="kube-state-metrics"})
+        - record: phase:kube_pod_status_phase:sum
+          expr: sum by (phase) (kube_pod_status_phase{job="kube-state-metrics"})
 {{- end }}

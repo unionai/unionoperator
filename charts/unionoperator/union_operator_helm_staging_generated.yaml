@@ -589,6 +589,8 @@ data:
         rules:
         - record: instance_type:kube_node_labels:sum
           expr: sum by (label_cloud_google_com_gke_accelerator, label_cloud_google_com_gke_preemptible, label_eks_amazonaws_com_capacity_type, label_flyte_org_node_role, label_node_group_name, label_node_kubernetes_io_instance_type, label_node_pool_name, label_topology_kubernetes_io_region) (kube_node_labels{job="kube-state-metrics"})
+        - record: phase:kube_pod_status_phase:sum
+          expr: sum by (phase) (kube_pod_status_phase{job="kube-state-metrics"})
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -2046,7 +2048,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "3a5ae95c67e9a58a0c5034aed000d9ed46c19873956a75c5b07d0d7bd36adb3"
+        configChecksum: "72acfa1073bfdef201db56e50c19b51087baaaeee4035c532743fdf7d446755"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus
