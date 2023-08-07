@@ -410,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: f0aed2951f806bdecade370f6b0946ebb46a0108 # UNION_OPERATOR_TAG
+      tag: 4cca595cf50737ade08aca8bc93057f99da2f2da # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -689,6 +689,7 @@ union:
     opencost:
       enabled: false
       scrape: false
+    extraScrapeConfigs: []
 
 opencost:
   # Values documented at https://github.com/opencost/opencost-helm-chart/tree/main/charts/opencost

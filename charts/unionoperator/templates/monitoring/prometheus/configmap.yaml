@@ -67,6 +67,9 @@ data:
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
           action: replace
+      - job_name: 'union-metrics'
+        static_configs:
+        - targets: ['{{ include "union-operator.fullname" . }}.{{ include "union-operator.namespace" . }}.svc.cluster.local']
       {{- if and (.Values.union.unionoperatorMonitoring.opencost.enabled) (.Values.union.unionoperatorMonitoring.opencost.scrape) }}
       - job_name: 'opencost'
         honor_labels: true
@@ -79,9 +82,9 @@ data:
           regex: container_.*|.*_labels|.*_cost
           action: keep
       {{- end}}
-      - job_name: 'union-metrics'
-        static_configs:
-        - targets: ['{{ include "union-operator.fullname" . }}.{{ include "union-operator.namespace" . }}.svc.cluster.local']
+      {{- with .Values.union.unionoperatorMonitoring.extraScrapeConfigs }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
   rules.yml: |
     groups:
       - name: rollup

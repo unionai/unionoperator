@@ -570,6 +570,9 @@ data:
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
           action: replace
+      - job_name: 'union-metrics'
+        static_configs:
+        - targets: ['union-operator.union.svc.cluster.local']
       - job_name: 'opencost'
         honor_labels: true
         scrape_interval: 1m
@@ -580,9 +583,6 @@ data:
           source_labels: [__name__]
           regex: container_.*|.*_labels|.*_cost
           action: keep
-      - job_name: 'union-metrics'
-        static_configs:
-        - targets: ['union-operator.union.svc.cluster.local']
   rules.yml: |
     groups:
       - name: rollup
@@ -2048,7 +2048,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "72acfa1073bfdef201db56e50c19b51087baaaeee4035c532743fdf7d446755"
+        configChecksum: "6b2e48f2abb52c8ba5b48d7336f1c8b419d2fe89fd1e3d4e6c041f2a772be18"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus
