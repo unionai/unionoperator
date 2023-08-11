@@ -31,6 +31,9 @@ data:
           source_labels: [__name__]
           regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests|kube_pod_status_phase|kube_node_labels|kube_node_status_condition
           action: keep
+        {{- with .Values.union.unionoperatorMonitoring.scrapeConfigs.kubeStateMetrics.extraMetricRelabelConfigs }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       - job_name: 'gpu-metrics'
         static_configs:
         - targets: ['dcgm-exporter.kube-system.svc.cluster.local:{{ .Values.union.unionoperatorMonitoring.dcgmExporter.service.port }}']
