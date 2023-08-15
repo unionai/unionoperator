@@ -353,6 +353,11 @@ data:
       enable-admin-launcher: true
       event-config:
         raw-output-policy: inline
+      gc-interval: 12h
+      kube-client-config:
+        burst: 25
+        qps: 100
+        timeout: 30s
       leader-election:
         enabled: false
         lease-duration: 15s
@@ -362,26 +367,26 @@ data:
         renew-deadline: 10s
         retry-period: 2s
       limit-namespace: all
-      max-workflow-retries: 30
+      max-workflow-retries: 50
       metadata-prefix: metadata/propeller
       metrics-prefix: flyte
       prof-port: 10254
       queue:
         batch-size: -1
-        batching-interval: 2s
+        batching-interval: 1s
         queue:
-          base-delay: 5s
-          capacity: 1000
-          max-delay: 120s
-          rate: 100
+          base-delay: 0s
+          capacity: 10000
+          max-delay: 60s
+          rate: 1000
           type: maxof
         sub-queue:
-          capacity: 100
-          rate: 10
+          capacity: 10000
+          rate: 1000
           type: bucket
         type: batch
       rawoutput-prefix: 's3://opencompute-staging-sample-tenant'
-      workers: 4
+      workers: 40
       workflow-reeval-duration: 30s
     webhook:
       certDir: /etc/webhook/certs
@@ -526,6 +531,14 @@ data:
     rule_files:
       - rules.yml
     scrape_configs:
+      - job_name: 'prometheus'
+        metrics_path: /prometheus/metrics
+        static_configs:
+        - targets: ['localhost:9090']
+        metric_relabel_configs:
+        - source_labels: [__name__]
+          regex: prometheus_tsdb_head_chunks_storage_size_bytes|prometheus_tsdb_head_series|prometheus_tsdb_head_series_created_total|prometheus_tsdb_head_series_removed_total|prometheus_tsdb_head_samples_appended_total|prometheus_tsdb_storage_blocks_bytes|prometheus_tsdb_retention_limit_bytes|prometheus_tsdb_wal_storage_size_bytes
+          action: keep
       - job_name: 'kube-state-metrics'
         static_configs:
         - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
@@ -591,6 +604,14 @@ data:
           expr: sum by (label_cloud_google_com_gke_accelerator, label_cloud_google_com_gke_preemptible, label_eks_amazonaws_com_capacity_type, label_flyte_org_node_role, label_node_group_name, label_node_kubernetes_io_instance_type, label_node_pool_name, label_topology_kubernetes_io_region) (kube_node_labels{job="kube-state-metrics"})
         - record: phase:kube_pod_status_phase:sum
           expr: sum by (phase) (kube_pod_status_phase{job="kube-state-metrics"})
+        - record: pod:container_cpu_usage_seconds_total:sum
+          expr: sum by (namespace, pod) (container_cpu_usage_seconds_total{namespace="union", image!="", job="kubernetes-cadvisor"})
+        - record: pod:container_memory_working_set_bytes:sum
+          expr: sum by (namespace, pod) (container_memory_working_set_bytes{namespace="union", image!="", job="kubernetes-cadvisor"})
+        - record: pod:kube_pod_container_resource_requests:sum
+          expr: sum by (namespace, pod, resource) (kube_pod_container_resource_requests{namespace="union", resource=~"cpu|memory", job="kube-state-metrics"})
+        - record: pod:kube_pod_container_resource_limits:sum
+          expr: sum by (namespace, pod, resource) (kube_pod_container_resource_limits{namespace="union", resource=~"cpu|memory", job="kube-state-metrics"})
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -1630,7 +1651,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "198716f81eb9de65ca3ddf001f5c4b4b1d1ead6ae87922f5854afb29176d251"
+        configChecksum: "f90ee930ad8f577e107c45f7a8e9df793d75e8bba8257e63faf4650ed45151a"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
@@ -1708,7 +1729,7 @@ spec:
         app.kubernetes.io/name: flyte-pod-webhook
         app.kubernetes.io/version: v1.8.0
       annotations:
-        configChecksum: "198716f81eb9de65ca3ddf001f5c4b4b1d1ead6ae87922f5854afb29176d251"
+        configChecksum: "f90ee930ad8f577e107c45f7a8e9df793d75e8bba8257e63faf4650ed45151a"
     spec:
       securityContext:
         fsGroup: 65534
@@ -2048,7 +2069,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "6b2e48f2abb52c8ba5b48d7336f1c8b419d2fe89fd1e3d4e6c041f2a772be18"
+        configChecksum: "99da9640503044c18eeb43bd2d3ec89287e73a5472d1f11851433cee503db1e"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus
@@ -2102,7 +2123,7 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "198716f81eb9de65ca3ddf001f5c4b4b1d1ead6ae87922f5854afb29176d251"
+      configChecksum: "f90ee930ad8f577e107c45f7a8e9df793d75e8bba8257e63faf4650ed45151a"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator

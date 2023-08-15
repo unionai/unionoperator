@@ -296,6 +296,11 @@ data:
       enable-admin-launcher: true
       event-config:
         raw-output-policy: inline
+      gc-interval: 12h
+      kube-client-config:
+        burst: 25
+        qps: 100
+        timeout: 30s
       leader-election:
         enabled: false
         lease-duration: 15s
@@ -305,26 +310,26 @@ data:
         renew-deadline: 10s
         retry-period: 2s
       limit-namespace: all
-      max-workflow-retries: 30
+      max-workflow-retries: 50
       metadata-prefix: metadata/propeller
       metrics-prefix: flyte
       prof-port: 10254
       queue:
         batch-size: -1
-        batching-interval: 2s
+        batching-interval: 1s
         queue:
-          base-delay: 5s
-          capacity: 1000
-          max-delay: 120s
-          rate: 100
+          base-delay: 0s
+          capacity: 10000
+          max-delay: 60s
+          rate: 1000
           type: maxof
         sub-queue:
-          capacity: 100
-          rate: 10
+          capacity: 10000
+          rate: 1000
           type: bucket
         type: batch
       rawoutput-prefix: 's3://my-s3-bucket'
-      workers: 4
+      workers: 40
       workflow-reeval-duration: 30s
     webhook:
       certDir: /etc/webhook/certs
@@ -1059,7 +1064,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "12853edabc9ba141a587a12e35a081af1d17e45722edd9ca45fba4a8ead67fc"
+        configChecksum: "b7e4666fc64373126dd812a9af23a41844d71e50a89dccb3886435a1a3936df"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
@@ -1137,7 +1142,7 @@ spec:
         app.kubernetes.io/name: flyte-pod-webhook
         app.kubernetes.io/version: v1.8.0
       annotations:
-        configChecksum: "12853edabc9ba141a587a12e35a081af1d17e45722edd9ca45fba4a8ead67fc"
+        configChecksum: "b7e4666fc64373126dd812a9af23a41844d71e50a89dccb3886435a1a3936df"
     spec:
       securityContext:
         fsGroup: 65534
@@ -1240,7 +1245,7 @@ spec:
         - name: union-operator-proxy
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:a229d6585ac9da52198806fe8ff36bf8afc04a97"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:5131fbfe55b18a3b328bb0d9e2f3dcd1610ce09d"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1316,7 +1321,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:a229d6585ac9da52198806fe8ff36bf8afc04a97"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:5131fbfe55b18a3b328bb0d9e2f3dcd1610ce09d"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1447,7 +1452,7 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "12853edabc9ba141a587a12e35a081af1d17e45722edd9ca45fba4a8ead67fc"
+      configChecksum: "b7e4666fc64373126dd812a9af23a41844d71e50a89dccb3886435a1a3936df"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator

@@ -239,42 +239,37 @@ union:
         shard:
           type: Hash     # use the "hash" shard strategy
           shard-count: 3 # the total number of shards
-      # -- follows the structure specified [here](https://pkg.go.dev/github.com/flyteorg/flytepropeller/pkg/controller/config).
+      # -- Propeller config specified [here](https://pkg.go.dev/github.com/flyteorg/flytepropeller/pkg/controller/config).
+      # These values are chosen to match a mix of [propeller config defaults](https://github.com/flyteorg/flytepropeller/blob/cbfcdf3396346bf83bd8e885d21803a5e53108ee/pkg/controller/config/config.go#L51-L114)
+      # (many of which are overridden in the Chart's [values.yaml](https://github.com/flyteorg/flyte/blob/e6fa8120dc0be4c46e789270c89fcfef3f6289f9/charts/flyte-core/values.yaml#L671-L703)),
+      # along with cloud-specific settings from [here](https://github.com/flyteorg/flyte/blob/e6fa8120dc0be4c46e789270c89fcfef3f6289f9/charts/flyte-core/values-eks.yaml#L233-L246).
       propeller:
         rawoutput-prefix: '{{ tpl .Values.metadataBucketPrefix $ }}'
-        metadata-prefix: metadata/propeller
-        workers: 4
-        max-workflow-retries: 30
-        workflow-reeval-duration: 30s
-        downstream-eval-duration: 30s
-        limit-namespace: "all"
-        prof-port: 10254
-        metrics-prefix: flyte
-        enable-admin-launcher: true
+        workers: 40
+        max-workflow-retries: 50
         leader-election:
-          lock-config-map:
-            name: propeller-leader
-            namespace: flyte
           enabled: false
-          lease-duration: 15s
-          renew-deadline: 10s
-          retry-period: 2s
         queue:
           type: batch
-          batching-interval: 2s
+          batching-interval: 1s
           batch-size: -1
           queue:
             type: maxof
-            rate: 100
-            capacity: 1000
-            base-delay: 5s
-            max-delay: 120s
+            base-delay: 0s
+            max-delay: 60s
+            rate: 1000
+            capacity: 10000
           sub-queue:
             type: bucket
-            rate: 10
-            capacity: 100
+            rate: 1000
+            capacity: 10000
         event-config:
           raw-output-policy: inline
+        gc-interval: 12h
+        kube-client-config:
+          qps: 100
+          burst: 25
+          timeout: 30s
       webhook:
         certDir: /etc/webhook/certs
         serviceName: flyte-pod-webhook
@@ -410,7 +405,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: a229d6585ac9da52198806fe8ff36bf8afc04a97 # UNION_OPERATOR_TAG
+      tag: 5131fbfe55b18a3b328bb0d9e2f3dcd1610ce09d # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
