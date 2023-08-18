@@ -23,15 +23,35 @@ data:
       dependenciesHeartbeat:
         propeller:
           endpoint: http://flytepropeller.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.configmap.core.propeller "prof-port") }}
+          {{- if .Values.union.unionoperatorDependencies }}
+          {{- if .Values.union.unionoperatorDependencies.unhealthyThreshold }}
+          unhealthyThreshold: {{ tpl (.Values.union.unionoperatorDependencies.unhealthyThreshold | toString) $ }}
+          {{- end }}
+          {{- end }}
         proxy:
           endpoint: http://union-operator-proxy.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
+          {{- if .Values.union.unionoperatorDependencies }}
+          {{- if .Values.union.unionoperatorDependencies.unhealthyThreshold }}
+          unhealthyThreshold: {{ tpl (.Values.union.unionoperatorDependencies.unhealthyThreshold | toString) $ }}
+          {{- end }}
+          {{- end }}
 {{- if and .Values.union.unionoperatorSparkHistoryServer.enabled .Values.union.unionoperatorSparkHistoryServer.dependencyCheckEnabled}}
         spark-hs:
           endpoint: http://union-operator-spark-hs.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ print (index .Values.union.proxy "prof-port") }}
+          {{- if .Values.union.unionoperatorDependencies }}
+          {{- if .Values.union.unionoperatorDependencies.unhealthyThreshold }}
+          unhealthyThreshold: {{ tpl (.Values.union.unionoperatorDependencies.unhealthyThreshold | toString) $ }}
+          {{- end }}
+          {{- end }}
 {{- end }}
 {{- if .Values.union.unionoperatorMonitoring.enabled }}
         prometheus:
           endpoint: http://{{ include "union-operator.fullname" . }}-prometheus.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ printf "%d%sapi/v1/targets" (int (index .Values.union.unionoperatorMonitoring.prometheus.service "port")) "/prometheus/" }}
+          {{- if .Values.union.unionoperatorDependencies }}
+          {{- if  .Values.union.unionoperatorDependencies.unhealthyThreshold }}
+          unhealthyThreshold: {{ tpl (.Values.union.unionoperatorDependencies.unhealthyThreshold | toString) $ }}
+          {{- end }}
+          {{- end }}
 {{- end }}
       clusterData:
         appId: {{ tpl (.Values.union.appId | toString) $ }}
