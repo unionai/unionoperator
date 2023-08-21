@@ -341,6 +341,9 @@ data:
           name: flyte-copilot-
           start-timeout: 30s
   core.yaml: | 
+    cache:
+      max_size_mbs: 1024
+      target_gc_percent: 70
     manager:
       pod-application: flytepropeller
       pod-template-container-name: flytepropeller
@@ -1651,7 +1654,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "f90ee930ad8f577e107c45f7a8e9df793d75e8bba8257e63faf4650ed45151a"
+        configChecksum: "ee8678fc6f572a7aabe2222158a85933573d8ddc80f884bce2a4fd6fd1fcd15"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
@@ -1691,9 +1694,9 @@ spec:
             ephemeral-storage: 500Mi
             memory: 8Gi
           requests:
-            cpu: "1"
+            cpu: "2"
             ephemeral-storage: 100Mi
-            memory: 500Mi
+            memory: 3Gi
         volumeMounts:
         - name: config-volume
           mountPath: /etc/flyte/config
@@ -1729,7 +1732,7 @@ spec:
         app.kubernetes.io/name: flyte-pod-webhook
         app.kubernetes.io/version: v1.8.0
       annotations:
-        configChecksum: "f90ee930ad8f577e107c45f7a8e9df793d75e8bba8257e63faf4650ed45151a"
+        configChecksum: "ee8678fc6f572a7aabe2222158a85933573d8ddc80f884bce2a4fd6fd1fcd15"
     spec:
       securityContext:
         fsGroup: 65534
@@ -2123,7 +2126,7 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "f90ee930ad8f577e107c45f7a8e9df793d75e8bba8257e63faf4650ed45151a"
+      configChecksum: "ee8678fc6f572a7aabe2222158a85933573d8ddc80f884bce2a4fd6fd1fcd15"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator
@@ -2156,9 +2159,9 @@ template:
           ephemeral-storage: 500Mi
           memory: 8Gi
         requests:
-          cpu: "1"
+          cpu: "2"
           ephemeral-storage: 100Mi
-          memory: 500Mi
+          memory: 3Gi
       volumeMounts:
         - name: config-volume
           mountPath: /etc/flyte/config

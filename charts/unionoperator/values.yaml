@@ -65,9 +65,9 @@ union:
         ephemeral-storage: 500Mi
         memory: "8Gi"
       requests:
-        cpu: "1"
+        cpu: "2"
         ephemeral-storage: 100Mi
-        memory: "500Mi"
+        memory: "3Gi"
     cacheSizeMbs: 0
     client_secret: foobar
     # -- Default regex string for searching configuration files
@@ -273,6 +273,9 @@ union:
       webhook:
         certDir: /etc/webhook/certs
         serviceName: flyte-pod-webhook
+      cache:
+        max_size_mbs: 1024
+        target_gc_percent: 70
       # -- For Workflow store use configuration [here](https://pkg.go.dev/github.com/flyteorg/flytepropeller/pkg/controller/workflowstore#Config)
       #
 
@@ -405,7 +408,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 4c3384d71ef7200e336873f7d5b410c08ef84d8b # UNION_OPERATOR_TAG
+      tag: 83c1d86577aafddf51941ca61fe05d89e46d78e1 # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
