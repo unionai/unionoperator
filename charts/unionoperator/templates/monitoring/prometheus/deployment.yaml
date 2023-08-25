@@ -115,8 +115,8 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  serviceName: {{ include "union-operator.fullname" . }}-prometheus-crit
   {{- if .Values.union.unionoperatorMonitoring.prometheus.critical.storage.persistent }}
+  serviceName: {{ include "union-operator.fullname" . }}-prometheus-crit
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -248,8 +248,8 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  serviceName: {{ include "union-operator.fullname" . }}-prometheus
   {{- if .Values.union.unionoperatorMonitoring.prometheus.storage.persistent }}
+  serviceName: {{ include "union-operator.fullname" . }}-prometheus
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
