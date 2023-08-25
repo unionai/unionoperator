@@ -1,4 +1,22 @@
 {{- if .Values.union.unionoperatorMonitoring.enabled -}}
+{{- if .Values.union.unionoperatorMonitoring.prometheus.critical.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "union-operator.fullname" . }}-prometheus-crit
+  labels:
+    {{- include "unionoperatorMonitoring.prometheus.critical.labels" . | nindent 4 }}
+spec:
+  type: {{  .Values.union.unionoperatorMonitoring.prometheus.service.type }}
+  ports:
+    - port: {{  .Values.union.unionoperatorMonitoring.prometheus.service.port }}
+      targetPort:  9090
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "unionoperatorMonitoring.prometheus.critical.selectorLabels" . | nindent 4 }}
+{{- end }}
+---
 apiVersion: v1
 kind: Service
 metadata:

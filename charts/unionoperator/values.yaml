@@ -154,6 +154,8 @@ union:
           kind: Namespace
           metadata:
             name: {{ namespace }}
+            labels:
+              union.ai/namespace-type: flyte
           spec:
             finalizers:
             - kubernetes
@@ -408,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 83c1d86577aafddf51941ca61fe05d89e46d78e1 # UNION_OPERATOR_TAG
+      tag: 01a2b5fcc77994fac50b81bfb237b9cf53f4b458 # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -530,7 +532,11 @@ union:
   unionoperatorMonitoring:
     enabled: false
     prometheus:
+      autoscaling:
+        enabled: false
+
       replicaCount: 1
+
       externalUrl: /prometheus/
 
       storage:
@@ -538,8 +544,43 @@ union:
         className: gp2
         sizePerReplica: 1Gi
         retention:
-          # size should strictly be less than the sizePerReplica in case of persistent
+          # size should strictly be less than the sizePerReplica in case of persistent, else less than ephemeral-storage
           size: 400MB
+
+      resources:
+        limits:
+          cpu: "4"
+          ephemeral-storage: 1Gi
+          memory: "8Gi"
+        requests:
+          cpu: "1"
+          ephemeral-storage: 500Mi
+          memory: "500Mi"
+
+      critical:
+        enabled: true
+        autoscaling:
+          enabled: false
+
+        replicaCount: 1
+
+        externalUrl: /prometheus/
+
+        storage:
+          persistent: false
+          retention:
+            # size should strictly be less than the sizePerReplica in case of persistent, else less than ephemeral-storage
+            size: 200MB
+
+        resources:
+          limits:
+            cpu: "1"
+            ephemeral-storage: 500Mi
+            memory: "500Mi"
+          requests:
+            cpu: "1"
+            ephemeral-storage: 500Mi
+            memory: "500Mi"
 
       image:
         repository: prom/prometheus
@@ -566,19 +607,6 @@ union:
       service:
         type: ClusterIP
         port: 80
-
-      resources:
-        limits:
-          cpu: "4"
-          ephemeral-storage: 1Gi
-          memory: "8Gi"
-        requests:
-          cpu: "1"
-          ephemeral-storage: 500Mi
-          memory: "500Mi"
-
-      autoscaling:
-        enabled: false
 
     kubeStateMetrics:
       replicaCount: 1

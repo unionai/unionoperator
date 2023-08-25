@@ -98,7 +98,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.cluster_resource_manager.enabled | bool | `true` |  |
 | union.cluster_resource_manager.service_account_name | string | `"clustersync-resource"` |  |
 | union.cluster_resource_manager.standalone_deploy | bool | `true` |  |
-| union.cluster_resource_manager.templates[0] | object | `{"key":"a_namespace.yaml","value":"apiVersion: v1\nkind: Namespace\nmetadata:\n  name: {{ namespace }}\nspec:\n  finalizers:\n  - kubernetes\n"}` | Template for namespaces resources |
+| union.cluster_resource_manager.templates[0] | object | `{"key":"a_namespace.yaml","value":"apiVersion: v1\nkind: Namespace\nmetadata:\n  name: {{ namespace }}\n  labels:\n    union.ai/namespace-type: flyte\nspec:\n  finalizers:\n  - kubernetes\n"}` | Template for namespaces resources |
 | union.cluster_resource_manager.templates[1] | object | `{"key":"b_default_service_account.yaml","value":"apiVersion: v1\nkind: ServiceAccount\nmetadata:\n  name: default\n  namespace: {{ namespace }}\n  annotations:\n    {{ defaultUserRoleKey }}: {{ defaultUserRoleValue }}\n"}` | Patch default service account |
 | union.cluster_resource_manager.templates[2].key | string | `"c_project_resource_quota.yaml"` |  |
 | union.cluster_resource_manager.templates[2].value | string | `"apiVersion: v1\nkind: ResourceQuota\nmetadata:\n  name: project-quota\n  namespace: {{ namespace }}\nspec:\n  hard:\n    limits.cpu: {{ projectQuotaCpu }}\n    limits.memory: {{ projectQuotaMemory }}\n    requests.nvidia.com/gpu: {{ projectQuotaNvidiaGpu }}\n"` |  |
@@ -169,7 +169,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"83c1d86577aafddf51941ca61fe05d89e46d78e1"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"01a2b5fcc77994fac50b81bfb237b9cf53f4b458"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key | string | `"ami_type"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"In"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].values[0] | string | `"AL2_x86_64_GPU"` |  |
@@ -232,6 +232,18 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.unionoperatorMonitoring.opencost.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.opencost.scrape | bool | `false` |  |
 | union.unionoperatorMonitoring.prometheus.autoscaling.enabled | bool | `false` |  |
+| union.unionoperatorMonitoring.prometheus.critical.autoscaling.enabled | bool | `false` |  |
+| union.unionoperatorMonitoring.prometheus.critical.enabled | bool | `true` |  |
+| union.unionoperatorMonitoring.prometheus.critical.externalUrl | string | `"/prometheus/"` |  |
+| union.unionoperatorMonitoring.prometheus.critical.replicaCount | int | `1` |  |
+| union.unionoperatorMonitoring.prometheus.critical.resources.limits.cpu | string | `"1"` |  |
+| union.unionoperatorMonitoring.prometheus.critical.resources.limits.ephemeral-storage | string | `"500Mi"` |  |
+| union.unionoperatorMonitoring.prometheus.critical.resources.limits.memory | string | `"500Mi"` |  |
+| union.unionoperatorMonitoring.prometheus.critical.resources.requests.cpu | string | `"1"` |  |
+| union.unionoperatorMonitoring.prometheus.critical.resources.requests.ephemeral-storage | string | `"500Mi"` |  |
+| union.unionoperatorMonitoring.prometheus.critical.resources.requests.memory | string | `"500Mi"` |  |
+| union.unionoperatorMonitoring.prometheus.critical.storage.persistent | bool | `false` |  |
+| union.unionoperatorMonitoring.prometheus.critical.storage.retention.size | string | `"200MB"` |  |
 | union.unionoperatorMonitoring.prometheus.externalUrl | string | `"/prometheus/"` |  |
 | union.unionoperatorMonitoring.prometheus.image.pullPolicy | string | `"IfNotPresent"` |  |
 | union.unionoperatorMonitoring.prometheus.image.repository | string | `"prom/prometheus"` |  |

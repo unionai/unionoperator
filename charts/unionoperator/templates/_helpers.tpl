@@ -166,11 +166,31 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Prometheus Critical Server labels
+*/}}
+{{- define "unionoperatorMonitoring.prometheus.critical.labels" -}}
+helm.sh/chart: {{ include "union-operator.chart" . }}
+{{ include "unionoperatorMonitoring.prometheus.critical.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
 Prometheus Server selector labels
 */}}
 {{- define "unionoperatorMonitoring.prometheus.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "union-operator.name" . }}-prometheus
 app.kubernetes.io/instance: {{ .Release.Name }}-prometheus
+{{- end }}
+
+{{/*
+Prometheus Critical Server selector labels
+*/}}
+{{- define "unionoperatorMonitoring.prometheus.critical.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "union-operator.name" . }}-prometheus-crit
+app.kubernetes.io/instance: {{ .Release.Name }}-prometheus-crit
 {{- end }}
 
 {{/*

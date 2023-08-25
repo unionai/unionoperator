@@ -149,6 +149,8 @@ data:
     kind: Namespace
     metadata:
       name: {{ namespace }}
+      labels:
+        union.ai/namespace-type: flyte
     spec:
       finalizers:
       - kubernetes
@@ -1248,7 +1250,7 @@ spec:
         - name: union-operator-proxy
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:83c1d86577aafddf51941ca61fe05d89e46d78e1"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:01a2b5fcc77994fac50b81bfb237b9cf53f4b458"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1324,7 +1326,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:83c1d86577aafddf51941ca61fe05d89e46d78e1"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:01a2b5fcc77994fac50b81bfb237b9cf53f4b458"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

@@ -1,4 +1,39 @@
 {{- if .Values.union.unionoperatorMonitoring.enabled -}}
+{{- if .Values.union.unionoperatorMonitoring.prometheus.critical.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "union-operator.fullname" . }}-prometheus-crit
+  labels:
+    {{- include "unionoperatorMonitoring.prometheus.critical.labels" . | nindent 4 }}
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval:     15s
+      evaluation_interval: 15s
+    alerting:
+      alertmanagers:
+      - static_configs:
+        - targets:
+    rule_files:
+      - rules.yml
+    scrape_configs:
+      - job_name: 'kube-state-metrics'
+        static_configs:
+        - targets: ['kube-state-metrics.kube-system.svc.cluster.local:{{ .Values.union.unionoperatorMonitoring.kubeStateMetrics.service.port }}']
+        metric_relabel_configs:
+        - separator: ;
+          source_labels: [__name__]
+          regex: kube_node_labels|kube_node_status_condition
+          action: keep
+  rules.yml: |
+    groups:
+      - name: rollup
+        rules:
+        - record: instance_type:kube_node_labels:sum
+          expr: sum by (label_cloud_google_com_gke_accelerator, label_cloud_google_com_gke_preemptible, label_eks_amazonaws_com_capacity_type, label_flyte_org_node_role, label_node_group_name, label_node_kubernetes_io_instance_type, label_node_pool_name, label_topology_kubernetes_io_region) (kube_node_labels{job="kube-state-metrics"})
+{{- end }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,12 +41,6 @@ metadata:
   labels:
     {{- include "unionoperatorMonitoring.prometheus.labels" . | nindent 4 }}
 data:
-  # Current config support scraping from configured kube state metrics service which serves request and limit metrics of
-  # all the pods running in the data plane.(We will later restrict this to serve only from configured namespaces where
-  # user pods are running). Also apart from request and limit it scrapes other metrics which come out of the box by installing
-  # the service.We will further refine them to set of useful metrics that should be scraped in next iteration.
-  # This installation of prometheus doesn't support scaling or retention and would be taken as immediate next step.
-  # The scrape interval is of 15 sec from state metrics endpoint.
   prometheus.yml: |
     global:
       scrape_interval:     15s
@@ -37,8 +66,12 @@ data:
         metric_relabel_configs:
         - separator: ;
           source_labels: [__name__]
-          regex: kube_pod_container_resource_limits|kube_pod_container_resource_requests|kube_pod_status_phase|kube_node_labels|kube_node_status_condition
+          regex: kube_pod_container_resource_(limits|requests)|kube_pod_status_phase|kube_node_(labels|status_condition)
           action: keep
+        - separator: ;
+          source_labels: [__name__, phase]
+          regex: kube_pod_status_phase;(Succeeded|Failed)
+          action: drop
         {{- with .Values.union.unionoperatorMonitoring.scrapeConfigs.kubeStateMetrics.extraMetricRelabelConfigs }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -103,7 +136,13 @@ data:
         - record: instance_type:kube_node_labels:sum
           expr: sum by (label_cloud_google_com_gke_accelerator, label_cloud_google_com_gke_preemptible, label_eks_amazonaws_com_capacity_type, label_flyte_org_node_role, label_node_group_name, label_node_kubernetes_io_instance_type, label_node_pool_name, label_topology_kubernetes_io_region) (kube_node_labels{job="kube-state-metrics"})
         - record: phase:kube_pod_status_phase:sum
-          expr: sum by (phase) (kube_pod_status_phase{job="kube-state-metrics"})
+          expr: sum by (label_union_ai_namespace_type, phase) (kube_pod_status_phase{job="kube-state-metrics"} * on (namespace) group_left(label_union_ai_namespace_type) kube_namespace_labels)
+        - record: namespace_phase:kube_pod_status_phase:sum
+          expr: sum by (namespace, label_union_ai_namespace_type, phase) (kube_pod_status_phase{job="kube-state-metrics"} * on (namespace) group_left(label_union_ai_namespace_type) kube_namespace_labels)
+        - record: namespace_type:pod:container_cpu_usage_seconds_total:count
+          expr: count by (label_union_ai_namespace_type) (count  by (namespace, label_union_ai_namespace_type, pod) (container_cpu_usage_seconds_total{pod!="", job="kubernetes-cadvisor"} * on (namespace) group_left(label_union_ai_namespace_type) kube_namespace_labels))
+        - record: namespace:pod:container_cpu_usage_seconds_total:count
+          expr: count by (namespace, label_union_ai_namespace_type) (count  by (namespace, label_union_ai_namespace_type, pod) (container_cpu_usage_seconds_total{pod!="", job="kubernetes-cadvisor"} * on (namespace) group_left(label_union_ai_namespace_type) kube_namespace_labels))
         - record: pod:container_cpu_usage_seconds_total:sum
           expr: sum by (namespace, pod) (container_cpu_usage_seconds_total{namespace="{{ include "union-operator.namespace" . }}", image!="", job="kubernetes-cadvisor"})
         - record: pod:container_memory_working_set_bytes:sum
