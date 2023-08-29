@@ -62,7 +62,7 @@ spec:
         - args:
             - --config.file=/etc/prometheus/prometheus.yml
             - --web.external-url={{ .Values.union.unionoperatorMonitoring.prometheus.critical.externalUrl }}
-            - --web.route-prefix=/prometheus/
+            - --web.route-prefix=/prometheus-crit/
             - --storage.tsdb.retention.size={{ .Values.union.unionoperatorMonitoring.prometheus.critical.storage.retention.size }}
           {{- if .Values.union.unionoperatorMonitoring.prometheus.critical.storage.persistent }}
             - --storage.tsdb.path=/prometheus
