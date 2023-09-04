@@ -17,18 +17,6 @@ kind: Namespace
 metadata:
   name: flytesnacks-production
 ---
-# Source: union-operator/charts/union/templates/agent/rbac.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: flyteagent
-  namespace: union
-  labels: 
-    app.kubernetes.io/name: flyteagent
-    app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
-    app.kubernetes.io/managed-by: Helm
----
 # Source: union-operator/charts/union/templates/propeller/rbac.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -38,7 +26,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
+    helm.sh/chart: union-v1.9.0
     app.kubernetes.io/managed-by: Helm
   annotations: 
     eks.amazonaws.com/role-arn: arn:aws:iam::479331373192:role/opencompute-staging-sample-tenant-adminflyterole
@@ -183,7 +171,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
+    helm.sh/chart: union-v1.9.0
     app.kubernetes.io/managed-by: Helm
 data:
   a_namespace.yaml.yaml: | 
@@ -227,7 +215,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
+    helm.sh/chart: union-v1.9.0
     app.kubernetes.io/managed-by: Helm
 data:
   cluster_resources.yaml: | 
@@ -301,7 +289,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteadmin
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
+    helm.sh/chart: union-v1.9.0
     app.kubernetes.io/managed-by: Helm
 data:
   admin.yaml: | 
@@ -324,7 +312,7 @@ data:
     plugins:
       k8s:
         co-pilot:
-          image: cr.flyte.org/flyteorg/flytecopilot-release:v1.8.0
+          image: cr.flyte.org/flyteorg/flytecopilot-release:v1.9.0
           name: flyte-copilot-
           start-timeout: 30s
   core.yaml: | 
@@ -385,7 +373,6 @@ data:
     tasks:
       task-plugins:
         default-for-task-types:
-          bigquery_query_job_task: agent-service
           container: container
           container_array: k8s-array
           sidecar: sidecar
@@ -395,10 +382,6 @@ data:
         - k8s-array
   k8s.yaml: | 
     plugins:
-      agent-service:
-        defaultGrpcEndpoint: flyteagent.flyte.svc.cluster.local:8000
-        supportedTaskTypes:
-        - bigquery_query_job_task
       k8s:
         default-cpus: 100m
         default-env-vars: []
@@ -667,7 +650,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
+    helm.sh/chart: union-v1.9.0
     app.kubernetes.io/managed-by: Helm
 rules:
 # Allow RO access to PODS
@@ -889,7 +872,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
+    helm.sh/chart: union-v1.9.0
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1059,30 +1042,6 @@ subjects:
   - kind: ServiceAccount
     name: union-operator
     namespace: union
----
-# Source: union-operator/charts/union/templates/agent/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: flyteagent
-  namespace: union
-  labels: 
-    app.kubernetes.io/name: flyteagent
-    app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
-    app.kubernetes.io/managed-by: Helm
-  annotations: 
-    projectcontour.io/upstream-protocol.h2c: grpc
-spec:
-  type: ClusterIP
-  ports:
-  - name: agent-grpc
-    port: 8000
-    protocol: TCP
-    targetPort: agent-grpc
-  selector: 
-    app.kubernetes.io/name: flyteagent
-    app.kubernetes.io/instance: union-operator
 ---
 # Source: union-operator/charts/union/templates/propeller/webhook.yaml
 # Service
@@ -1366,53 +1325,6 @@ spec:
           key: flyte.org/node-role
           operator: Exists
 ---
-# Source: union-operator/charts/union/templates/agent/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: flyteagent
-  namespace: union
-  labels: 
-    app.kubernetes.io/name: flyteagent
-    app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 1
-  selector:
-    matchLabels: 
-      app.kubernetes.io/name: flyteagent
-      app.kubernetes.io/instance: union-operator
-  template:
-    metadata:
-      annotations:
-      labels: 
-        app.kubernetes.io/name: flyteagent
-        app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-v1.8.0
-        app.kubernetes.io/managed-by: Helm
-    spec:
-      containers:
-      - command:
-        - pyflyte
-        - serve
-        image: "ghcr.io/flyteorg/flyteagent:1.6.2b1"
-        imagePullPolicy: "IfNotPresent"
-        name: flyteagent
-        ports:
-        - containerPort: 8000
-          name: agent-grpc
-        resources:
-          limits:
-            cpu: 500m
-            ephemeral-storage: 100Mi
-            memory: 500Mi
-          requests:
-            cpu: 10m
-            ephemeral-storage: 50Mi
-            memory: 50Mi
-      serviceAccountName: flyteagent
----
 # Source: union-operator/charts/union/templates/clusterresourcesync/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -1422,7 +1334,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flyteclusterresourcesync
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
+    helm.sh/chart: union-v1.9.0
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -1433,11 +1345,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "a9de74950e4c65581a224c65126b7e7127b753b3beee3e4e4050599c48d6b63"
+        configChecksum: "95c56ecad9dc06c60a0bfe197fa42a5a9bb97e44cfe260abc01c8163a477475"
       labels: 
         app.kubernetes.io/name: flyteclusterresourcesync
         app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-v1.8.0
+        helm.sh/chart: union-v1.9.0
         app.kubernetes.io/managed-by: Helm
     spec:
       containers:
@@ -1447,7 +1359,7 @@ spec:
             - /etc/flyte/config/*.yaml
             - clusterresource
             - run
-          image: "cr.flyte.org/flyteorg/flyteadmin-release:v1.8.0"
+          image: "cr.flyte.org/flyteorg/flyteadmin-release:v1.9.0"
           imagePullPolicy: "IfNotPresent"
           name: sync-cluster-resources
           volumeMounts:
@@ -1479,7 +1391,7 @@ metadata:
   labels: 
     app.kubernetes.io/name: flytepropeller-manager
     app.kubernetes.io/instance: union-operator
-    helm.sh/chart: union-v1.8.0
+    helm.sh/chart: union-v1.9.0
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -1490,11 +1402,11 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "ee8678fc6f572a7aabe2222158a85933573d8ddc80f884bce2a4fd6fd1fcd15"
+        configChecksum: "d5e01540afb06812c0dceb30d5a726d0823ef4c00a4fbb98fb879a2f7ae7e6a"
       labels: 
         app.kubernetes.io/name: flytepropeller-manager
         app.kubernetes.io/instance: union-operator
-        helm.sh/chart: union-v1.8.0
+        helm.sh/chart: union-v1.9.0
         app.kubernetes.io/managed-by: Helm
     spec:
       securityContext:
@@ -1519,7 +1431,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.8.0"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.9.0"
         imagePullPolicy: "IfNotPresent"
         name: flytepropeller-manager
         ports:
@@ -1566,9 +1478,9 @@ spec:
       labels:
         app: flyte-pod-webhook
         app.kubernetes.io/name: flyte-pod-webhook
-        app.kubernetes.io/version: v1.8.0
+        app.kubernetes.io/version: v1.9.0
       annotations:
-        configChecksum: "ee8678fc6f572a7aabe2222158a85933573d8ddc80f884bce2a4fd6fd1fcd15"
+        configChecksum: "d5e01540afb06812c0dceb30d5a726d0823ef4c00a4fbb98fb879a2f7ae7e6a"
     spec:
       securityContext:
         fsGroup: 65534
@@ -1577,7 +1489,7 @@ spec:
       serviceAccountName: flyte-pod-webhook
       initContainers:
       - name: generate-secrets
-        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.8.0"
+        image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.9.0"
         imagePullPolicy: "IfNotPresent"
         command:
           - flytepropeller
@@ -1600,7 +1512,7 @@ spec:
             mountPath: /etc/flyte/config
       containers:
         - name: webhook
-          image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.8.0"
+          image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.9.0"
           imagePullPolicy: "IfNotPresent"
           command:
             - flytepropeller
@@ -2027,11 +1939,11 @@ metadata:
 template:
   metadata:
     annotations:
-      configChecksum: "ee8678fc6f572a7aabe2222158a85933573d8ddc80f884bce2a4fd6fd1fcd15"
+      configChecksum: "d5e01540afb06812c0dceb30d5a726d0823ef4c00a4fbb98fb879a2f7ae7e6a"
     labels: 
       app.kubernetes.io/name: flytepropeller
       app.kubernetes.io/instance: union-operator
-      helm.sh/chart: union-v1.8.0
+      helm.sh/chart: union-v1.9.0
       app.kubernetes.io/managed-by: Helm
       app: flytepropeller
   spec:
@@ -2049,7 +1961,7 @@ template:
         valueFrom:
           fieldRef:
             fieldPath: metadata.name
-      image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.8.0"
+      image: "cr.flyte.org/flyteorg/flytepropeller-release:v1.9.0"
       imagePullPolicy: "IfNotPresent"
       name: flytepropeller
       ports:
