@@ -447,7 +447,9 @@ data:
         proxy:
           endpoint: http://union-operator-proxy.union.svc.cluster.local:10254
         prometheus:
-          endpoint: http://union-operator-prometheus.union.svc.cluster.local:80/prometheus/api/v1/targets
+          endpoint: http://union-operator-prometheus.union.svc.cluster.local:80/prometheus/-/healthy
+        prometheus-crit:
+          endpoint: http://union-operator-prometheus-crit.union.svc.cluster.local:80/prometheus-crit/-/healthy
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
@@ -617,6 +619,10 @@ data:
           expr: sum by (namespace, pod, resource) (kube_pod_container_resource_requests{namespace="union", resource=~"cpu|memory", job="kube-state-metrics"})
         - record: pod:kube_pod_container_resource_limits:sum
           expr: sum by (namespace, pod, resource) (kube_pod_container_resource_limits{namespace="union", resource=~"cpu|memory", job="kube-state-metrics"})
+        - record: job:up:sum
+          expr: sum by (job) (up)
+        - record: job:up:count
+          expr: count by (job) (up)
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -1636,7 +1642,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "a1ceb4327853c40471e59447a129ef14cc96fd8134c653fe8e683f7799c7bba"
+        configChecksum: "8305e127bb16c8d03c803f0b177d48e2d181012000179e65a910e2e4655030a"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
@@ -1820,7 +1826,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "9975a936ffb28ca8631000d20e1adc96be2c014c36da558b5cf6e5411b0f2b6"
+        configChecksum: "c8fbeebb56a457cc35e7fcc876caea9fc27bf9fffae6412d486f6cd9a967e88"
       labels:
         app.kubernetes.io/name: union-operator-prometheus-crit
         app.kubernetes.io/instance: union-operator-prometheus-crit
@@ -1885,7 +1891,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "9975a936ffb28ca8631000d20e1adc96be2c014c36da558b5cf6e5411b0f2b6"
+        configChecksum: "c8fbeebb56a457cc35e7fcc876caea9fc27bf9fffae6412d486f6cd9a967e88"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus

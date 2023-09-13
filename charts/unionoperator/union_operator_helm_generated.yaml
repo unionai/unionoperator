@@ -416,6 +416,8 @@ data:
           endpoint: http://flytepropeller.union.svc.cluster.local:10254
         proxy:
           endpoint: http://union-operator-proxy.union.svc.cluster.local:10254
+        prometheus-crit:
+          endpoint: http://union-operator-prometheus-crit.union.svc.cluster.local:80/prometheus-crit/-/healthy
       clusterData:
         appId: abcdef
         cloudHostName: playground.hosted.unionai.cloud
@@ -1162,7 +1164,7 @@ spec:
         - name: union-operator-proxy
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:1e2ed4ffd25ec968b1288ec02e84b0d75742882a"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:8097d2972e5ec074262abd00c4b63d97095d24bc"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
@@ -1215,7 +1217,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "c592a981999d64bd09e1e3486d91c69a1a7d49a140ab072a08a10e6a3d55e71"
+        configChecksum: "f1c215785b5bd659fc601aaa0e15a26fe572c01f8c967d2362f53c48e75faf1"
         prometheus.io/path: /metrics
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
@@ -1238,7 +1240,7 @@ spec:
         - name: union-operator
           securityContext:
             {}
-          image: "public.ecr.aws/p0i0a9q8/unionoperator:1e2ed4ffd25ec968b1288ec02e84b0d75742882a"
+          image: "public.ecr.aws/p0i0a9q8/unionoperator:8097d2972e5ec074262abd00c4b63d97095d24bc"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:

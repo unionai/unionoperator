@@ -151,4 +151,8 @@ data:
           expr: sum by (namespace, pod, resource) (kube_pod_container_resource_requests{namespace="{{ include "union-operator.namespace" . }}", resource=~"cpu|memory", job="kube-state-metrics"})
         - record: pod:kube_pod_container_resource_limits:sum
           expr: sum by (namespace, pod, resource) (kube_pod_container_resource_limits{namespace="{{ include "union-operator.namespace" . }}", resource=~"cpu|memory", job="kube-state-metrics"})
+        - record: job:up:sum
+          expr: sum by (job) (up)
+        - record: job:up:count
+          expr: count by (job) (up)
 {{- end }}

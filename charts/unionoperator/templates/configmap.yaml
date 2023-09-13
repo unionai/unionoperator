@@ -46,7 +46,16 @@ data:
 {{- end }}
 {{- if .Values.union.unionoperatorMonitoring.enabled }}
         prometheus:
-          endpoint: http://{{ include "union-operator.fullname" . }}-prometheus.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ printf "%d%sapi/v1/targets" (int (index .Values.union.unionoperatorMonitoring.prometheus.service "port")) "/prometheus/" }}
+          endpoint: http://{{ include "union-operator.fullname" . }}-prometheus.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ printf "%d/prometheus/-/healthy" (int (index .Values.union.unionoperatorMonitoring.prometheus.service "port")) }}
+          {{- if .Values.union.unionoperatorDependencies }}
+          {{- if  .Values.union.unionoperatorDependencies.unhealthyThreshold }}
+          unhealthyThreshold: {{ tpl (.Values.union.unionoperatorDependencies.unhealthyThreshold | toString) $ }}
+          {{- end }}
+          {{- end }}
+{{- end }}
+{{- if .Values.union.unionoperatorMonitoring.prometheus.critical.enabled }}
+        prometheus-crit:
+          endpoint: http://{{ include "union-operator.fullname" . }}-prometheus-crit.{{ include "union-operator.namespace" . }}.svc.cluster.local:{{ printf "%d/prometheus-crit/-/healthy" (int (index .Values.union.unionoperatorMonitoring.prometheus.service "port")) }}
           {{- if .Values.union.unionoperatorDependencies }}
           {{- if  .Values.union.unionoperatorDependencies.unhealthyThreshold }}
           unhealthyThreshold: {{ tpl (.Values.union.unionoperatorDependencies.unhealthyThreshold | toString) $ }}
