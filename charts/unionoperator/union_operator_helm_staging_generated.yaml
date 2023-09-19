@@ -623,6 +623,8 @@ data:
           expr: sum by (job) (up)
         - record: job:up:count
           expr: count by (job) (up)
+        - record: flyte_agent_request_latency_seconds:mean1m
+          expr: sum(rate(flyte_agent_request_latency_seconds_sum[1m])) / sum(rate(flyte_agent_request_latency_seconds_count[1m]))
 ---
 # Source: union-operator/charts/union/templates/propeller/crds/flyteworkflow.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -1826,7 +1828,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "c8fbeebb56a457cc35e7fcc876caea9fc27bf9fffae6412d486f6cd9a967e88"
+        configChecksum: "33468082ee4f70aeeebd526431cd356747b5f9ed6b62d8696a6cac21acd20c8"
       labels:
         app.kubernetes.io/name: union-operator-prometheus-crit
         app.kubernetes.io/instance: union-operator-prometheus-crit
@@ -1891,7 +1893,7 @@ spec:
   template:
     metadata:
       annotations:
-        configChecksum: "c8fbeebb56a457cc35e7fcc876caea9fc27bf9fffae6412d486f6cd9a967e88"
+        configChecksum: "33468082ee4f70aeeebd526431cd356747b5f9ed6b62d8696a6cac21acd20c8"
       labels:
         app.kubernetes.io/name: union-operator-prometheus
         app.kubernetes.io/instance: union-operator-prometheus

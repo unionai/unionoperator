@@ -9,7 +9,7 @@ Deploys Union Operator to onboard a k8s cluster to Union Cloud
 | Repository | Name | Version |
 |------------|------|---------|
 | https://flyteorg.github.io/flyte/ | union(flyte-core) | v1.9.0 |
-| https://opencost.github.io/opencost-helm-chart | opencost | v1.12.0 |
+| https://opencost.github.io/opencost-helm-chart | opencost | v1.19.3 |
 
 ### SANDBOX INSTALLATION:
 - [Install helm 3](https://helm.sh/docs/intro/install/)
@@ -43,15 +43,17 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | flyteagent.extraArgs | object | `{}` | Appends extra command line arguments to the main command |
 | flyteagent.image.pullPolicy | string | `"IfNotPresent"` | Docker image pull policy |
 | flyteagent.image.repository | string | `"ghcr.io/flyteorg/flyteagent"` | Docker image for flyteagent deployment |
-| flyteagent.image.tag | string | `"1.6.2b1"` | Docker image tag |
+| flyteagent.image.tag | string | `"ga-v1"` | Docker image tag |
 | flyteagent.nodeSelector | object | `{}` | nodeSelector for flyteagent deployment |
 | flyteagent.podAnnotations | object | `{}` | Annotations for flyteagent pods |
 | flyteagent.ports.containerPort | int | `8000` |  |
 | flyteagent.ports.name | string | `"agent-grpc"` |  |
 | flyteagent.priorityClassName | string | `""` | Sets priorityClassName for datacatalog pod(s). |
+| flyteagent.prometheusPort.containerPort | int | `9090` |  |
+| flyteagent.prometheusPort.name | string | `"agent-metric"` |  |
 | flyteagent.replicaCount | int | `1` | Replicas count for flyteagent deployment |
 | flyteagent.resources | object | `{"limits":{"cpu":"500m","ephemeral-storage":"100Mi","memory":"500Mi"},"requests":{"cpu":"10m","ephemeral-storage":"50Mi","memory":"50Mi"}}` | Default resources requests and limits for flyteagent deployment |
-| flyteagent.service | object | `{"type":"ClusterIP"}` | Service settings for flyteagent |
+| flyteagent.service | object | `{"clusterIP":"None","type":"ClusterIP"}` | Service settings for flyteagent |
 | flyteagent.serviceAccount | object | `{"annotations":{},"create":true,"imagePullSecrets":[]}` | Configuration for service accounts for flyteagent |
 | flyteagent.serviceAccount.annotations | object | `{}` | Annotations for ServiceAccount attached to flyteagent pods |
 | flyteagent.serviceAccount.create | bool | `true` | Should a service account be created for flyteagent |
@@ -169,7 +171,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"8097d2972e5ec074262abd00c4b63d97095d24bc"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"2173b02f475de73dacd2f4d042bb57c5407838ba"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key | string | `"ami_type"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"In"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].values[0] | string | `"AL2_x86_64_GPU"` |  |

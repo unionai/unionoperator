@@ -12,5 +12,5 @@ dependencies:
     version: 'v1.9.0' # FLYTE_VERSION
   - name: opencost
     repository: https://opencost.github.io/opencost-helm-chart
-    version: v1.12.0
+    version: v1.19.3
     condition: union.unionoperatorMonitoring.opencost.enabled

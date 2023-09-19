@@ -410,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 8097d2972e5ec074262abd00c4b63d97095d24bc # UNION_OPERATOR_TAG
+      tag: 2173b02f475de73dacd2f4d042bb57c5407838ba # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -783,12 +783,15 @@ flyteagent:
     # -- Docker image for flyteagent deployment
     repository: ghcr.io/flyteorg/flyteagent
     # -- Docker image tag
-    tag: 1.6.2b1
+    tag: ga-v1
     # -- Docker image pull policy
     pullPolicy: IfNotPresent
   ports:
     containerPort: 8000
     name: agent-grpc
+  prometheusPort:
+    containerPort: 9090
+    name: agent-metric
   # -- Default resources requests and limits for flyteagent deployment
   resources:
     limits:
@@ -804,6 +807,8 @@ flyteagent:
   # -- Service settings for flyteagent
   service:
     type: ClusterIP
+    # Use headless service for flyteagent
+    clusterIP: None
   # -- Configuration for service accounts for flyteagent
   serviceAccount:
     # -- Should a service account be created for flyteagent

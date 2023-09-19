@@ -155,4 +155,6 @@ data:
           expr: sum by (job) (up)
         - record: job:up:count
           expr: count by (job) (up)
+        - record: flyte_agent_request_latency_seconds:mean1m
+          expr: sum(rate(flyte_agent_request_latency_seconds_sum[1m])) / sum(rate(flyte_agent_request_latency_seconds_count[1m]))
 {{- end }}
