@@ -1,22 +1,4 @@
 ---
-# Source: union-operator/templates/namespaces.yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: flytesnacks-development
----
-# Source: union-operator/templates/namespaces.yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: flytesnacks-staging
----
-# Source: union-operator/templates/namespaces.yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: flytesnacks-production
----
 # Source: union-operator/charts/union/templates/propeller/rbac.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -802,6 +784,7 @@ rules:
     resources:
       - nodes
       - nodes/proxy
+      - pods
     verbs:
       - get
       - list
@@ -1450,9 +1433,9 @@ spec:
             ephemeral-storage: 500Mi
             memory: 8Gi
           requests:
-            cpu: "2"
+            cpu: 3670m
             ephemeral-storage: 100Mi
-            memory: 3Gi
+            memory: 4Gi
         volumeMounts:
         - name: config-volume
           mountPath: /etc/flyte/config
@@ -1596,13 +1579,13 @@ spec:
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             limits:
-              cpu: "4"
-              ephemeral-storage: 500Mi
-              memory: 8Gi
-            requests:
               cpu: "1"
+              ephemeral-storage: 500Mi
+              memory: 1Gi
+            requests:
+              cpu: 100m
               ephemeral-storage: 100Mi
-              memory: 500Mi
+              memory: 128Mi
           volumeMounts:
             - mountPath: /etc/union/config
               name: config-volume
@@ -1678,7 +1661,7 @@ spec:
             requests:
               cpu: "1"
               ephemeral-storage: 100Mi
-              memory: 500Mi
+              memory: 4Gi
           volumeMounts:
             - mountPath: /etc/union/config
               name: config-volume
@@ -1980,9 +1963,9 @@ template:
           ephemeral-storage: 500Mi
           memory: 8Gi
         requests:
-          cpu: "2"
+          cpu: 3670m
           ephemeral-storage: 100Mi
-          memory: 3Gi
+          memory: 4Gi
       volumeMounts:
         - name: config-volume
           mountPath: /etc/flyte/config

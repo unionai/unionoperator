@@ -114,6 +114,36 @@ data:
       - job_name: 'union-metrics'
         static_configs:
         - targets: ['{{ include "union-operator.fullname" . }}.{{ include "union-operator.namespace" . }}.svc.cluster.local']
+      {{- if .Values.union.unionoperatorMonitoring.flytePropeller.enabled }}
+      - job_name: 'flyte-propeller'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - "{{ include "union-operator.namespace" . }}"
+          selectors:
+          - role: "pod"
+            label: "app=flytepropeller"
+        metric_relabel_configs:
+        - source_labels: [__name__]
+          regex: "flyte:propeller:all:free_workers_count|\
+            flyte:propeller:all:gc_latency_ms|\
+            flyte:propeller:all:metastore:write_unlabeled_ms|\
+            flyte:propeller:all:node:node_exec_latency_unlabeled_us|\
+            flyte:propeller:all:node:perma_user_error_duration_unlabeled_ms|\
+            flyte:propeller:all:node:queueing_latency_ms|\
+            flyte:propeller:all:node:transition_latency_unlabeled_ms|\
+            flyte:propeller:all:node:user_error_duration_unlabeled_ms|\
+            flyte:propeller:all:main_adds|\
+            flyte:propeller:all:main_depth|\
+            flyte:propeller:all:round:round_time_ms|\
+            flyte:propeller:all:wf_update_latency_ms"
+          action: keep
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+      {{- end }}
       {{- if and (.Values.union.unionoperatorMonitoring.opencost.enabled) (.Values.union.unionoperatorMonitoring.opencost.scrape) }}
       - job_name: 'opencost'
         honor_labels: true

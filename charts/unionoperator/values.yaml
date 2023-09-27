@@ -65,9 +65,9 @@ union:
         ephemeral-storage: 500Mi
         memory: "8Gi"
       requests:
-        cpu: "2"
+        cpu: "3670m"
         ephemeral-storage: 100Mi
-        memory: "3Gi"
+        memory: "4Gi"
     cacheSizeMbs: 0
     client_secret: foobar
     # -- Default regex string for searching configuration files
@@ -384,13 +384,13 @@ union:
       # resources, such as Minikube. If you do want to specify resources, uncomment the following
       # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
       limits:
-        cpu: "4"
-        ephemeral-storage: 500Mi
-        memory: "8Gi"
-      requests:
         cpu: "1"
+        ephemeral-storage: 500Mi
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
         ephemeral-storage: 100Mi
-        memory: "500Mi"
+        memory: "128Mi"
 
     autoscaling:
       enabled: false
@@ -410,7 +410,7 @@ union:
       repository: public.ecr.aws/p0i0a9q8/unionoperator
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 2173b02f475de73dacd2f4d042bb57c5407838ba # UNION_OPERATOR_TAG
+      tag: 2da8e8bf09cc6ce4898b6911149e81c5b95f140f # UNION_OPERATOR_TAG
 
     imagePullSecrets: []
     nameOverride: ""
@@ -459,7 +459,7 @@ union:
       requests:
         cpu: "1"
         ephemeral-storage: 100Mi
-        memory: "500Mi"
+        memory: "4Gi"
 
     autoscaling:
       enabled: false
@@ -506,11 +506,11 @@ union:
 
     resources:
       limits:
-        cpu: "4"
-        ephemeral-storage: 500Mi
-        memory: "8Gi"
-      requests:
         cpu: "1"
+        ephemeral-storage: 500Mi
+        memory: "2Gi"
+      requests:
+        cpu: "100m"
         ephemeral-storage: 100Mi
         memory: "500Mi"
 
@@ -711,7 +711,8 @@ union:
         - name: nvidia-install-dir-host
           mountPath: /usr/local/nvidia
           readOnly: true
-
+    flytePropeller:
+      enabled: false
     opencost:
       enabled: false
       scrape: false

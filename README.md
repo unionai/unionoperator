@@ -136,7 +136,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.flytepropeller.nodeSelector | object | `{}` | nodeSelector for Flytepropeller deployment |
 | union.flytepropeller.podAnnotations | object | `{}` | Annotations for Flytepropeller pods |
 | union.flytepropeller.replicaCount | int | `1` | Replicas count for Flytepropeller deployment |
-| union.flytepropeller.resources | object | `{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"2","ephemeral-storage":"100Mi","memory":"3Gi"}}` | Default resources requests and limits for Flytepropeller deployment |
+| union.flytepropeller.resources | object | `{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"3670m","ephemeral-storage":"100Mi","memory":"4Gi"}}` | Default resources requests and limits for Flytepropeller deployment |
 | union.flytepropeller.serviceAccount | object | `{"annotations":{},"create":true,"imagePullSecrets":[]}` | Configuration for service accounts for FlytePropeller |
 | union.flytepropeller.serviceAccount.annotations | object | `{}` | Annotations for ServiceAccount attached to FlytePropeller pods |
 | union.flytepropeller.serviceAccount.create | bool | `true` | Should a service account be created for FlytePropeller |
@@ -150,12 +150,12 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.proxy.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | union.proxy.prof-port | int | `10254` |  |
 | union.proxy.replicaCount | int | `2` |  |
-| union.proxy.resources.limits.cpu | string | `"4"` |  |
+| union.proxy.resources.limits.cpu | string | `"1"` |  |
 | union.proxy.resources.limits.ephemeral-storage | string | `"500Mi"` |  |
-| union.proxy.resources.limits.memory | string | `"8Gi"` |  |
-| union.proxy.resources.requests.cpu | string | `"1"` |  |
+| union.proxy.resources.limits.memory | string | `"1Gi"` |  |
+| union.proxy.resources.requests.cpu | string | `"100m"` |  |
 | union.proxy.resources.requests.ephemeral-storage | string | `"100Mi"` |  |
-| union.proxy.resources.requests.memory | string | `"500Mi"` |  |
+| union.proxy.resources.requests.memory | string | `"128Mi"` |  |
 | union.proxy.service.port | int | `8080` |  |
 | union.proxy.serviceAccount.annotations | object | `{}` |  |
 | union.proxy.serviceAccount.create | bool | `true` |  |
@@ -171,7 +171,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.storage.gcs | string | `nil` | settings for storage type gcs |
 | union.storage.s3 | object | `{"region":"us-east-1"}` | settings for storage type s3 |
 | union.storage.type | string | `"sandbox"` | Sets the storage type. Supported values are sandbox, s3, gcs and custom. |
-| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"2173b02f475de73dacd2f4d042bb57c5407838ba"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"500Mi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
+| union.unionoperator | object | `{"affinity":{},"autoscaling":{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80},"configmapOverrides":{},"fullnameOverride":"","image":{"pullPolicy":"IfNotPresent","repository":"public.ecr.aws/p0i0a9q8/unionoperator","tag":"2da8e8bf09cc6ce4898b6911149e81c5b95f140f"},"imagePullSecrets":[],"nameOverride":"","nodeSelector":{},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"10254","prometheus.io/scrape":"true"},"podSecurityContext":{},"priorityClassName":"system-cluster-critical","replicaCount":1,"resources":{"limits":{"cpu":"4","ephemeral-storage":"500Mi","memory":"8Gi"},"requests":{"cpu":"1","ephemeral-storage":"100Mi","memory":"4Gi"}},"securityContext":{},"service":{"port":80,"type":"ClusterIP"},"serviceAccount":{"annotations":{},"create":true,"name":""},"tolerations":[]}` | ---------------------------------------------------- |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key | string | `"ami_type"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"In"` |  |
 | union.unionoperatorMonitoring.dcgmExporter.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].values[0] | string | `"AL2_x86_64_GPU"` |  |
@@ -213,6 +213,7 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.unionoperatorMonitoring.dcgmExporter.tolerations[1].operator | string | `"Exists"` |  |
 | union.unionoperatorMonitoring.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.extraScrapeConfigs | list | `[]` |  |
+| union.unionoperatorMonitoring.flytePropeller.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.autoscaling.enabled | bool | `false` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.image.pullPolicy | string | `"IfNotPresent"` |  |
 | union.unionoperatorMonitoring.kubeStateMetrics.image.repository | string | `"registry.k8s.io/kube-state-metrics/kube-state-metrics"` |  |
@@ -285,10 +286,10 @@ helm upgrade -f values.yaml union-operator unionai/union-operator -n union-opera
 | union.unionoperatorSparkHistoryServer.nodeSelector | object | `{}` |  |
 | union.unionoperatorSparkHistoryServer.podSecurityContext | object | `{}` |  |
 | union.unionoperatorSparkHistoryServer.replicaCount | int | `1` |  |
-| union.unionoperatorSparkHistoryServer.resources.limits.cpu | string | `"4"` |  |
+| union.unionoperatorSparkHistoryServer.resources.limits.cpu | string | `"1"` |  |
 | union.unionoperatorSparkHistoryServer.resources.limits.ephemeral-storage | string | `"500Mi"` |  |
-| union.unionoperatorSparkHistoryServer.resources.limits.memory | string | `"8Gi"` |  |
-| union.unionoperatorSparkHistoryServer.resources.requests.cpu | string | `"1"` |  |
+| union.unionoperatorSparkHistoryServer.resources.limits.memory | string | `"2Gi"` |  |
+| union.unionoperatorSparkHistoryServer.resources.requests.cpu | string | `"100m"` |  |
 | union.unionoperatorSparkHistoryServer.resources.requests.ephemeral-storage | string | `"100Mi"` |  |
 | union.unionoperatorSparkHistoryServer.resources.requests.memory | string | `"500Mi"` |  |
 | union.unionoperatorSparkHistoryServer.securityContext.allowPrivilegeEscalation | bool | `true` |  |
